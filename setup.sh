@@ -5,7 +5,6 @@ export CPPFLAGS="-I/usr/local/opt/zlib/include"
 pyenv install 3.12.5
 pyenv local 3.12.5
 
-python -m venv .venv
-source .venv/bin/activate
+pyenv exec  python -m venv .venv
 
-pip install -r requirements.txt
+pyenv exec pip install -r requirements.txt
