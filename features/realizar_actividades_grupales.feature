@@ -25,8 +25,12 @@ Característica: Realización de actividades por ciudadanos
     Y agregue los correos de los invitados "jean.cotera@epn.edu, cristian.sangucho@epn.edu.ec" a la reserva
     Entonces se enviará una invitación por correo con los detalles de la reserva.
 
-  Escenario: Cancelar reserva de actividad pública
+  Escenario: Cancelar reserva de actividad publica
     Dado que el ciudadano tiene una reserva en el "Parque la Alameda"
     Cuando cancele la reserva
     Entonces la reserva será eliminada de la agenda pública.
 
+  Escenario: Cancelar reserva de actividad privada
+    Dado que el ciudadano tiene una reserva en el "Parque la Alameda"
+    Cuando cancele la reserva
+    Entonces se enviará una correo de cancelacion de cancelación a los invitados.
