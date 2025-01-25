@@ -1,3 +1,9 @@
+#Directorio de entorno virtual de python
 /.venv/
 **/__pycache__/
 
+# Archivo .DS_Store de Mac
+.DS_Store
+
+# Carpeta .idea de pycharm
+.idea/
