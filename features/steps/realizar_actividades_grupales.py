@@ -21,7 +21,6 @@ def step_impl(context, nombre_espacio_publico):
 
     assert context.ciudad.espacio_publico.hay_areas_comunales_disponibles();
 
-
 @step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
 def step_impl(context, maximo_reservas):
     context.ciudadano = Ciudadano("Fernando Do Santos", "1725548763")
@@ -30,6 +29,10 @@ def step_impl(context, maximo_reservas):
 
 @step('el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, hora_fin):
+    context.tipo_reserva = tipo_reserva
+    context.fecha_reserva = fecha_reserva
+    context.hora_inicio = hora_inicio
+    context.hora_fin = hora_fin
     pass #da valor en el siguiente paso
 
 
@@ -50,10 +53,10 @@ def step_impl(context):
     assert context.controlador_notificacion.enviar_invitacion(context.ciudadano.obtener_ultima_reserva())
 
 
-@step('que el ciudadano tiene una reserva en la "Cancha #1" en el espacio publico "Parque la Alameda"')
+@step('que el ciudadano tiene una reserva "pública" en la "Cancha #1" en el espacio publico "Parque la Alameda"')
 def step_impl(context):
-    pass
-
+    reservado = context.controlador_reserva.existe_reserva(context.id_reserva)
+    assert reservado
 @step("cancele la reserva")
 def step_impl(context):
     pass
