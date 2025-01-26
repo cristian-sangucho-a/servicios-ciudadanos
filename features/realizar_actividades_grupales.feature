@@ -31,13 +31,13 @@ Característica: Realización de actividades por ciudadanos
     #TODO: las vistas se deben narrar en los test para representar un cambio de estado de mi sistema??????????????????????????????? TIPO DE RESERVA
 
   Escenario: Cancelar reserva de actividad publica en area comunal
-    Dado que el ciudadano tiene una reserva "publica" en la "Cancha #1" en el espacio publico "Parque la Alameda"
+    Dado que el ciudadano tiene una reserva "publica" en el espacio publico "Parque la Alameda" en el area comunal "Cancha #3" el "15/01/2024" de "16:00" a "17:00"
     Cuando cancele la reserva
     Entonces la reserva será eliminada de la agenda pública.
 
   Escenario: Cancelar reserva de actividad privada en area comunal
-    Dado que el ciudadano tiene una reserva "privada" en la "Cancha #2" en el espacio publico "Parque la Alameda"
+    Dado que el ciudadano tiene una reserva "privada" en el espacio publico "Parque la Alameda" en el area comunal "Cancha #3" el "15/01/2024" de "7:00" a "8:00"
     Cuando cancele la reserva
-    Entonces reserva será eliminada de la agenda pública.
-    Y se enviará una correo de cancelacion de cancelación a los invitados.
+    Entonces se enviará una correo de cancelacion de cancelación a los invitados
+    Y la reserva será eliminada de la agenda pública.
     #TODO: un metodo que elimine y notifique a los invitados para mantener la consistencia de la informacion
