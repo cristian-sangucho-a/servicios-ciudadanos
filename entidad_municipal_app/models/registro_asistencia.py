@@ -4,7 +4,41 @@ Modelo que gestiona los registros de asistencia a eventos municipales.
 from django.db import models
 from django.core.exceptions import ValidationError
 from ciudadano_app.models import Ciudadano
-from .evento_municipal import EventoMunicipal
+
+class RegistroAsistenciaManager(models.Manager):
+    """Manager personalizado para consultas comunes de RegistroAsistencia"""
+    
+    def inscritos_para_ciudadano(self, ciudadano):
+        """Obtiene todos los registros activos de un ciudadano"""
+        return self.filter(
+            ciudadano=ciudadano,
+            estado_registro=RegistroAsistencia.ESTADO_INSCRITO
+        )
+    
+    def en_espera_para_ciudadano(self, ciudadano):
+        """Obtiene todos los registros en lista de espera de un ciudadano"""
+        return self.filter(
+            ciudadano=ciudadano,
+            estado_registro=RegistroAsistencia.ESTADO_EN_ESPERA
+        )
+    
+    def obtener_siguiente_en_espera(self, evento):
+        """Obtiene el siguiente registro en lista de espera para un evento"""
+        return self.filter(
+            evento=evento,
+            estado_registro=RegistroAsistencia.ESTADO_EN_ESPERA
+        ).order_by('fecha_inscripcion').first()
+
+    def tiene_inscripcion_activa(self, evento, ciudadano):
+        """Verifica si un ciudadano tiene una inscripción activa en un evento"""
+        return self.filter(
+            evento=evento,
+            ciudadano=ciudadano,
+            estado_registro__in=[
+                RegistroAsistencia.ESTADO_INSCRITO,
+                RegistroAsistencia.ESTADO_EN_ESPERA
+            ]
+        ).exists()
 
 class RegistroAsistencia(models.Model):
     """
@@ -34,7 +68,7 @@ class RegistroAsistencia(models.Model):
     )
     
     evento = models.ForeignKey(
-        EventoMunicipal,
+        'entidad_municipal_app.EventoMunicipal',  # Referencia lazy para evitar importación circular
         on_delete=models.CASCADE,
         verbose_name='Evento',
         help_text='Evento al que se inscribe el ciudadano'
@@ -53,11 +87,13 @@ class RegistroAsistencia(models.Model):
         help_text='Fecha y hora en que se realizó la inscripción'
     )
     
-    fecha_actualizacion = models.DateTimeField(
+    fecha_modificacion = models.DateTimeField(
         auto_now=True,
-        verbose_name='Última Actualización',
+        verbose_name='Última Modificación',
         help_text='Fecha y hora de la última modificación'
     )
+
+    objects = RegistroAsistenciaManager()
 
     class Meta:
         verbose_name = 'Registro de Asistencia'

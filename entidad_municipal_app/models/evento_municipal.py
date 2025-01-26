@@ -3,6 +3,11 @@ Modelo que representa un evento municipal.
 """
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.db.models import Count
+from django.db import transaction
+from django.db.models import F, Q
+from django.utils import timezone
+from .registro_asistencia import RegistroAsistencia
 
 class EventoMunicipal(models.Model):
     """
@@ -21,6 +26,13 @@ class EventoMunicipal(models.Model):
         (ESTADO_FINALIZADO, 'Finalizado'),
         (ESTADO_CANCELADO, 'Cancelado'),
     ]
+
+    # Estados de registro (copiados de RegistroAsistencia para evitar importación circular)
+    ESTADO_INSCRITO = 'INSCRITO'
+    ESTADO_EN_ESPERA = 'EN_ESPERA'
+    ESTADO_CANCELADO_REGISTRO = 'CANCELADO'
+    ESTADO_ASISTIO = 'ASISTIO'
+    ESTADO_NO_ASISTIO = 'NO_ASISTIO'
 
     nombre_evento = models.CharField(
         max_length=200,
@@ -49,16 +61,11 @@ class EventoMunicipal(models.Model):
         help_text='Número máximo de personas que pueden asistir'
     )
     
-    cupos_disponibles = models.PositiveIntegerField(
-        verbose_name='Cupos Disponibles',
-        help_text='Número de cupos aún disponibles'
-    )
-    
     estado_actual = models.CharField(
         max_length=20,
         choices=ESTADOS_EVENTO,
         default=ESTADO_PROGRAMADO,
-        verbose_name='Estado',
+        verbose_name='Estado del Evento',
         help_text='Estado actual del evento'
     )
 
@@ -79,30 +86,87 @@ class EventoMunicipal(models.Model):
         verbose_name_plural = 'Eventos Municipales'
         ordering = ['-fecha_realizacion']
 
-    def verificar_disponibilidad_cupos(self):
-        """Verifica si hay cupos disponibles para el evento"""
-        return self.cupos_disponibles > 0
+    @property
+    def cupos_disponibles(self):
+        """
+        Calcula los cupos disponibles del evento de forma atómica
+        """
+        return self.capacidad_maxima - self.registroasistencia_set.filter(
+            estado_registro=self.ESTADO_INSCRITO
+        ).count()
 
-    def verificar_estado_permite_inscripciones(self):
-        """Verifica si el evento está en un estado que permite inscripciones"""
-        return self.estado_actual == self.ESTADO_PROGRAMADO
+    def _get_cupos_ocupados(self):
+        """Obtiene el número de cupos ocupados"""
+        return self.registroasistencia_set.filter(
+            estado_registro=self.ESTADO_INSCRITO
+        ).count()
 
     def reducir_cupo_disponible(self):
-        """Reduce en uno el número de cupos disponibles"""
-        if not self.verificar_disponibilidad_cupos():
-            raise ValidationError("No hay cupos disponibles para este evento")
-        self.cupos_disponibles -= 1
-        self.save()
+        """
+        Reduce el cupo disponible de forma segura con manejo de concurrencia
+        
+        Returns:
+            bool: True si se pudo reducir el cupo, False si no hay cupos disponibles
+        """
+        with transaction.atomic():
+            # Bloquea el registro para operaciones concurrentes
+            evento = EventoMunicipal.objects.select_for_update().get(pk=self.pk)
+            if evento.cupos_disponibles > 0:
+                return True
+            return False
 
     def aumentar_cupo_disponible(self):
-        """Aumenta en uno el número de cupos disponibles"""
-        if self.cupos_disponibles < self.capacidad_maxima:
-            self.cupos_disponibles += 1
-            self.save()
+        """
+        Aumenta el cupo disponible de forma segura con manejo de concurrencia
+        
+        Returns:
+            bool: True si se pudo aumentar el cupo, False si no se pudo aumentar
+        """
+        with transaction.atomic():
+            # Bloquea el registro para operaciones concurrentes
+            evento = EventoMunicipal.objects.select_for_update().get(pk=self.pk)
+            if evento.capacidad_maxima > evento._get_cupos_ocupados():
+                return True
+            return False
+
+    def esta_disponible_para_inscripcion(self):
+        """
+        Verifica si el evento está disponible para inscripciones
+        
+        Returns:
+            bool: True si el evento está disponible para inscripciones
+        """
+        return (
+            self.estado_actual == self.ESTADO_PROGRAMADO and
+            self.fecha_realizacion > timezone.now() and
+            self.cupos_disponibles > 0
+        )
+
+    def obtener_inscritos(self):
+        """
+        Obtiene la lista de ciudadanos inscritos al evento
+        
+        Returns:
+            QuerySet: QuerySet de RegistroAsistencia con estado INSCRITO
+        """
+        return self.registroasistencia_set.filter(
+            estado_registro=self.ESTADO_INSCRITO
+        ).select_related('ciudadano')
+
+    def obtener_lista_espera(self):
+        """
+        Obtiene la lista de espera ordenada por fecha de inscripción
+        
+        Returns:
+            QuerySet: QuerySet de RegistroAsistencia con estado EN_ESPERA
+        """
+        return self.registroasistencia_set.filter(
+            estado_registro=self.ESTADO_EN_ESPERA
+        ).select_related('ciudadano').order_by('fecha_inscripcion')
 
     def obtener_formato_fecha(self):
         """Retorna la fecha del evento en formato legible"""
-        return self.fecha_realizacion.strftime('%d/%m/%Y %H:%M')
+        return self.fecha_realizacion.strftime("%d/%m/%Y %H:%M")
 
     def __str__(self):
         return f"{self.nombre_evento} ({self.obtener_formato_fecha()})"

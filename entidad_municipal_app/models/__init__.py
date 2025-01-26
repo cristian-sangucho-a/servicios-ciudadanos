@@ -1,6 +1,7 @@
 """
-Inicializa el paquete de modelos para la aplicación entidad_municipal_app.
+Modelos de la aplicación de entidad municipal.
 """
+
 from .evento_municipal import EventoMunicipal
 from .registro_asistencia import RegistroAsistencia
 

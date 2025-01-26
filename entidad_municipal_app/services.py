@@ -7,8 +7,10 @@ from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils import timezone
 from typing import Optional, Tuple
-from .models import EventoMunicipal, RegistroAsistencia
+from .models.evento_municipal import EventoMunicipal
+from .models.registro_asistencia import RegistroAsistencia
 
 class ErrorGestionEventos(Exception):
     """Excepción personalizada para errores en la gestión de eventos"""
@@ -49,18 +51,22 @@ class ServicioNotificaciones:
         
         Gracias por tu interés en nuestros eventos municipales.
         '''
-        
-        send_mail(
-            subject=asunto,
-            message=mensaje,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[registro.ciudadano.obtener_correo_electronico()],
-            fail_silently=False,
-        )
+
+        try:
+            send_mail(
+                subject=asunto,
+                message=mensaje,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[registro.ciudadano.correo_electronico],
+                fail_silently=False
+            )
+        except Exception as e:
+            # Log the error but don't stop the process
+            print(f"Error al enviar notificación: {str(e)}")
 
 class GestorRegistroAsistencia:
     """Gestiona las operaciones relacionadas con registros de asistencia a eventos"""
-
+    
     def __init__(self):
         self.servicio_notificaciones = ServicioNotificaciones()
 
@@ -74,8 +80,10 @@ class GestorRegistroAsistencia:
         Raises:
             ErrorGestionEventos: Si el evento no está disponible
         """
-        if not evento.verificar_estado_permite_inscripciones():
-            raise ErrorGestionEventos("El evento no está abierto para inscripciones")
+        if not evento.esta_disponible_para_inscripcion():
+            raise ErrorGestionEventos(
+                "El evento no está disponible para inscripciones"
+            )
 
     def _validar_inscripcion_unica(self, evento: EventoMunicipal, ciudadano) -> None:
         """
@@ -88,17 +96,10 @@ class GestorRegistroAsistencia:
         Raises:
             ErrorGestionEventos: Si ya existe una inscripción activa
         """
-        inscripcion_existente = RegistroAsistencia.objects.filter(
-            ciudadano=ciudadano,
-            evento=evento,
-            estado_registro__in=[
-                RegistroAsistencia.ESTADO_INSCRITO,
-                RegistroAsistencia.ESTADO_EN_ESPERA
-            ]
-        ).exists()
-
-        if inscripcion_existente:
-            raise ErrorGestionEventos("Ya tienes una inscripción activa para este evento")
+        if RegistroAsistencia.objects.tiene_inscripcion_activa(evento, ciudadano):
+            raise ErrorGestionEventos(
+                "Ya tienes una inscripción activa para este evento"
+            )
 
     @transaction.atomic
     def procesar_solicitud_inscripcion(self, evento_id: int, ciudadano) -> RegistroAsistencia:
@@ -116,29 +117,34 @@ class GestorRegistroAsistencia:
             ErrorGestionEventos: Si hay problemas con la inscripción
         """
         try:
-            evento = EventoMunicipal.objects.select_for_update().get(id=evento_id)
+            # Obtener y bloquear el evento para operaciones concurrentes
+            evento = EventoMunicipal.objects.select_for_update().get(pk=evento_id)
+            
+            # Validar que el ciudadano no tenga una inscripción activa
+            self._validar_inscripcion_unica(evento, ciudadano)
+            
+            # Determinar el estado del registro
+            if evento.esta_disponible_para_inscripcion() and evento.reducir_cupo_disponible():
+                estado = RegistroAsistencia.ESTADO_INSCRITO
+            else:
+                estado = RegistroAsistencia.ESTADO_EN_ESPERA
+            
+            # Crear el registro
+            registro = RegistroAsistencia.objects.create(
+                ciudadano=ciudadano,
+                evento=evento,
+                estado_registro=estado
+            )
+            
+            # Enviar notificación
+            self.servicio_notificaciones.enviar_notificacion_inscripcion(registro)
+            
+            return registro
+            
         except EventoMunicipal.DoesNotExist:
             raise ErrorGestionEventos("El evento especificado no existe")
-
-        self._validar_evento_disponible(evento)
-        self._validar_inscripcion_unica(evento, ciudadano)
-
-        estado_registro = (RegistroAsistencia.ESTADO_INSCRITO 
-                         if evento.verificar_disponibilidad_cupos() 
-                         else RegistroAsistencia.ESTADO_EN_ESPERA)
-
-        registro = RegistroAsistencia.objects.create(
-            ciudadano=ciudadano,
-            evento=evento,
-            estado_registro=estado_registro
-        )
-
-        if estado_registro == RegistroAsistencia.ESTADO_INSCRITO:
-            evento.reducir_cupo_disponible()
-
-        self.servicio_notificaciones.enviar_notificacion_inscripcion(registro)
-        
-        return registro
+        except Exception as e:
+            raise ErrorGestionEventos(f"Error al procesar la inscripción: {str(e)}")
 
     @transaction.atomic
     def procesar_cancelacion_inscripcion(self, registro_id: int) -> Tuple[RegistroAsistencia, Optional[RegistroAsistencia]]:
@@ -155,29 +161,36 @@ class GestorRegistroAsistencia:
             ErrorGestionEventos: Si hay problemas con la cancelación
         """
         try:
-            registro = RegistroAsistencia.objects.select_for_update().get(id=registro_id)
-        except RegistroAsistencia.DoesNotExist:
-            raise ErrorGestionEventos("El registro de asistencia no existe")
-
-        if not registro.verificar_estado_activo():
-            raise ErrorGestionEventos("Solo se pueden cancelar inscripciones activas")
-
-        # Guardar estado original antes de la cancelación
-        estado_original = registro.estado_registro
-
-        # Cancelar la inscripción actual
-        registro.actualizar_estado(RegistroAsistencia.ESTADO_CANCELADO)
-        self.servicio_notificaciones.enviar_notificacion_inscripcion(registro)
-
-        registro_promovido = None
-        # Verificar si el estado original era INSCRITO para promover
-        if estado_original == RegistroAsistencia.ESTADO_INSCRITO:
-            registro_promovido = self._promover_siguiente_en_espera(registro.evento)
-            if not registro_promovido:
-                # Si no hay nadie en espera, aumentar el cupo disponible
+            registro = RegistroAsistencia.objects.select_related('evento').get(pk=registro_id)
+            
+            if registro.estado_registro == RegistroAsistencia.ESTADO_CANCELADO:
+                raise ErrorGestionEventos("El registro ya está cancelado")
+            
+            # Guardar estado original antes de cancelar
+            estado_original = registro.estado_registro
+            
+            # Cancelar el registro actual
+            registro.estado_registro = RegistroAsistencia.ESTADO_CANCELADO
+            registro.save()
+            
+            if estado_original == RegistroAsistencia.ESTADO_INSCRITO:
                 registro.evento.aumentar_cupo_disponible()
-
-        return registro, registro_promovido
+            
+            registro_promovido = None
+            if estado_original == RegistroAsistencia.ESTADO_INSCRITO:
+                registro_promovido = self._promover_siguiente_en_espera(registro.evento)
+            
+            # Enviar notificaciones
+            self.servicio_notificaciones.enviar_notificacion_inscripcion(registro)
+            if registro_promovido:
+                self.servicio_notificaciones.enviar_notificacion_inscripcion(registro_promovido)
+            
+            return registro, registro_promovido
+            
+        except RegistroAsistencia.DoesNotExist:
+            raise ErrorGestionEventos("El registro especificado no existe")
+        except Exception as e:
+            raise ErrorGestionEventos(f"Error al procesar la cancelación: {str(e)}")
 
     def _promover_siguiente_en_espera(self, evento: EventoMunicipal) -> Optional[RegistroAsistencia]:
         """
@@ -189,14 +202,9 @@ class GestorRegistroAsistencia:
         Returns:
             Optional[RegistroAsistencia]: Registro promovido si existe
         """
-        siguiente_en_espera = RegistroAsistencia.objects.filter(
-            evento=evento,
-            estado_registro=RegistroAsistencia.ESTADO_EN_ESPERA
-        ).order_by('fecha_inscripcion').first()
-
-        if siguiente_en_espera:
-            siguiente_en_espera.actualizar_estado(RegistroAsistencia.ESTADO_INSCRITO)
-            self.servicio_notificaciones.enviar_notificacion_inscripcion(siguiente_en_espera)
-            return siguiente_en_espera
-        
+        siguiente = RegistroAsistencia.objects.obtener_siguiente_en_espera(evento)
+        if siguiente:
+            siguiente.estado_registro = RegistroAsistencia.ESTADO_INSCRITO
+            siguiente.save()
+            return siguiente
         return None
