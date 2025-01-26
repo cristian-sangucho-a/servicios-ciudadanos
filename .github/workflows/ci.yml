@@ -1,0 +1,19 @@
+name: ci_servicios_ciudadanos
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  Pull_Request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR name
+        if: github.event_name == 'pull_request'
+        uses: Slashgear/action-check-pr-title@v4.3.0
+        with:
+          regexp: '^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert|release|hotfix)(\([a-zA-Z0-9_\-\.]+\))?:\s.{1,50}$'
+          helpMessage: 'Example: fix(auth): resolve token expiration issue'
+
