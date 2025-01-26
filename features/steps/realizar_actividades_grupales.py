@@ -27,9 +27,17 @@ def step_impl(context, maximo_reservas):
     assert context.ciudadano.obtener_numero_reservas_activas() <= maximo_reservas
 
 
-@step('el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
-def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, hora_fin):
-    context.tipo_reserva = tipo_reserva
+@step('el ciudadano realice una reserva "publica" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
+def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
+    context.tipo_reserva = "publica"
+    context.fecha_reserva = fecha_reserva
+    context.hora_inicio = hora_inicio
+    context.hora_fin = hora_fin
+    pass #da valor en el siguiente paso
+
+@step('el ciudadano realice una reserva "privada" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
+def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
+    context.tipo_reserva = "privada"
     context.fecha_reserva = fecha_reserva
     context.hora_inicio = hora_inicio
     context.hora_fin = hora_fin
@@ -39,40 +47,45 @@ def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, h
 @step("se guarda la reserva en la Agenda Pública.")
 def step_impl(context):
     context.controlador_reserva = ControladorReserva()
-    assert context.controlador_reserva.reservar_area_comunal(context.cancha1, context.fecha_reserva, context.hora_inicio, context.hora_fin, context.tipo_reserva, context.ciudadano)
+    context.id_reserva, context.reservado = context.controlador_reserva.reservar_area_comunal(context.cancha1, context.fecha_reserva, context.hora_inicio, context.hora_fin, context.tipo_reserva, context.ciudadano)
 
+    assert context.reservado
 
 @step('agregue los correos de los invitados "{correos_invitados}" a la reserva')
 def step_impl(context, correos_invitados):
-    context.correos_invitados = correos_invitados
-    pass #esto puede ser verificado en el siguiente paso
+    context.reserva.agregar_correo_invitado(correos_invitados)
+    # context.correos_invitados = correos_invitados
+    pass # esto puede ser verificado en el siguiente paso
 
 @step("se enviará una invitación por correo con los detalles de la reserva.")
 def step_impl(context):
     context.controlador_notificacion = ControladorNotificacion()
-    assert context.controlador_notificacion.enviar_invitacion(context.ciudadano.obtener_ultima_reserva())
+    assert context.controlador_notificacion.enviar_invitacion(context.ciudadano.obtener_reserva_por_id(context.id_reserva))
 
 
-@step('que el ciudadano tiene una reserva "pública" en la "Cancha #1" en el espacio publico "Parque la Alameda"')
-def step_impl(context):
-    reservado = context.controlador_reserva.existe_reserva(context.id_reserva)
-    assert reservado
+@step(
+    'que el ciudadano tiene una reserva "{tipo_reserva}" en el espacio publico "{nombre_espacio}" en el area comunal "{nombre_area}" el "{fecha}" de "{hora_inicio}" a "{hora_fin}"')
+def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_inicio, hora_fin):
+    context.id_reserva, context.reservado = context.controlador_reserva.reservar_area_comunal(
+        context.cancha3,
+        fecha,
+        hora_inicio,
+        hora_fin,
+        tipo_reserva.lower(),  # Ej: "publica" → "publica"
+        context.ciudadano  # Asume que context.ciudadano ya existe
+    )
+
+
 @step("cancele la reserva")
 def step_impl(context):
     pass
 
 @step("la reserva será eliminada de la agenda pública.")
 def step_impl(context):
-    pass
+    assert context.controlador_reserva.cancelar_reserva(context.id_reserva, context.ciudadano)
 
-@step("reserva será eliminada de la agenda pública.")
-def step_impl(context):
-    pass
 
-@step("se enviará una correo de cancelacion de cancelación a los invitados.")
+@step("se enviará una correo de cancelacion de cancelación a los invitados")
 def step_impl(context):
-    pass
-
-@step('cada ciudadano puede tener hasta "3" reservas activas')
-def step_impl(context):
-    pass
+    assert context.controlador_notificacion.enviar_invitacion(
+        context.ciudadano.obtener_reserva_por_id(context.id_reserva))
