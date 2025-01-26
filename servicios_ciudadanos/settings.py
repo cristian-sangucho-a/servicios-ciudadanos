@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'behave_django',
+    'ciudadano_app.apps.CiudadanoAppConfig',
+    'entidad_municipal_app.apps.EntidadMunicipalAppConfig',
 ]
 
 MIDDLEWARE = [
@@ -99,9 +101,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Guayaquil'
 
 USE_I18N = True
 
@@ -116,3 +118,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración del modelo de usuario personalizado
+AUTH_USER_MODEL = 'ciudadano_app.Ciudadano'
+
+# Configuración de correo electrónico (para desarrollo)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
