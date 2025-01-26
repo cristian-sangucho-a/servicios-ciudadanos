@@ -1,43 +1,39 @@
 #language: es
 
   Característica: Organizar eventos publicos masivos
-
-    Como entidad publica
-    quiero organizar eventos públicos masivos en los espacios comunitarios
-    para promover la participación ciudadana y el uso eficiente de los recursos públicos
-
-Escenario: Organizar un evento en un lugar disponible
-    Dado que la entidad municipal "Municipal Central" quiere organizar un evento "Quito Fest"
-    Y el dia del evento "2023-07-15" y la hora inicio es "18:00"
-    Cuando el lugar escogido es "Parque Central" Y esta disponible
-    Entonces se publicara el evento en la Agenda Pública
+    Como Entidad Municipal
+    Quiero organizar eventos públicos masivos en los espacios públicos
+    para promover la participación ciudadana y el uso eficiente de los recursos públicos.
 
 
-Escenario: Organizar un evento en un lugar no disponible
-    Dado que la entidad municipal "Municipal Central" quiere organizar un evento "Quito Fest"
-    Y el dia del evento "2023-07-15" y la hora inicio es "18:00"
-    Cuando el lugar escogido es "Parque Central"
-    Y no esta disponible
-    Entonces no se publicara el evento en la Agenda Pública
-    Y se mostrara los lugares disponibles
+Escenario: Organizar un evento en un espacio público disponible
+  Dado que la entidad municipal "Municipio de Quito" desea organizar el evento "Quito Fest"
+  Y la fecha del evento es "2023-12-06" con hora de inicio a las "14:00"
+  Cuando el espacio público "Parque Central" se encuentre disponible
+  Entonces se publicará el evento en la Agenda Pública
 
 
-Escenario: Organizar un evento en múltiples lugares simultáneamente
-  Dado que la entidad municipal "<nombre de la entidad>" quiere organizar un evento "<nombre del evento>"
-  Y el dia del evento "2023-07-15" y la hora inicio es "18:00"
-  Cuando se registran varias ubicaciones para el evento:
-    | Lugar          | Dirección                | Capacidad |
-    | Parque Central | Av. Principal 123        | 500       |
-    | Centro Cultural| Calle Secundaria 456     | 300       |
-    | Estadio Municipal| Av. Deportes 789       | 1000     |
-  Y estos son diferentes
-  Entonces se publicara el evento en la Agenda Pública
+Escenario: Organizar un evento en un espacio público no disponible
+  Dado que la entidad municipal "Municipio de Quito" desea organizar el evento "Quito Fest"
+  Y la fecha del evento es "2023-12-06" con hora de inicio a las "14:00"
+  Cuando el espacio público "Parque Central" no se encuentre disponible
+  Entonces no se incluirá el evento en la Agenda Pública
+  Y se mostrarán los espacios públicos disponibles
 
 
+Escenario: Organizar un evento en múltiples espacios públicos simultáneamente
+  Dado que la entidad municipal "Municipio de Quito" desea organizar el evento "Quito Fest"
+  Y la fecha del evento es "2023-12-06" con hora de inicio a las "14:00"
+  Cuando se registran los siguientes espacios públicos para el evento:
+    | Parque Central      |
+    | Centro Cultural     |
+    | Estadio Municipal   |
+  Y todos los espacios públicos son distintos entre sí
+  Entonces se incluirá el evento en la Agenda Pública
 
-Escenario: Cancelar evento debido a casos fortiutos/incidentes externos
-  Dado el evento "Festival Cultural de Primavera" está en estado "Programado"
-  Y la  del lugar esta "Peligro" debido a un incendio forestal
+
+Escenario: Cancelar evento debido a caso fortuito externo
+  Dado que existe un evento llamado "Festival Cultural de Primavera" con el estado "Confirmado"
+  Y el espacio público destinado al evento está en una situación de "Riesgo" debido a un "Incendio forestal"
   Cuando la entidad municipal cambia el estado del evento a "Cancelado"
-  Entonces la entidad municipal añade el motivo de cancelacion del evento
-
+  Entonces se registra el motivo de la cancelación
