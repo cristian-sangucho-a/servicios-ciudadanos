@@ -24,10 +24,7 @@ Escenario: Organizar un evento en un espacio público no disponible
 Escenario: Organizar un evento en múltiples espacios públicos simultáneamente
   Dado que la entidad municipal "Municipio de Quito" desea organizar el evento "Quito Fest"
   Y la fecha del evento es "2023-12-06" con hora de inicio a las "14:00"
-  Cuando se registran los siguientes espacios públicos para el evento:
-    | Parque Central      |
-    | Centro Cultural     |
-    | Estadio Municipal   |
+  Cuando se registran mas de un espacio público para el evento
   Y todos los espacios públicos son distintos entre sí
   Entonces se incluirá el evento en la Agenda Pública
 
