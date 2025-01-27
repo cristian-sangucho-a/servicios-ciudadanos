@@ -1,62 +1,64 @@
 """
 Modelo principal de Ciudadano.
 """
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .gestor_ciudadano import GestorCiudadano
+
 
 class Ciudadano(AbstractBaseUser, PermissionsMixin):
     """
     Modelo que representa a un ciudadano en el sistema municipal.
     Extiende el modelo base de usuario de Django para incluir campos específicos.
     """
-    
+
     correo_electronico = models.EmailField(
         unique=True,
-        verbose_name='Correo Electrónico',
-        help_text='Dirección de correo electrónico del ciudadano'
+        verbose_name="Correo Electrónico",
+        help_text="Dirección de correo electrónico del ciudadano",
     )
-    
+
     nombre_completo = models.CharField(
         max_length=120,
-        verbose_name='Nombre Completo',
-        help_text='Nombre completo del ciudadano'
+        verbose_name="Nombre Completo",
+        help_text="Nombre completo del ciudadano",
     )
-    
+
     numero_identificacion = models.CharField(
         max_length=20,
         unique=True,
-        verbose_name='Número de Identificación',
-        help_text='Número de documento de identidad del ciudadano'
+        verbose_name="Número de Identificación",
+        help_text="Número de documento de identidad del ciudadano",
     )
-    
+
     esta_activo = models.BooleanField(
         default=True,
-        verbose_name='¿Está Activo?',
-        help_text='Indica si el ciudadano puede acceder al sistema'
+        verbose_name="¿Está Activo?",
+        help_text="Indica si el ciudadano puede acceder al sistema",
     )
-    
+
     es_staff = models.BooleanField(
         default=False,
-        verbose_name='¿Es Personal Administrativo?',
-        help_text='Indica si el ciudadano puede acceder al panel de administración'
+        verbose_name="¿Es Personal Administrativo?",
+        help_text="Indica si el ciudadano puede acceder al panel de administración",
     )
-    
+
     fecha_registro = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Fecha de Registro',
-        help_text='Fecha y hora en que el ciudadano se registró en el sistema'
+        verbose_name="Fecha de Registro",
+        help_text="Fecha y hora en que el ciudadano se registró en el sistema",
     )
 
     objects = GestorCiudadano()
 
-    USERNAME_FIELD = 'correo_electronico'
-    REQUIRED_FIELDS = ['nombre_completo', 'numero_identificacion']
+    USERNAME_FIELD = "correo_electronico"
+    REQUIRED_FIELDS = ["nombre_completo", "numero_identificacion"]
 
     class Meta:
-        verbose_name = 'Ciudadano'
-        verbose_name_plural = 'Ciudadanos'
-        ordering = ['-fecha_registro']
+        verbose_name = "Ciudadano"
+        verbose_name_plural = "Ciudadanos"
+        ordering = ["-fecha_registro"]
 
     def obtener_nombre_completo(self):
         """Retorna el nombre completo del ciudadano"""
