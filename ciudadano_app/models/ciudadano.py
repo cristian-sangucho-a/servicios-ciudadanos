@@ -70,10 +70,6 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
         """Retorna el número de identificación del ciudadano"""
         return self.numero_identificacion
 
-<<<<<<< Updated upstream
     def __str__(self):
+        """Retorna una representación en cadena del ciudadano"""
         return f"Ciudadano: {self.nombre_completo} ({self.correo_electronico})"
-=======
-    def _str_(self):
-        return f"Ciudadano: {self.nombre_completo} ({self.correo_electronico})"
->>>>>>> Stashed changes
