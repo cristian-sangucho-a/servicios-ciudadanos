@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-# from django.db import models
-
 from ciudadano_app.models.Reporte import Reporte
 
 

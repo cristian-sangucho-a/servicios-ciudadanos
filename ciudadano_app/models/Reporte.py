@@ -1,43 +1,16 @@
-# from typing import Any
-
-# from django.db import models
+from django.db import models
 
 from ciudadano_app.models import Ciudadano
 from ciudadano_app.models.TipoReporte import TipoReporte
 
+class Reporte(models.Model):
+    ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE)
+    tipo_reporte = models.ForeignKey(TipoReporte, on_delete=models.CASCADE)
+    ubicacion = models.CharField(max_length=255)
+    prioridad = models.IntegerField(default=None, null=True, blank=True)
 
-class Reporte():
+    def validar_reporte(self):
+        return bool(self.ciudadano and self.tipo_reporte and self.ubicacion)
 
-    def __init__(self, ciudadano: Ciudadano, tipo_reporte: TipoReporte, **kwargs):
-        # super().__init__(*args, **kwargs)
-        self.__ciudadano = ciudadano
-        self.__tipo_reporte = tipo_reporte
-        self.__prioridad = None
-        if kwargs.get("ubicacion"):
-            self.__ubicacion = kwargs.get("ubicacion")
-
-    def validar_reporte(self) -> bool:
-        es_valido = bool(self.__ciudadano and self.__tipo_reporte and self.__ubicacion)
-        return es_valido
-
-    @property
-    def ciudadano(self):
-        return self.__ciudadano
-
-    @property
-    def tipo_reporte(self):
-        return self.__tipo_reporte
-
-    @property
-    def ubicacion(self):
-        return self.__ubicacion
-
-    @property
-    def prioridad(self):
-        return self.__prioridad
-
-    @prioridad.setter
-    def prioridad(self, prioridad: int):
-        if prioridad < 1 or prioridad > 5:
-            raise ValueError("La prioridad debe estar entre 1 y 5.")
-        self.__prioridad = prioridad
+    def __str__(self):
+        return f"Reporte de {self.tipo_reporte.asunto} por {self.ciudadano.nombre}"

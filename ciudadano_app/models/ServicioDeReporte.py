@@ -1,13 +1,8 @@
-# from typing import Any
-
-# from django.db import models
-
 from ciudadano_app.models.Reporte import Reporte
 from ciudadano_app.models.RepositorioDeReporte import RepositorioDeReporte
 
 class ServicioDeReporte():
     def __init__(self, reporte_repositorio: RepositorioDeReporte):
-        # super().__init__(*args, **kwargs)
         self.reporte_repositorio = reporte_repositorio
 
     # De acuerdo a la escala fiboncacci: 1, 1, 2, 3, 5, 8, 13
