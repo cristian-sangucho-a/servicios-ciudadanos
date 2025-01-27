@@ -10,14 +10,14 @@ servicioDeReporte = ServicioDeReporte(repositorioEnMemoria)
 @step(
     'que un ciudadano llamado "{nombre}" con correo "{correo}" e identificación "{identificacion}" ha identificado un problema')
 def step_impl(context, nombre, correo, identificacion):
-    context.ciudadano = Ciudadano.objects.create(nombre=nombre, correo=correo, identificacion=identificacion)
-
+    context.ciudadano = Ciudadano(nombre=nombre, correo=correo, identificacion=identificacion)
 
 @step(
     'proporciona sus detalles en un reporte con asunto "{asunto}", descripción "{descripcion}" y ubicación "{ubicacion}"')
 def step_impl(context, asunto, descripcion, ubicacion):
-    context.tipo_reporte = TipoReporte.objects.get_or_create(asunto=asunto, defaults={'descripcion': descripcion})
-    context.reporte = Reporte.objects.create(ciudadano=context.ciudadano, tipo_reporte=context.tipo_reporte, ubicacion=ubicacion)
+    tipo_reporte = TipoReporte(asunto=asunto, descripcion=descripcion)
+    context.tipo_reporte = tipo_reporte
+    context.reporte = Reporte(ciudadano=context.ciudadano, tipo_reporte=tipo_reporte, ubicacion=ubicacion)
 
 @step("se envía el reporte descrito")
 def step_impl(context):
