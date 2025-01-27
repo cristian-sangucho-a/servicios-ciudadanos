@@ -29,7 +29,7 @@ def generar_registros(repositorio ,cantidad_registro, asunto):
     fake = Faker()
 
     for _ in range(int(cantidad_registro)):
-        ciudadano = Ciudadano(nombre=fake.name(), identificacion=fake.ssn(), correo=fake.email())
+        ciudadano = Ciudadano(nombre_completo=fake.name(), correo_electronico=fake.email(), numero_identificacion=fake.numerify("###-###-###"))
         tipo_reporte = TipoReporte(asunto=asunto, descripcion=fake.text())
         reporte = Reporte(ciudadano=ciudadano, tipo_reporte=tipo_reporte, ubicacion=fake.address())
         reporte.prioridad = fake.random_int(min=1, max=5)
