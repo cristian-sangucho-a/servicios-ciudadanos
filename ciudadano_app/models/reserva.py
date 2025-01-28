@@ -27,7 +27,11 @@ class Reserva(models.Model):
         AreaComunal,
         on_delete=models.CASCADE,
         primary_key=True,
+        related_name='+'
     )
+
+    def obtener_id(self):
+        return self.pk
 
     def agregar_correos_invitados(self, correos_invitados):
         try:
