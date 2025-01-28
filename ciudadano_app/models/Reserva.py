@@ -1,4 +1,4 @@
 from django.db import models
 
-class Ciudadano(models.Model):
+class Reserva(models.Model):
     pass
