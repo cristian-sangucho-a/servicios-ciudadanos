@@ -1,3 +1,5 @@
+from time import time
+
 from django.db import models
 
 class AreaComunal(models.Model):
@@ -8,11 +10,11 @@ class AreaComunal(models.Model):
     )
     hora_de_apertura = models.TimeField(
         help_text="Hora de apertura del área comunal",
-        default="07:00"
+        default= time(7, 0, 0)
     )
     hora_de_cierre = models.TimeField(
         help_text="Hora de cierre del área comunal",
-        default="20:00"
+        default=time(20, 0, 0)
     )
 
 

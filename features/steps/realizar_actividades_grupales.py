@@ -76,16 +76,16 @@ def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
 
 @step('agregue los correos de los invitados "{correos_invitados}" a la reserva')
 def step_impl(context, correos_invitados):
-    context.controlador_reserva.obtener_reserva_por_id(id_reserva = context.id_reserva).agregar_correo_invitado(correos_invitados = correos_invitados)
-    pass # esto puede ser verificado en el siguiente paso
+    assert context.controlador_reserva.obtener_reserva_por_id(id_reserva = context.id_reserva).agregar_correos_invitados(correos_invitados = correos_invitados)
+    # esto puede ser verificado en el siguiente paso o no xd
 
 #--------------------AQUI SE USA EL ENTONCES DE ARRIBA --------------------------#
 
 @step("se enviará una invitación por correo con los detalles de la reserva.")
 def step_impl(context):
     context.controlador_notificacion = ControladorNotificacion()
-    #assert context.controlador_notificacion.enviar_invitacion(id_reserva = context.ciudadano.obtener_reserva_por_id(id_reserva = context.id_reserva))
-    pass
+    assert context.controlador_notificacion.enviar_invitacion(reserva = context.ciudadano.obtener_reserva_por_id(id_reserva = context.id_reserva))
+
     # Esta es una consideracion que me da deepsek para agilizar el tiempo que demora en enviarse un mensaje y arrojar algun codigo de OK
     # from unittest.mock import patch
     #
