@@ -32,16 +32,16 @@ def step_impl(context, nombre_espacio_publico):
     #assert context.espacio_publico.hay_areas_comunales_disponibles();
     pass
 @step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
-def step_impl(context, maximo_reservas):
+def step_impl(context):
     context.ciudadano = Ciudadano.objects.create_user(
         correo_electronico=fake.email(),
         nombre_completo=fake.name(),
         numero_identificacion=str(fake.random_number(digits=10)),
         contrasena="secret123"
     )
+    context.controlador_reserva = ControladorReserva()
+    assert context.controlador_reserva.ciudadano_no_supera_maximo_reservas(ciudadano=context.ciudadano)
 
-    #assert context.ciudadano.obtener_numero_reservas_activas() <= int(maximo_reservas)
-    pass
 @step('el ciudadano realice una reserva "publica" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
     context.tipo_reserva = "publica"
