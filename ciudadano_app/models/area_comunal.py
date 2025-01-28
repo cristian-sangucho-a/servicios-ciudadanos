@@ -1,4 +1,4 @@
-from time import time
+from datetime import time
 
 from django.db import models
 
