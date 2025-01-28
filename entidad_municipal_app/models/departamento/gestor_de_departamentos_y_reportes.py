@@ -1,4 +1,4 @@
-from app.Departamento import Departamento
+from entidad_municipal_app.models.departamento.departamento import Departamento
 
 
 class GestorDeDepartamentos:
