@@ -4,7 +4,7 @@ Modelo principal de Ciudadano.
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from .gestor_ciudadano import GestorCiudadano
+from ciudadano_app.models.ciudadano.gestor_ciudadano import GestorCiudadano
 
 
 class Ciudadano(AbstractBaseUser, PermissionsMixin):
