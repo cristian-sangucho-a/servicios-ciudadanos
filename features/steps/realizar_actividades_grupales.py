@@ -40,7 +40,7 @@ def step_impl(context):
         contrasena="secret123"
     )
     context.controlador_reserva = ControladorReserva()
-    assert !context.controlador_reserva.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
+    assert  not context.controlador_reserva.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
 
 @step('el ciudadano realice una reserva "publica" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
@@ -76,8 +76,8 @@ def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
 
 @step('agregue los correos de los invitados "{correos_invitados}" a la reserva')
 def step_impl(context, correos_invitados):
-    context.controlador_reserva.obtener_reserva_por_id(id_reserva = context.id_reserva).agregar_correos_invitados(correos_invitados = correos_invitados)
-    pass # esto puede ser verificado en el siguiente paso
+    assert context.controlador_reserva.obtener_reserva_por_id(id_reserva = context.id_reserva).agregar_correos_invitados(correos_invitados = correos_invitados)
+    # esto puede ser verificado en el siguiente paso o no xd
 
 #--------------------AQUI SE USA EL ENTONCES DE ARRIBA --------------------------#
 
