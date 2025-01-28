@@ -7,7 +7,11 @@ class Reserva(models.Model):
         AreaComunal,
         on_delete=models.CASCADE,
         primary_key=True,
+        related_name='+'
     )
+
+    def obtener_id(self):
+        return self.pk
 
 
     ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE)
