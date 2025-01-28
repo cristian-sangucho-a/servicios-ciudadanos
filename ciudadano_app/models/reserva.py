@@ -29,15 +29,15 @@ class Reserva(models.Model):
         primary_key=True,
     )
 
-
-    ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE)
-
     def agregar_correos_invitados(self, correos_invitados):
         try:
             self.correos_invitados = correos_invitados
         except Exception as e:
             return False
         return True
+
+    def obtener_area_comunal(self):
+        return self.area_comunal
 
     def obtener_correos_invitados(self):
         return self.correos_invitados
