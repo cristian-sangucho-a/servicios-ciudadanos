@@ -12,10 +12,10 @@ fake = Faker()
 
 @step('que existen areas comunales en el espacio publico "{nombre_espacio_publico}" disponibles en la ciudad y son')
 def step_impl(context, nombre_espacio_publico):
-
-
-    context.entidad_municipal = EntidadMunicipal.objects.create(nombre="QuitoDMQ")
-    context.espacio_publico = EspacioPublico.objects.create(nombre=nombre_espacio_publico) #saber que mas tiene el espacio publico con el otro team
+    #la entidad municipal se encarga de la creación de espacios públicos (preguntarle al profe si la parte administrativa está fuera del alcance)
+    context.entidad_municipal = EntidadMunicipal.objects.create(nombre="QuitoDMQ") #saber que mas tiene el espacio publico con el otro team
+    #TODO revisar el modelo de EspacioPublico, los campos necesarios para crearse
+    context.espacio_publico = EspacioPublico.objects.create(nombre=nombre_espacio_publico)
 
     context.cancha1 = AreaComunal.objects.create(nombre_area=context.table[0].cells[0])
     context.cancha2 = AreaComunal.objects.create(nombre_area=context.table[1].cells[0])
@@ -28,7 +28,7 @@ def step_impl(context, nombre_espacio_publico):
     context.cancha1.agregar_fecha_disponible(fecha="15/01/2024", hora_inicio="07:00", hora_fin="20:00")
     context.cancha2.agregar_fecha_disponible(fecha="15/01/2024", hora_inicio="07:00", hora_fin="20:00")
     context.cancha3.agregar_fecha_disponible(fecha="15/01/2024", hora_inicio="07:00", hora_fin="20:00")
-
+    context.espacio_publico = context.entidad_municipal.crear_espacio_publico(espacio_publico=context.espacio_publico)
     #assert context.espacio_publico.hay_areas_comunales_disponibles();
     pass
 @step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
