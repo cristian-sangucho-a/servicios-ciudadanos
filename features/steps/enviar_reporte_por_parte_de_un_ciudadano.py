@@ -2,18 +2,13 @@ from behave import step
 
 from ciudadano_app.models import Ciudadano, TipoReporte, Reporte
 from ciudadano_app.models.reporte.servicio_de_reporte import ServicioDeReporte
-from mocks.repositorio_de_reporte_django import (
-    RepositorioDeReporteDjango,
+from mocks.repositorio_de_reporte_en_memoria import (
+    RepositorioDeReporteEnMemoria,
     generar_registros,
 )
-# from mocks.repositorio_de_reporte_en_memoria import (
-#     RepositorioDeReporteEnMemoria,
-#     generar_registros,
-# )
 
-repositorioDjango = RepositorioDeReporteDjango()
-servicioDeReporte = ServicioDeReporte(repositorioDjango)
-
+repositorioEnMemoria = RepositorioDeReporteEnMemoria()
+servicioDeReporte = ServicioDeReporte(repositorioEnMemoria)
 
 @step(
     'que un ciudadano llamado "{nombre}" con correo "{correo}" e identificación "{identificacion}" ha identificado un problema'
@@ -22,7 +17,6 @@ def step_impl(context, nombre, correo, identificacion):
     context.ciudadano = Ciudadano(
         nombre_completo=nombre, correo_electronico=correo, numero_identificacion=identificacion
     )
-    context.ciudadano.save()
 
 
 @step(
@@ -31,7 +25,6 @@ def step_impl(context, nombre, correo, identificacion):
 def step_impl1(context, asunto, descripcion, ubicacion):
     tipo_reporte = TipoReporte(asunto=asunto, descripcion=descripcion)
     context.tipo_reporte = tipo_reporte
-    tipo_reporte.save()
     context.reporte = Reporte(
         ciudadano=context.ciudadano, tipo_reporte=tipo_reporte, ubicacion=ubicacion
     )
@@ -46,7 +39,7 @@ def step_impl2(context):
     'se asigna una prioridad de acuerdo a "{cantidad_registro}" registros previos del problema con asunto "{asunto}"'
 )
 def step_impl3(context, cantidad_registro, asunto):
-    generar_registros(repositorioDjango, cantidad_registro, asunto)
+    generar_registros(repositorioEnMemoria, cantidad_registro, asunto)
     context.reporte = servicioDeReporte.priorizar(context.reporte)
 
 
