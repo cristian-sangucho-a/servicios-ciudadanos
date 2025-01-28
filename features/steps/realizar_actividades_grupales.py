@@ -3,7 +3,7 @@ from django.db import models
 from behave import *
 from ciudadano_app.models import *
 from ciudadano_app.models.controlador_notificacion import ControladorNotificacion
-from ciudadano_app.models.servicio_reserva import ControladorReserva, ServicioReserva
+from ciudadano_app.models.servicio_reserva import ServicioReserva
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 
 
@@ -29,8 +29,8 @@ def step_impl(context, nombre_espacio_publico):
     context.cancha2.agregar_fecha_disponible(fecha="15/01/2024", hora_inicio="07:00", hora_fin="20:00")
     context.cancha3.agregar_fecha_disponible(fecha="15/01/2024", hora_inicio="07:00", hora_fin="20:00")
     context.espacio_publico = context.entidad_municipal.crear_espacio_publico(espacio_publico=context.espacio_publico)
-    #assert context.espacio_publico.hay_areas_comunales_disponibles();
-    pass
+    assert context.espacio_publico.hay_areas_comunales_disponibles();
+
 @step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
 def step_impl(context):
     context.ciudadano = Ciudadano.objects.create_user(
@@ -39,7 +39,7 @@ def step_impl(context):
         numero_identificacion=str(fake.random_number(digits=10)),
         contrasena="secret123"
     )
-    context.controlador_reserva = ControladorReserva()
+    context.controlador_reserva = ServicioReserva()
     assert  not context.controlador_reserva.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
 
 @step('el ciudadano realice una reserva "publica" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')

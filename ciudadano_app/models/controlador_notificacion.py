@@ -1,11 +1,10 @@
-from django.db import models
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from ciudadano_app.models import Reserva
 
 
-class ControladorNotificacion(models.Model):
+class ControladorNotificacion():
 
     def enviar_invitacion(self, reserva: Reserva):
         usuario = reserva.ciudadano.nombre_completo

@@ -4,31 +4,37 @@ from ciudadano_app.models import Ciudadano, AreaComunal
 
 class Reserva(models.Model):
     fecha_reserva = models.DateField(
-        help_text="Fecha de la reserva"
+        help_text="Fecha de la reserva",
+        null=True
     )
     hora_inicio = models.TimeField(
-        help_text="Hora de inicio de la reserva"
+        help_text="Hora de inicio de la reserva",
+        null=True
     )
     hora_fin = models.TimeField(
-        help_text="Hora de fin de la reserva"
+        help_text="Hora de fin de la reserva",
+        null=True
     )
     tipo_reserva = models.CharField(
         max_length=50,
-        help_text="Tipo de reserva"
+        help_text="Tipo de reserva",
+        null=True
     )
     correos_invitados = models.CharField(
         max_length=100,
-        help_text="Correos de los invitados"
+        help_text="Correos de los invitados",
+        default=""
     )
     ciudadano = models.ForeignKey(
-        Ciudadano, on_delete=models.CASCADE
+        Ciudadano, on_delete=models.CASCADE,
+        null=True
     )
     area_comunal = models.OneToOneField(
         AreaComunal,
         on_delete=models.CASCADE,
         primary_key=True,
-        related_name='+'
-    )
+        related_name='+',
+        default=1)
 
     def obtener_id(self):
         return self.pk
