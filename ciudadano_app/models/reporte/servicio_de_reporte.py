@@ -1,5 +1,5 @@
-from ciudadano_app.models.Reporte import Reporte
-from ciudadano_app.models.RepositorioDeReporte import RepositorioDeReporte
+from ciudadano_app.models.reporte.reporte import Reporte
+from ciudadano_app.models.reporte.repositorio_de_reporte import RepositorioDeReporte
 
 class ServicioDeReporte():
     def __init__(self, reporte_repositorio: RepositorioDeReporte):
@@ -24,7 +24,7 @@ class ServicioDeReporte():
 
         reporte.prioridad = self.__obtener_prioridad(cantidad_reportes)
 
-        self.reporte_repositorio.actualziar_prioridad_de_reporte_por_asunto(reporte.tipo_reporte.asunto, reporte.prioridad)
+        self.reporte_repositorio.actualizar_prioridad_de_reporte_por_asunto(reporte.tipo_reporte.asunto, reporte.prioridad)
 
         return reporte
 

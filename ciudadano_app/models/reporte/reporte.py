@@ -1,7 +1,7 @@
 from django.db import models
 
 from ciudadano_app.models import Ciudadano
-from ciudadano_app.models.TipoReporte import TipoReporte
+from ciudadano_app.models.reporte.tipo_reporte import TipoReporte
 
 class Reporte(models.Model):
     ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE)

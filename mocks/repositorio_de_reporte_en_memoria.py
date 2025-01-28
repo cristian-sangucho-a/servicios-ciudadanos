@@ -1,9 +1,9 @@
 from faker.proxy import Faker
 
 from ciudadano_app.models import Ciudadano
-from ciudadano_app.models.Reporte import Reporte
-from ciudadano_app.models.RepositorioDeReporte import RepositorioDeReporte
-from ciudadano_app.models.TipoReporte import TipoReporte
+from ciudadano_app.models.reporte.reporte import Reporte
+from ciudadano_app.models.reporte.repositorio_de_reporte import RepositorioDeReporte
+from ciudadano_app.models.reporte.tipo_reporte import TipoReporte
 
 
 class RepositorioDeReporteEnMemoria(RepositorioDeReporte):
@@ -18,7 +18,7 @@ class RepositorioDeReporteEnMemoria(RepositorioDeReporte):
             self.baseDeDato[reporte.tipo_reporte.asunto] = []
         self.baseDeDato[reporte.tipo_reporte.asunto].append(reporte)
 
-    def actualziar_prioridad_de_reporte_por_asunto(self, asunto: str, prioridad: int):
+    def actualizar_prioridad_de_reporte_por_asunto(self, asunto: str, prioridad: int):
         if asunto in self.baseDeDato:
             for report in self.baseDeDato[asunto]:
                 report.prioridad = prioridad
