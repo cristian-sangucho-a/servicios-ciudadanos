@@ -1,5 +1,5 @@
 from django.db import models
-from ciudadano_app.models import Ciudadano
+from ciudadano_app.models import Ciudadano, AreaComunal
 
 
 class Reserva(models.Model):
@@ -23,6 +23,14 @@ class Reserva(models.Model):
     ciudadano = models.ForeignKey(
         Ciudadano, on_delete=models.CASCADE
     )
+    area_comunal = models.OneToOneField(
+        AreaComunal,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+
+
+    ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE)
 
     def agregar_correos_invitados(self, correos_invitados):
         try:
