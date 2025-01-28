@@ -6,4 +6,13 @@ class AreaComunal(models.Model):
         help_text="Nombre del área comunal",
         default="Área Comunal"
     )
-    pass
+    hora_de_apertura = models.TimeField(
+        help_text="Hora de apertura del área comunal",
+        default="07:00"
+    )
+    hora_de_cierre = models.TimeField(
+        help_text="Hora de cierre del área comunal",
+        default="20:00"
+    )
+
+

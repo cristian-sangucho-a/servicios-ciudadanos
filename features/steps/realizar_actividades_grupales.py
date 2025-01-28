@@ -3,7 +3,7 @@ from django.db import models
 from behave import *
 from ciudadano_app.models import *
 from ciudadano_app.models.controlador_notificacion import ControladorNotificacion
-from ciudadano_app.models.servicio_reserva import ControladorReserva
+from ciudadano_app.models.servicio_reserva import ControladorReserva, ServicioReserva
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 
 
@@ -40,7 +40,7 @@ def step_impl(context):
         contrasena="secret123"
     )
     context.controlador_reserva = ControladorReserva()
-    assert context.controlador_reserva.ciudadano_no_supera_maximo_reservas(ciudadano=context.ciudadano)
+    assert  not context.controlador_reserva.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
 
 @step('el ciudadano realice una reserva "publica" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
@@ -53,17 +53,17 @@ def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
 
 @step("se guarda la reserva en la Agenda Pública")
 def step_impl(context):
-    context.controlador_reserva = ControladorReserva()
-    context.id_reserva, context.reservado = context.controlador_reserva.reservar_area_comunal(
+    context.servicio_reserva = ServicioReserva()
+    context.id_reserva, context.reservado = context.servicio_reserva.reservar_area_comunal(
         area_comunal=context.cancha1,
         fecha_reserva=context.fecha_reserva,
         hora_inicio=context.hora_inicio,
         hora_fin=context.hora_fin,
         tipo_reserva=context.tipo_reserva,
         ciudadano=context.ciudadano)
+    assert context.reservado
+    # TODO: revisar si es necesario refactorar, como no hay agenda publica(en los modelos) el cuando y entonces sea uno solo
 
-    #assert context.reservado
-    pass
 ##########################FIN PRIMER ESCENARIO####################################
 
 @step('el ciudadano realice una reserva "privada" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
@@ -76,16 +76,16 @@ def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
 
 @step('agregue los correos de los invitados "{correos_invitados}" a la reserva')
 def step_impl(context, correos_invitados):
-    context.controlador_reserva.obtener_reserva_por_id(id_reserva = context.id_reserva).agregar_correo_invitado(correos_invitados = correos_invitados)
-    pass # esto puede ser verificado en el siguiente paso
+    assert context.controlador_reserva.obtener_reserva_por_id(id_reserva = context.id_reserva).agregar_correos_invitados(correos_invitados = correos_invitados)
+    # esto puede ser verificado en el siguiente paso o no xd
 
 #--------------------AQUI SE USA EL ENTONCES DE ARRIBA --------------------------#
 
 @step("se enviará una invitación por correo con los detalles de la reserva.")
 def step_impl(context):
     context.controlador_notificacion = ControladorNotificacion()
-    #assert context.controlador_notificacion.enviar_invitacion(id_reserva = context.ciudadano.obtener_reserva_por_id(id_reserva = context.id_reserva))
-    pass
+    assert context.controlador_notificacion.enviar_invitacion(reserva = context.ciudadano.obtener_reserva_por_id(id_reserva = context.id_reserva))
+
     # Esta es una consideracion que me da deepsek para agilizar el tiempo que demora en enviarse un mensaje y arrojar algun codigo de OK
     # from unittest.mock import patch
     #
