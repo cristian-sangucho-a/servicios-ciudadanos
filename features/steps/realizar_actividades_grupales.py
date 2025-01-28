@@ -3,7 +3,7 @@ from django.db import models
 from behave import *
 from ciudadano_app.models import *
 from ciudadano_app.models.controlador_notificacion import ControladorNotificacion
-from ciudadano_app.models.controlador_reserva import ControladorReserva
+from ciudadano_app.models.servicio_reserva import ControladorReserva
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 
 
