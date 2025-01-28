@@ -1,16 +1,40 @@
 from django.db import models
 
+# Importación de modelos necesarios desde la aplicación 'ciudadano_app'.
 from ciudadano_app.models import Ciudadano
 from ciudadano_app.models.reporte.tipo_reporte import TipoReporte
 
 class Reporte(models.Model):
+    """
+    Modelo para representar un reporte realizado por un ciudadano.
+    """
+
+    # Relación con el modelo Ciudadano; se elimina el reporte si el ciudadano se elimina.
     ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE)
+
+    # Relación con el modelo TipoReporte; se elimina el reporte si el tipo de reporte se elimina.
     tipo_reporte = models.ForeignKey(TipoReporte, on_delete=models.CASCADE)
+
+    # Campo para almacenar la ubicación asociada al reporte.
     ubicacion = models.CharField(max_length=255)
+
+    # Campo opcional para establecer la prioridad del reporte, puede ser nulo o en blanco.
     prioridad = models.IntegerField(default=None, null=True, blank=True)
 
     def validar_reporte(self):
+        """
+        Método para validar la presencia de los campos obligatorios en el reporte.
+
+        Returns:
+            bool: True si el reporte tiene todos los campos necesarios, False en caso contrario.
+        """
         return bool(self.ciudadano and self.tipo_reporte and self.ubicacion)
 
     def __str__(self):
-        return f"Reporte de {self.tipo_reporte.asunto} por {self.ciudadano.nombre}"
+        """
+        Método para obtener la representación en cadena del reporte, mostrando información relevante.
+
+        Returns:
+            str: Cadena que representa el reporte, incluyendo el asunto y el nombre del ciudadano.
+        """
+        return f"Reporte de {self.tipo_reporte.asunto} por {self.ciudadano.nombre_completo}"
