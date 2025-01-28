@@ -1,15 +1,14 @@
 from behave import step
 
 from ciudadano_app.models import Ciudadano, TipoReporte, Reporte
-from ciudadano_app.models.ServicioDeReporte import ServicioDeReporte
-from mocks.RepositorioDeReporteEnMemoria import (
+from ciudadano_app.models.reporte.servicio_de_reporte import ServicioDeReporte
+from mocks.repositorio_de_reporte_en_memoria import (
     RepositorioDeReporteEnMemoria,
     generar_registros,
 )
 
 repositorioEnMemoria = RepositorioDeReporteEnMemoria()
 servicioDeReporte = ServicioDeReporte(repositorioEnMemoria)
-
 
 @step(
     'que un ciudadano llamado "{nombre}" con correo "{correo}" e identificación "{identificacion}" ha identificado un problema'
