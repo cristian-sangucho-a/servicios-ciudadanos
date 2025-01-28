@@ -2,7 +2,7 @@
 
 Prerequisites
 
-Operating System: Windows 7 or higher
+Operating System: Windows 7 or higherss
 
 Installation
 
