@@ -38,7 +38,7 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
         help_text="Indica si el ciudadano puede acceder al sistema",
     )
 
-    es_staff = models.BooleanField(
+    is_staff = models.BooleanField(
         default=False,
         verbose_name="¿Es Personal Administrativo?",
         help_text="Indica si el ciudadano puede acceder al panel de administración",
@@ -58,20 +58,26 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "Ciudadano"
         verbose_name_plural = "Ciudadanos"
-        ordering = ["-fecha_registro"]
-
-    def obtener_nombre_completo(self):
-        """Retorna el nombre completo del ciudadano"""
-        return self.nombre_completo
-
-    def obtener_correo_electronico(self):
-        """Retorna el correo electrónico del ciudadano"""
-        return self.correo_electronico
-
-    def obtener_identificacion(self):
-        """Retorna el número de identificación del ciudadano"""
-        return self.numero_identificacion
+        db_table = "ciudadano_app_ciudadano"
 
     def __str__(self):
-        """Retorna una representación en cadena del ciudadano"""
-        return f"Ciudadano: {self.nombre_completo} ({self.correo_electronico})"
+        return f"{self.nombre_completo} ({self.correo_electronico})"
+
+    @property
+    def is_active(self):
+        """
+        Indica si el usuario está activo.
+        """
+        return self.esta_activo
+
+    def has_perm(self, perm, obj=None):
+        """
+        Verifica si el usuario tiene un permiso específico.
+        """
+        return True if self.is_staff else super().has_perm(perm, obj)
+
+    def has_module_perms(self, app_label):
+        """
+        Verifica si el usuario tiene permisos para ver la aplicación app_label.
+        """
+        return True if self.is_staff else super().has_module_perms(app_label)

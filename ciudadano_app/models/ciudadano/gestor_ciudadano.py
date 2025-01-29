@@ -1,48 +1,44 @@
 """
-Gestor personalizado para el modelo Ciudadano.
+Gestor de usuarios para el modelo Ciudadano.
 """
 from django.contrib.auth.models import BaseUserManager
-from django.core.exceptions import ValidationError
+
 
 class GestorCiudadano(BaseUserManager):
-    """Gestor para la creación y administración de ciudadanos en el sistema"""
-    
-    def create_user(self, correo_electronico, contrasena=None, **campos_adicionales):
+    """
+    Gestor personalizado para el modelo Ciudadano.
+    """
+
+    def create_user(self, correo_electronico, nombre_completo, numero_identificacion, contrasena=None):
         """
-        Crea un nuevo ciudadano regular en el sistema.
-        
-        Args:
-            correo_electronico: Correo electrónico del ciudadano
-            contrasena: Contraseña del ciudadano
-            campos_adicionales: Campos adicionales como nombre, identificación, etc.
-        
-        Returns:
-            Ciudadano: Nueva instancia de Ciudadano
-            
-        Raises:
-            ValueError: Si no se proporciona un correo electrónico
+        Crea y guarda un usuario regular.
         """
         if not correo_electronico:
-            raise ValidationError('El correo electrónico es obligatorio para crear un ciudadano')
-            
-        correo_normalizado = self.normalize_email(correo_electronico)
-        ciudadano = self.model(correo_electronico=correo_normalizado, **campos_adicionales)
-        ciudadano.set_password(contrasena)
-        ciudadano.save(using=self._db)
-        return ciudadano
+            raise ValueError('Los usuarios deben tener un correo electrónico')
 
-    def create_superuser(self, correo_electronico, contrasena=None, **campos_adicionales):
+        user = self.model(
+            correo_electronico=self.normalize_email(correo_electronico),
+            nombre_completo=nombre_completo,
+            numero_identificacion=numero_identificacion,
+        )
+
+        user.set_password(contrasena)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, correo_electronico, nombre_completo, numero_identificacion, contrasena=None):
         """
-        Crea un nuevo ciudadano con privilegios de administrador.
-        
-        Args:
-            correo_electronico: Correo electrónico del administrador
-            contrasena: Contraseña del administrador
-            campos_adicionales: Campos adicionales como nombre, identificación, etc.
-            
-        Returns:
-            Ciudadano: Nueva instancia de Ciudadano con privilegios de administrador
+        Crea y guarda un superusuario.
         """
-        campos_adicionales.setdefault('es_staff', True)
-        campos_adicionales.setdefault('is_superuser', True)
-        return self.create_user(correo_electronico, contrasena, **campos_adicionales)
+        user = self.create_user(
+            correo_electronico=correo_electronico,
+            contrasena=contrasena,
+            nombre_completo=nombre_completo,
+            numero_identificacion=numero_identificacion,
+        )
+
+        user.is_staff = True
+        user.is_superuser = True
+        user.esta_activo = True  # Asegurarnos de que el usuario esté activo
+        user.save(using=self._db)
+        return user

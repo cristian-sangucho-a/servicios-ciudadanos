@@ -160,25 +160,20 @@
                 </div>
             </div>
 
-            {% if user.is_staff %}
-            <div class="card shadow-sm">
-                <div class="card-header bg-light">
-                    <h5 class="card-title mb-0">Administración</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="#" class="btn btn-outline-primary">
-                            <i class="fas fa-edit me-2"></i>
-                            Editar Evento
-                        </a>
-                        <a href="#" class="btn btn-outline-info">
-                            <i class="fas fa-list-check me-2"></i>
-                            Ver Inscripciones
-                        </a>
-                    </div>
-                </div>
+            <!-- Temporalmente removido hasta implementar funcionalidad
+            {% if user.is_authenticated and user.is_staff %}
+            <div class="mt-4">
+                <a href="#" class="btn btn-warning">
+                    <i class="fas fa-edit me-2"></i>
+                    Editar Evento
+                </a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalCancelarEvento">
+                    <i class="fas fa-times-circle me-2"></i>
+                    Cancelar Evento
+                </button>
             </div>
             {% endif %}
+            -->
         </div>
     </div>
 </div>
