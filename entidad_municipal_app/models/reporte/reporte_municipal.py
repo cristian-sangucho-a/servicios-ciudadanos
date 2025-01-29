@@ -1,71 +1,74 @@
 from django.db import models
-
+from django.core.exceptions import ValidationError
 from ciudadano_app.models.reporte.reporte import Reporte
+
 
 class ReporteMunicipal(models.Model):
     """
-    Modelo que representa un reporte municipal.
-
-    Atributos:
-        reporte_ciudadano (ForeignKey): Relación con el reporte ciudadano original.
-        estado (CharField): Estado del reporte.
-        evidencia (TextField): Evidencia opcional de la solución.
+    Modelo que representa un reporte municipal derivado de un reporte ciudadano.
     """
+
+    ESTADOS_VALIDOS = [
+        "no_asignado",
+        "asignado",
+        "atendiendo",
+        "resuelto",
+        "postergado"
+    ]
+
     id = models.AutoField(primary_key=True)
     reporte_ciudadano = models.ForeignKey(
-        Reporte, on_delete=models.CASCADE
+        Reporte,
+        on_delete=models.CASCADE,
+        verbose_name="Reporte Ciudadano",
+        help_text="Reporte ciudadano original"
     )
-    estado = models.CharField(max_length=50, default="no_asignado")
-    evidencia = models.TextField(blank=True, null=True)
+    estado = models.CharField(
+        max_length=50,
+        default="no_asignado",
+        verbose_name="Estado",
+        help_text="Estado actual del reporte municipal"
+    )
+    evidencia = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Evidencia",
+        help_text="Evidencia de la atención o resolución del reporte"
+    )
 
-    def __str__(self):
-        """
-        Retorna una representación en cadena del reporte municipal.
-        """
-        return f"Reporte {self.id}: {self.estado}"
+    class Meta:
+        verbose_name = "Reporte Municipal"
+        verbose_name_plural = "Reportes Municipales"
+        ordering = ['-id']
 
-    def obtener_estado(self):
+    def cambiar_estado(self, nuevo_estado: str):
         """
-        Devuelve el estado actual del reporte.
+        Cambia el estado del reporte municipal validando que sea un estado válido.
 
-        :return: Estado del reporte.
-        :rtype: str
+        Args:
+            nuevo_estado (str): Nuevo estado a establecer
+
+        Raises:
+            ValidationError: Si el estado no es válido
         """
-        return self.estado
+        if nuevo_estado not in self.ESTADOS_VALIDOS:
+            raise ValidationError(
+                f"Estado '{nuevo_estado}' no válido. Estados permitidos: {self.ESTADOS_VALIDOS}"
+            )
+        self.estado = nuevo_estado
 
-    def registrar_evidencia(self, descripcion_evidencia):
+    def registrar_evidencia(self, descripcion_evidencia: str):
         """
-        Registra evidencia en el reporte municipal.
+        Registra evidencia en el reporte y lo marca como resuelto.
 
-        :param descripcion_evidencia: Descripción de la evidencia.
-        :type descripcion_evidencia: str
+        Args:
+            descripcion_evidencia (str): Descripción de la evidencia
         """
         self.evidencia = descripcion_evidencia
         self.estado = "resuelto"
-        self.save()
 
-    def obtener_evidencia(self):
+    def __str__(self):
         """
-        Devuelve la evidencia registrada en el reporte.
-
-        :return: Evidencia del reporte.
-        :rtype: str
+        Representación en cadena del reporte municipal.
         """
-        return self.evidencia if self.evidencia else ""
-
-
-    def cambiar_estado(self, nuevo_estado):
-        """
-        Cambia el estado del reporte municipal y lo guarda en la base de datos.
-
-        :param nuevo_estado: Nuevo estado a asignar al reporte.
-        :type nuevo_estado: str
-        :raises ValueError: Si el estado proporcionado no es válido.
-        """
-        ESTADOS_VALIDOS = ["asignado", "atendiendo", "resuelto", "postergado"]
-
-        if nuevo_estado not in ESTADOS_VALIDOS:
-            raise ValueError(f"Estado '{nuevo_estado}' no es válido. Estados permitidos: {ESTADOS_VALIDOS}")
-
-        self.estado = nuevo_estado
-        self.save()
+        return f"Reporte Municipal {self.id}: {self.estado}"
