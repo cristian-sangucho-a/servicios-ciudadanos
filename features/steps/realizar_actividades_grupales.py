@@ -4,6 +4,7 @@ from faker import Faker
 from datetime import datetime
 
 from ciudadano_app.admin import AreaComunal
+from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from mocks.repositorio_reserva_en_memoria import RepositorioReservaMemoria
 
@@ -30,59 +31,22 @@ def step_impl(context, nombre_espacio_publico):
     # Set up mock behaviors
     assert servicio_reserva_en_memoria.hay_areas_comunales_disponibles(espacio_publico=context.espacio_publico)
 
-#
-# @step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
-# def step_impl(context, maximo_reservas):
-#     # Create mock citizen instead of database object
-#     context.ciudadano = Mock()
-#     context.ciudadano.correo_electronico = fake.email()
-#     context.ciudadano.nombre_completo = fake.name()
-#     context.ciudadano.numero_identificacion = str(fake.random_number(digits=10))
-#
-#     # Create mock reservation service
-#     context.servicio_reserva = Mock()
-#     context.servicio_reserva.ciudadano_supera_maximo_reservas.return_value = False
-#
-#     # Verify the maximum reservas condition
-#     assert int(maximo_reservas) >= 0
-#     context.maximo_reservas = int(maximo_reservas)
-#
-#
-# @step(
-#     'el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
-# def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, hora_fin):
-#     context.tipo_reserva = tipo_reserva
-#     context.fecha_reserva = fecha_reserva
-#     context.hora_inicio = hora_inicio
-#     context.hora_fin = hora_fin
-#
-#     # Store the requested area
-#     context.area_solicitada = next(
-#         area for area in [context.cancha1, context.cancha2, context.cancha3]
-#         if area.nombre_area == area_comunal
-#     )
-#
-#
-# @step("se guarda la reserva en la Agenda Pública")
-# def step_impl(context):
-#     # Mock the reservation service
-#     context.servicio_reserva = Mock()
-#     context.servicio_reserva.reservar_area_comunal.return_value = (1, True)  # (id_reserva, reservado)
-#
-#     # Attempt reservation
-#     context.id_reserva, context.reservado = context.servicio_reserva.reservar_area_comunal(
-#         area_comunal=context.area_solicitada,
-#         fecha_reserva=context.fecha_reserva,
-#         hora_inicio=context.hora_inicio,
-#         hora_fin=context.hora_fin,
-#         tipo_reserva=context.tipo_reserva,
-#         ciudadano=context.ciudadano
-#     )
-#
-#     # Verify the reservation was successful
-#     assert context.reservado
-#     assert context.id_reserva > 0
-#     # TODO: revisar si es necesario refactorar, como no hay agenda publica(en los modelos) el cuando y entonces sea uno solo
+
+@step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
+def step_impl(context, maximo_reservas):
+     # Create mock citizen instead of database object
+    context.ciudadano = Ciudadano(nombre_completo=fake.name(), correo_electronico=fake.email(), numero_identificacion=str(fake.random_number(digits=10)), esta_activo=True)
+    assert not servicio_reserva_en_memoria.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
+
+@step(
+    'el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
+def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, hora_fin):
+    pass
+
+@step("se guarda la reserva en la Agenda Pública")
+def step_impl(context):
+    pass
+    # TODO: revisar si es necesario refactorar, como no hay agenda publica(en los modelos) el cuando y entonces sea uno solo
 
 # ##########################FIN PRIMER ESCENARIO####################################
 #

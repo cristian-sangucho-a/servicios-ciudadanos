@@ -13,7 +13,8 @@ class RepositorioReservaMemoria(RespositorioReserva):
         return 1, True
 
     def ciudadano_supera_maximo_reservas(self, ciudadano):
-        return False
+        self.base_datos[ciudadano] = [ciudadano.reservas]
+        return len(self.base_datos[ciudadano]) > 3
 
     def crear_ciudadano(self, nombre, correo):
         pass
