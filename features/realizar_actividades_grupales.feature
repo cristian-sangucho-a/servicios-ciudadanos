@@ -7,7 +7,7 @@ Característica: Realización de actividades por ciudadanos
   Para mejorar la convivencia entre los ciudadanos
 
   Escenario: Reserva de un area comunal para actividad pública
-    Dado que existen areas comunales en el espacio publico "Parque la Alameda" disponibles en la ciudad y son
+    Dado que existen areas comunales disponibles en el espacio publico "Parque la Alameda" en la ciudad y son
       | Nombre            |
       | Cancha #1         |
       | Cancha #2         |
@@ -18,7 +18,7 @@ Característica: Realización de actividades por ciudadanos
     #TODO: Cooordinar con Marco la publicacion o suscripcion para notificar esta reserva
 
   Escenario: Reserva de un area comunal para una actividad privada
-    Dado que existen areas comunales en el espacio publico "Parque la Alameda" disponibles en la ciudad y son
+    Dado que existen areas comunales disponibles en el espacio publico "Parque la Alameda" en la ciudad y son
       | Nombre    |
       | Cancha #1 |
       | Cancha #2 |
