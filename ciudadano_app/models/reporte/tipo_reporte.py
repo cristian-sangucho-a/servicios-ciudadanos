@@ -1,5 +1,8 @@
 from django.db import models
 
+from entidad_municipal_app.models.departamento.departamento import Departamento
+
+
 class TipoReporte(models.Model):
     """
     Modelo que representa un tipo de reporte en el sistema.
@@ -18,6 +21,11 @@ class TipoReporte(models.Model):
     # Campo para una descripción textual extensa del tipo de reporte.
     descripcion = models.TextField()
 
+    #Campo para el departamento al cual se asigna el reporte
+    departamento = models.ForeignKey(Departamento, on_delete=models.CASCADE)
+
+    # Campo para la prioridad de atención del reporte dependiendo del asunto que tenga
+    prioridad_de_atencion = models.IntegerField(default=0)
     def __str__(self):
         """
         Devuelve el asunto del tipo de reporte como su representación en cadena, facilitando la identificación en interfaces de usuario.

@@ -1,47 +1,38 @@
+from django.db import models
 
-class Departamento:
-    def __init__(self, nombre):
-        self.__nombre = nombre
-        self.__reportes = []
-        self.__palabras_clave_priorizacion = {
-            'impacto_seguridad': {
-                'alto': [],
-                'medio': []
-            },
-            'afectacion_publica': {
-                'alto': [],
-                'medio': []
-            },
-            'posibilidad_agravamiento': {
-                'alto': [],
-                'medio': []
-            }
-        }
 
-    def obtener_nombre(self):
-        return self.__nombre
+class Departamento(models.Model):
+    """
+    Representa un departamento dentro del sistema de gestión de reportes.
 
-    def agregar_reporte(self, reporte):
-        self.__reportes.append(reporte)
-        reporte.cambiar_estado("asignado")
+    Atributos:
+        nombre (CharField): Nombre único del departamento.
+    """
+    nombre = models.CharField(max_length=20, unique=True)
 
-    def obtener_reportes_asignados(self):
-        return self.__reportes
+    def __str__(self):
+        """
+        Retorna una representación en cadena del departamento.
+        """
+        return self.nombre
 
-    def priorizar_reportes(self):
-        self.__reportes.sort(key=lambda r: r.obtener_indice_prioridad(), reverse=True)
+    def atender_reporte_municipal(self, reporte):
+        """
+        Marca un reporte como 'atendiendo'.
 
-    def obtener_reporte_por_id(self, id_reporte):
-        for reporte in self.__reportes:
-            if reporte.obtener_id() == id_reporte:
-                return reporte
-        return None
-
-    def atender_reporte(self, reporte):
+        :param reporte: Instancia de ReporteMunicipal.
+        :type reporte: ReporteMunicipal
+        """
         reporte.cambiar_estado("atendiendo")
-
-    def registrar_evidencia(self, reporte, evidencia):
-        reporte.registrar_evidencia(evidencia)
+        reporte.save()
 
     def postergar_reporte(self, reporte):
+        """
+        Marca un reporte como 'postergado'.
+
+        :param reporte: Instancia de ReporteMunicipal.
+        :type reporte: ReporteMunicipal
+        """
         reporte.cambiar_estado("postergado")
+        reporte.save()
+
