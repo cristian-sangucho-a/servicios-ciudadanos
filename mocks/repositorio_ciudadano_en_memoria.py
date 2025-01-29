@@ -37,7 +37,7 @@ class RepositorioCiudadanoEnMemoria(RepositorioCiudadano):
         usuario = User.objects.create_user(
             username=correo_electronico,
             email=correo_electronico,
-            password="secret123"  # En producción se generaría una contraseña aleatoria
+            password="sws@12345."  # En producción se generaría una contraseña aleatoria
         )
 
         # Crear el ciudadano y guardarlo en la base de datos
