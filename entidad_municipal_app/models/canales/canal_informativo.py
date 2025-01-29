@@ -1,7 +1,6 @@
 from django.db import models
-from ciudadano_app.models import Ciudadano
+from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from django.utils.timezone import now
-
 
 class CanalInformativo(models.Model):
     """
@@ -96,7 +95,6 @@ class CanalInformativo(models.Model):
         """
         if not self.es_emergencia:
             raise ValueError("Este método solo es válido para canales de emergencia.")
-
 
 class Suscripcion(models.Model):
     """

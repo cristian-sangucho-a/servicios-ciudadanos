@@ -12,6 +12,13 @@ Característica: Canales informativos municipales
     Cuando el ciudadano activa su suscripción al canal "Cultura y arte",
     Entonces el ciudadano recibe noticias relacionadas al canal.
 
+  Escenario: Ciudadano reacciona y comenta en una noticia
+    Dado existe un ciudadano registrado
+    Y existe una noticia publicada en un canal informativo
+    Cuando el ciudadano reacciona a la noticia con "Me gusta"
+    Y el ciudadano comenta en la noticia con "Excelente noticia"
+    Entonces la reacción y comentario del ciudadano quedan registrados en la noticia.
+
   Escenario: Canales de Emergencia
     Dado que soy una entidad municipal que gestiona el canal de "emergencia",
     Cuando ocurre un incidente "terremoto" en "Quito",

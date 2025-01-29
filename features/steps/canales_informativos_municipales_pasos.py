@@ -3,52 +3,57 @@ from faker import Faker
 from ciudadano_app.models import Ciudadano
 from entidad_municipal_app.models.canales.canal_informativo import CanalInformativo, Suscripcion
 from entidad_municipal_app.models.canales.noticia import Noticia
+from entidad_municipal_app.models.canales.reaccion import Reaccion
+from entidad_municipal_app.models.canales.comentario import Comentario
 
 fake = Faker()
 
-# Dado que soy una entidad municipal que gestiona el canal
-@given('que soy una entidad municipal que gestiona el canal "{canal_nombre}",')
-def step_impl(context, canal_nombre):
-    """
-    Crea un canal informativo con el nombre proporcionado.
-    """
-    context.canal = CanalInformativo.objects.get_or_create(
-        nombre=canal_nombre,
-        descripcion=fake.text(max_nb_chars=200),
-        es_emergencia=False
-    )[0]
-
-
-# Cuando el ciudadano activa su suscripción al canal
-@when('el ciudadano activa su suscripción al canal "{canal_nombre}",')
-def step_impl(context, canal_nombre):
-    """
-    El ciudadano se suscribe al canal especificado.
-    """
-    # Crear un ciudadano ficticio
-    context.ciudadano = Ciudadano.objects.create_user(
+# --- Métodos Auxiliares ---
+def crear_ciudadano():
+    """Crea y retorna un ciudadano ficticio."""
+    return Ciudadano.objects.create_user(
         correo_electronico=fake.email(),
         nombre_completo=fake.name(),
         numero_identificacion=str(fake.random_number(digits=10)),
-        contrasena="secret123"
+        contrasena="test123"
     )
 
+def crear_canal(nombre, es_emergencia=False):
+    """Crea y retorna un canal informativo o de emergencia."""
+    canal, _ = CanalInformativo.objects.get_or_create(
+        nombre=nombre,
+        descripcion="Canal de noticias" if not es_emergencia else "Canal de emergencias",
+        es_emergencia=es_emergencia
+    )
+    return canal
+
+def suscribir_ciudadano_al_canal(ciudadano, canal):
+    """Suscribe un ciudadano a un canal informativo."""
+    canal.suscribir_ciudadano(ciudadano)
+    return Suscripcion.objects.get(canal=canal, ciudadano=ciudadano)
+
+
+# --- Escenario de suscripción a un canal informativo ---
+@given('que soy una entidad municipal que gestiona el canal "{canal_nombre}",')
+def step_impl(context, canal_nombre):
+    """Crea un canal informativo."""
+    context.canal = crear_canal(canal_nombre, es_emergencia=False)
+
+
+@when('el ciudadano activa su suscripción al canal "{canal_nombre}",')
+def step_impl(context, canal_nombre):
+    """El ciudadano se suscribe al canal especificado."""
+    context.ciudadano = crear_ciudadano()
     canal = CanalInformativo.objects.get(nombre=canal_nombre)
-    context.canal = canal
-    canal.suscribir_ciudadano(context.ciudadano)
-    suscripcion = Suscripcion.objects.get(canal=canal, ciudadano=context.ciudadano)
+    context.suscripcion = suscribir_ciudadano_al_canal(context.ciudadano, canal)
 
-    # Asegurar que la suscripción exista
-    assert suscripcion, f"El ciudadano {context.ciudadano.nombre_completo} no está suscrito al canal {canal.nombre}."
+    assert context.suscripcion, f"El ciudadano no se suscribió correctamente al canal {canal.nombre}."
 
 
-# Entonces el ciudadano recibe noticias relacionadas al canal
-@then('el ciudadano recibe noticias relacionadas al canal.')
+@then("el ciudadano recibe noticias relacionadas al canal.")
 def step_impl(context):
-    """
-    Verifica que el ciudadano esté recibiendo noticias del canal al que está suscrito.
-    """
-    Noticia.objects.create(
+    """Verifica que el ciudadano recibe noticias del canal suscrito."""
+    noticia = Noticia.objects.create(
         canal=context.canal,
         titulo=fake.sentence(),
         contenido=fake.text(max_nb_chars=500),
@@ -56,49 +61,76 @@ def step_impl(context):
     )
 
     noticias = Noticia.objects.filter(canal=context.canal)
-    assert noticias.exists(), f"No hay noticias relacionadas al canal {context.canal.nombre}."
+    assert noticias.exists(), f"No hay noticias en el canal {context.canal.nombre}."
 
-# Dado que soy una entidad municipal que gestiona el canal de emergencia
+
+# --- Escenario de reacción y comentario en una noticia ---
+@given("existe un ciudadano registrado")
+def step_impl(context):
+    """Crea un ciudadano ficticio."""
+    context.ciudadano = crear_ciudadano()
+
+
+@given("existe una noticia publicada en un canal informativo")
+def step_impl(context):
+    """Crea un canal informativo y publica una noticia."""
+    context.canal = crear_canal("Noticias Locales")
+    context.noticia = Noticia.objects.create(
+        canal=context.canal,
+        titulo=fake.sentence(),
+        contenido=fake.text(max_nb_chars=500),
+        imagen=None
+    )
+
+
+@when('el ciudadano reacciona a la noticia con "{tipo_reaccion}"')
+def step_impl(context, tipo_reaccion):
+    """Registra la reacción del ciudadano en la noticia."""
+    context.reaccion = Reaccion.objects.create(
+        noticia=context.noticia,
+        ciudadano=context.ciudadano,
+        tipo=tipo_reaccion
+    )
+
+
+@when('el ciudadano comenta en la noticia con "{comentario_texto}"')
+def step_impl(context, comentario_texto):
+    """Registra un comentario en la noticia."""
+    context.comentario = Comentario.objects.create(
+        noticia=context.noticia,
+        ciudadano=context.ciudadano,
+        contenido=comentario_texto
+    )
+
+
+@then("la reacción y comentario del ciudadano quedan registrados en la noticia.")
+def step_impl(context):
+    """Verifica que la reacción y comentario han sido almacenados."""
+    assert Reaccion.objects.filter(noticia=context.noticia, ciudadano=context.ciudadano).exists(), "La reacción no fue registrada."
+    assert Comentario.objects.filter(noticia=context.noticia, ciudadano=context.ciudadano).exists(), "El comentario no fue registrado."
+
+
+# --- Escenario de alertas de emergencia ---
 @given('que soy una entidad municipal que gestiona el canal de "{canal_nombre}",')
 def step_impl(context, canal_nombre):
-    """
-    Crea un canal informativo con el nombre proporcionado.
-    """
-    CanalInformativo.objects.get_or_create(
-        nombre=canal_nombre,
-        descripcion="Canal para notificaciones urgentes.",
-        es_emergencia=True
-    )
-    canal = CanalInformativo.objects.get(nombre=canal_nombre)
-    context.canal_emergencia = canal
-    # Crear ciudadanos ficticios
-    context.ciudadanos_en_ciudad = [Ciudadano.objects.create_user(
-        correo_electronico=fake.email(),
-        nombre_completo=fake.name(),
-        numero_identificacion=str(fake.random_number(digits=10)),
-        contrasena="secret123"
-    ) for _ in range(5)]
+    """Crea un canal de emergencia y suscribe ciudadanos ficticios."""
+    context.canal_emergencia = crear_canal(canal_nombre, es_emergencia=True)
+    context.ciudadanos_en_ciudad = [crear_ciudadano() for _ in range(5)]
 
-    suscripciones = []
     for ciudadano in context.ciudadanos_en_ciudad:
-        context.canal_emergencia.suscribir_ciudadano(ciudadano)
-        suscripciones.append(Suscripcion.objects.get(canal=canal, ciudadano=ciudadano))
+        suscribir_ciudadano_al_canal(ciudadano, context.canal_emergencia)
 
-    assert len(context.ciudadanos_en_ciudad) == len(suscripciones), f"Los ciudadanos no están suscritos al canal {context.canal_emergencia.nombre}."
+    assert Suscripcion.objects.filter(canal=context.canal_emergencia).count() == 5, "Los ciudadanos no fueron suscritos correctamente al canal de emergencia."
 
-# Cuando ocurre un incidente de emergencia
+
 @when('ocurre un incidente "{incidente}" en "{ciudad}",')
 def step_impl(context, incidente, ciudad):
-    """
-    Guarda la informacion de incidente.
-    """
+    """Guarda la información del incidente."""
     context.incidente = incidente
     context.ciudad = ciudad
 
-# El sistema envía alertas rápidas a los ciudadanos de la localidad
+
 @then('el sistema envía alertas rápidas a los ciudadanos de "{ciudad}".')
 def step_impl(context, ciudad):
-    """
-    Verifica que las alertas de emergencia han sido enviadas a los ciudadanos de la localidad.
-    """
-    context.canal_emergencia.notificar_alerta_emergencia(context.incidente,context.ciudad)
+    """Verifica que las alertas de emergencia han sido enviadas."""
+    context.canal_emergencia.notificar_alerta_emergencia(context.incidente, ciudad)
