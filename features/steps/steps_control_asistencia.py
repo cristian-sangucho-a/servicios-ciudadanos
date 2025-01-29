@@ -11,8 +11,10 @@ from ciudadano_app.models import Ciudadano
 from entidad_municipal_app.models.evento_municipal import EventoMunicipal
 from entidad_municipal_app.models.registro_asistencia import RegistroAsistencia
 from entidad_municipal_app.services import GestorRegistroAsistencia, ErrorGestionEventos
+from mocks.repositorio_ciudadano_en_memoria import RepositorioCiudadanoEnMemoria
 
 fake = Faker()
+repositorio_ciudadano = RepositorioCiudadanoEnMemoria()
 
 @given("que existe un evento con aforo disponible")
 def step_impl(context):
@@ -34,11 +36,10 @@ def step_impl(context):
     """
     Crea un ciudadano ficticio usando Faker. Guarda la instancia en context.ciudadano.
     """
-    context.ciudadano = Ciudadano.objects.create_user(
+    context.ciudadano = repositorio_ciudadano.crear_ciudadano(
         correo_electronico=fake.email(),
         nombre_completo=fake.name(),
-        numero_identificacion=str(fake.random_number(digits=10)),
-        contrasena="secret123"
+        numero_identificacion=str(fake.random_number(digits=10))
     )
 
 @when("el ciudadano intenta registrarse en el evento")
@@ -95,11 +96,10 @@ def step_impl(context):
     )
     
     # Crear y registrar un ciudadano para llenar el cupo
-    ciudadano = Ciudadano.objects.create_user(
+    ciudadano = repositorio_ciudadano.crear_ciudadano(
         correo_electronico=fake.email(),
         nombre_completo=fake.name(),
-        numero_identificacion=str(fake.random_number(digits=10)),
-        contrasena="secret123"
+        numero_identificacion=str(fake.random_number(digits=10))
     )
     
     # Registrar al ciudadano usando el gestor
@@ -116,11 +116,10 @@ def step_impl(context):
     En caso de no haber cupo, quedará en EN_ESPERA.
     """
     # Crear otro ciudadano
-    context.ciudadano = Ciudadano.objects.create_user(
+    context.ciudadano = repositorio_ciudadano.crear_ciudadano(
         correo_electronico=fake.email(),
         nombre_completo=fake.name(),
-        numero_identificacion=str(fake.random_number(digits=10)),
-        contrasena="secret123"
+        numero_identificacion=str(fake.random_number(digits=10))
     )
     
     # Intentar registrarlo
@@ -170,11 +169,10 @@ def step_impl(context):
     )
     
     # Crear y guardar el primer ciudadano
-    context.ciudadano = Ciudadano.objects.create_user(
+    context.ciudadano = repositorio_ciudadano.crear_ciudadano(
         correo_electronico=fake.email(),
         nombre_completo=fake.name(),
-        numero_identificacion=str(fake.random_number(digits=10)),
-        contrasena="secret123"
+        numero_identificacion=str(fake.random_number(digits=10))
     )
     
     # Crear el registro usando el gestor
@@ -190,11 +188,10 @@ def step_impl(context):
     Crea un segundo ciudadano que irá a lista de espera.
     """
     # Crear el segundo ciudadano
-    context.ciudadano_espera = Ciudadano.objects.create_user(
+    context.ciudadano_espera = repositorio_ciudadano.crear_ciudadano(
         correo_electronico=fake.email(),
         nombre_completo=fake.name(),
-        numero_identificacion=str(fake.random_number(digits=10)),
-        contrasena="secret123"
+        numero_identificacion=str(fake.random_number(digits=10))
     )
     
     # Intentar registrarlo (quedará en espera porque no hay cupos)

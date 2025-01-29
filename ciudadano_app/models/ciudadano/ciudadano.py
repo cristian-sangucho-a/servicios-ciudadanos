@@ -84,3 +84,9 @@ class Ciudadano(models.Model):
         Verifica si el usuario tiene permisos para ver la aplicación app_label.
         """
         return True if self.is_staff else self.usuario.has_module_perms(app_label)
+
+    def obtener_nombre_completo(self):
+        """
+        Retorna el nombre completo del ciudadano.
+        """
+        return self.nombre_completo
