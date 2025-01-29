@@ -4,6 +4,7 @@ Implementa los pasos definidos en el archivo control_asistencia.feature
 """
 
 from behave import given, when, then
+from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 from faker import Faker
@@ -11,10 +12,8 @@ from ciudadano_app.models import Ciudadano
 from entidad_municipal_app.models.evento_municipal import EventoMunicipal
 from entidad_municipal_app.models.registro_asistencia import RegistroAsistencia
 from entidad_municipal_app.services import GestorRegistroAsistencia, ErrorGestionEventos
-from mocks.repositorio_ciudadano_en_memoria import RepositorioCiudadanoEnMemoria
 
 fake = Faker()
-repositorio_ciudadano = RepositorioCiudadanoEnMemoria()
 
 @given("que existe un evento con aforo disponible")
 def step_impl(context):
@@ -36,8 +35,17 @@ def step_impl(context):
     """
     Crea un ciudadano ficticio usando Faker. Guarda la instancia en context.ciudadano.
     """
-    context.ciudadano = repositorio_ciudadano.crear_ciudadano(
-        correo_electronico=fake.email(),
+    # Crear primero el usuario de Django
+    usuario = User.objects.create_user(
+        username=fake.email(),
+        email=fake.email(),
+        password="sws@12345."
+    )
+    
+    # Luego crear el ciudadano
+    context.ciudadano = Ciudadano.objects.create(
+        usuario=usuario,
+        correo_electronico=usuario.email,
         nombre_completo=fake.name(),
         numero_identificacion=str(fake.random_number(digits=10))
     )
@@ -96,8 +104,17 @@ def step_impl(context):
     )
     
     # Crear y registrar un ciudadano para llenar el cupo
-    ciudadano = repositorio_ciudadano.crear_ciudadano(
-        correo_electronico=fake.email(),
+    # Crear primero el usuario de Django
+    usuario = User.objects.create_user(
+        username=fake.email(),
+        email=fake.email(),
+        password="sws@12345."
+    )
+    
+    # Luego crear el ciudadano
+    ciudadano = Ciudadano.objects.create(
+        usuario=usuario,
+        correo_electronico=usuario.email,
         nombre_completo=fake.name(),
         numero_identificacion=str(fake.random_number(digits=10))
     )
@@ -116,8 +133,17 @@ def step_impl(context):
     En caso de no haber cupo, quedará en EN_ESPERA.
     """
     # Crear otro ciudadano
-    context.ciudadano = repositorio_ciudadano.crear_ciudadano(
-        correo_electronico=fake.email(),
+    # Crear primero el usuario de Django
+    usuario = User.objects.create_user(
+        username=fake.email(),
+        email=fake.email(),
+        password="sws@12345."
+    )
+    
+    # Luego crear el ciudadano
+    context.ciudadano = Ciudadano.objects.create(
+        usuario=usuario,
+        correo_electronico=usuario.email,
         nombre_completo=fake.name(),
         numero_identificacion=str(fake.random_number(digits=10))
     )
@@ -169,8 +195,17 @@ def step_impl(context):
     )
     
     # Crear y guardar el primer ciudadano
-    context.ciudadano = repositorio_ciudadano.crear_ciudadano(
-        correo_electronico=fake.email(),
+    # Crear primero el usuario de Django
+    usuario = User.objects.create_user(
+        username=fake.email(),
+        email=fake.email(),
+        password="sws@12345."
+    )
+    
+    # Luego crear el ciudadano
+    context.ciudadano = Ciudadano.objects.create(
+        usuario=usuario,
+        correo_electronico=usuario.email,
         nombre_completo=fake.name(),
         numero_identificacion=str(fake.random_number(digits=10))
     )
@@ -188,8 +223,17 @@ def step_impl(context):
     Crea un segundo ciudadano que irá a lista de espera.
     """
     # Crear el segundo ciudadano
-    context.ciudadano_espera = repositorio_ciudadano.crear_ciudadano(
-        correo_electronico=fake.email(),
+    # Crear primero el usuario de Django
+    usuario = User.objects.create_user(
+        username=fake.email(),
+        email=fake.email(),
+        password="sws@12345."
+    )
+    
+    # Luego crear el ciudadano
+    context.ciudadano_espera = Ciudadano.objects.create(
+        usuario=usuario,
+        correo_electronico=usuario.email,
         nombre_completo=fake.name(),
         numero_identificacion=str(fake.random_number(digits=10))
     )
