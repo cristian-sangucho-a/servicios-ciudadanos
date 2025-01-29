@@ -11,6 +11,7 @@ class ServicioReserva():
 
     def reservar_area_comunal(self, area_comunal: AreaComunal, fecha_reserva, hora_inicio, hora_fin, tipo_reserva, ciudadano: Ciudadano):
         if self.ciudadano_supera_maximo_reservas(ciudadano):
+
             return 0, False
 
         reserva = Reserva.objects.create(
@@ -22,6 +23,3 @@ class ServicioReserva():
             ciudadano=ciudadano
         )
         return reserva.obtener_id(), True
-
-    def obtener_horarios_disponibles(self, area_comunal: AreaComunal, fecha_reserva):
-        return area_comunal.obtener_horarios_disponibles(fecha_reserva)
