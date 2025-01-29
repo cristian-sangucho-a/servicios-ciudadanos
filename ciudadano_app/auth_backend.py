@@ -26,7 +26,7 @@ class EmailBackend(ModelBackend):
             Usuario autenticado o None si la autenticación falla
         """
         UserModel = get_user_model()
-        email = kwargs.get('correo_electronico') or username
+        email = kwargs.get('email') or username
         
         # Log de los datos recibidos
         logger.debug(f"Intento de autenticación - Email recibido: {email}")
@@ -40,7 +40,7 @@ class EmailBackend(ModelBackend):
         try:
             # Intentamos obtener el usuario por su correo electrónico
             logger.debug(f"Buscando usuario con email: {email}")
-            user = UserModel.objects.get(correo_electronico=email)
+            user = UserModel.objects.get(email=email)
             
             # Log del resultado de la autenticación
             if user.check_password(password):
@@ -49,13 +49,13 @@ class EmailBackend(ModelBackend):
                     logger.info(f"Usuario autenticado exitosamente: {email}")
                     return user
                 else:
-                    logger.warning(f"Usuario no puede autenticarse: {email}")
+                    logger.warning(f"Usuario no está activo: {email}")
             else:
-                logger.warning("Contraseña incorrecta")
+                logger.warning(f"Contraseña incorrecta para: {email}")
                 
         except UserModel.DoesNotExist:
-            logger.warning(f"Usuario no encontrado: {email}")
-            UserModel().set_password(password)
+            logger.warning(f"No se encontró usuario con email: {email}")
+            return None
             
         return None
 
@@ -67,7 +67,7 @@ class EmailBackend(ModelBackend):
             user_id: ID del usuario a obtener
             
         Returns:
-            Usuario encontrado o None si no existe
+            Usuario si existe y está activo, None en caso contrario
         """
         UserModel = get_user_model()
         try:

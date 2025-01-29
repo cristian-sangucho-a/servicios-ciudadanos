@@ -3,15 +3,23 @@ Modelo principal de Ciudadano.
 """
 
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from ciudadano_app.models.ciudadano.gestor_ciudadano import GestorCiudadano
+from django.contrib.auth.models import User
 
-
-class Ciudadano(AbstractBaseUser, PermissionsMixin):
+class Ciudadano(models.Model):
     """
     Modelo que representa a un ciudadano en el sistema municipal.
-    Extiende el modelo base de usuario de Django para incluir campos específicos.
+    Se relaciona con el modelo User de Django para la autenticación.
     """
+    
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='ciudadano',
+        verbose_name="Usuario",
+        help_text="Usuario del sistema asociado al ciudadano",
+        null=True,
+        blank=True
+    )
 
     correo_electronico = models.EmailField(
         unique=True,
@@ -50,11 +58,6 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
         help_text="Fecha y hora en que el ciudadano se registró en el sistema",
     )
 
-    objects = GestorCiudadano()
-
-    USERNAME_FIELD = "correo_electronico"
-    REQUIRED_FIELDS = ["nombre_completo", "numero_identificacion"]
-
     class Meta:
         verbose_name = "Ciudadano"
         verbose_name_plural = "Ciudadanos"
@@ -74,10 +77,10 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
         """
         Verifica si el usuario tiene un permiso específico.
         """
-        return True if self.is_staff else super().has_perm(perm, obj)
+        return True if self.is_staff else self.usuario.has_perm(perm, obj)
 
     def has_module_perms(self, app_label):
         """
         Verifica si el usuario tiene permisos para ver la aplicación app_label.
         """
-        return True if self.is_staff else super().has_module_perms(app_label)
+        return True if self.is_staff else self.usuario.has_module_perms(app_label)

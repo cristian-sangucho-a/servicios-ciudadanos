@@ -126,20 +126,21 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración del modelo de usuario personalizado
-AUTH_USER_MODEL = 'ciudadano_app.Ciudadano'
+# AUTH_USER_MODEL = 'ciudadano_app.Ciudadano'
 
 # Configuración de correo electrónico (para desarrollo)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Configuración de autenticación
+AUTHENTICATION_BACKENDS = [
+    'ciudadano_app.auth_backend.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Configuración de login/logout
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'lista_eventos'
 LOGOUT_REDIRECT_URL = 'lista_eventos'
-
-# Configuración de autenticación personalizada
-AUTHENTICATION_BACKENDS = [
-    'ciudadano_app.auth_backend.EmailBackend',
-]
 
 # Configuración de logging
 LOGGING = {
