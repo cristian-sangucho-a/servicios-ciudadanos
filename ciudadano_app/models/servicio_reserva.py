@@ -23,3 +23,5 @@ class ServicioReserva():
         )
         return reserva.obtener_id(), True
 
+    def obtener_horarios_disponibles(self, area_comunal: AreaComunal, fecha_reserva):
+        return area_comunal.obtener_horarios_disponibles(fecha_reserva)

@@ -11,30 +11,25 @@ class EntidadMunicipal(models.Model):
     nombre = models.CharField(
         max_length=100,
         help_text="Nombre de la entidad municipal",
-        default="Entidad Municipal",
-        null=True
+        default="Entidad Municipal"
     )
     direccion = models.CharField(
         max_length=200,
         help_text="Dirección física de la entidad",
-        default="Dirección no especificada",
-        null=True
+        default="Dirección no especificada"
     )
     telefono = models.CharField(
         max_length=20,
         help_text="Número de teléfono de contacto",
-        default="000-000-0000",
-        null=True
+        default="000-000-0000"
     )
     correo_electronico = models.EmailField(
         help_text="Correo electrónico de contacto",
-        default="contacto@entidad.com",
-        null=True
+        default="contacto@entidad.com"
     )
     fecha_registro = models.DateTimeField(
         help_text="Fecha de registro en el sistema",
-        default=timezone.now,
-        null=True
+        default=timezone.now
     )
 
     def __str__(self):

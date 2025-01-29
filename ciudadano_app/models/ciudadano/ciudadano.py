@@ -80,4 +80,4 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
     def obtener_reservas_activas(self):
         """Retorna el número de reservas activas del ciudadano"""
         #TODO: si se agrega estado a las reservas se debe modificar para que filtre las reservas activas
-        return self.reserva_set.all().count()
+        return self.reservas.filter(estado_reserva='Activa').count()
