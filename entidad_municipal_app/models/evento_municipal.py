@@ -9,6 +9,10 @@ from django.db.models import F, Q
 from django.utils import timezone
 from .registro_asistencia import RegistroAsistencia
 
+from entidad_municipal_app.models import EntidadMunicipal
+from entidad_municipal_app.models import espacio_publico
+
+
 class EventoMunicipal(models.Model):
     """
     Modelo que representa un evento organizado por la entidad municipal.
@@ -49,13 +53,13 @@ class EventoMunicipal(models.Model):
         verbose_name='Fecha de Realización',
         help_text='Fecha y hora en que se realizará el evento'
     )
-    
+    """
     lugar_evento = models.CharField(
         max_length=200,
         verbose_name='Lugar',
         help_text='Ubicación donde se realizará el evento'
     )
-    
+    """
     capacidad_maxima = models.PositiveIntegerField(
         verbose_name='Capacidad Máxima',
         help_text='Número máximo de personas que pueden asistir'
@@ -80,6 +84,21 @@ class EventoMunicipal(models.Model):
         verbose_name='Última Actualización',
         help_text='Fecha y hora de la última modificación'
     )
+
+#---
+
+    lugar_evento = models.ForeignKey(
+        'EspacioPublico',
+        on_delete=models.CASCADE,
+        null=True,  # Permite valores nulos
+        blank=True,  # Permite valores vacíos en formularios
+        help_text="Ubicación donde se realizará el evento"
+    )
+
+
+
+
+
 
     class Meta:
         verbose_name = 'Evento Municipal'
@@ -167,6 +186,23 @@ class EventoMunicipal(models.Model):
     def obtener_formato_fecha(self):
         """Retorna la fecha del evento en formato legible"""
         return self.fecha_realizacion.strftime("%d/%m/%Y %H:%M")
+
+    def get_lugar_evento(self):
+        """
+        Obtiene el lugar del evento.
+        """
+        return self.lugar_evento
+
+    def set_lugar_evento(self, lugar):
+        """
+        Establece el lugar del evento.
+
+        Args:
+            lugar (str): La nueva ubicación del evento.
+        """
+        self.lugar_evento = lugar
+        self.save()
+
 
     def __str__(self):
         return f"{self.nombre_evento} ({self.obtener_formato_fecha()})"

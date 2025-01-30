@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('nombre_evento', models.CharField(help_text='Nombre descriptivo del evento municipal', max_length=200, verbose_name='Nombre del Evento')),
                 ('descripcion_evento', models.TextField(help_text='Descripción detallada del evento', verbose_name='Descripción')),
                 ('fecha_realizacion', models.DateTimeField(help_text='Fecha y hora en que se realizará el evento', verbose_name='Fecha de Realización')),
-                ('lugar_evento', models.CharField(help_text='Ubicación donde se realizará el evento', max_length=200, verbose_name='Lugar')),
+                #('lugar_evento', models.CharField(help_text='Ubicación donde se realizará el evento', max_length=200, verbose_name='Lugar')),
                 ('capacidad_maxima', models.PositiveIntegerField(help_text='Número máximo de personas que pueden asistir', verbose_name='Capacidad Máxima')),
                 ('cupos_disponibles', models.PositiveIntegerField(help_text='Número de cupos aún disponibles', verbose_name='Cupos Disponibles')),
                 ('estado_actual', models.CharField(choices=[('PROGRAMADO', 'Programado'), ('EN_CURSO', 'En Curso'), ('FINALIZADO', 'Finalizado'), ('CANCELADO', 'Cancelado')], default='PROGRAMADO', help_text='Estado actual del evento', max_length=20, verbose_name='Estado')),
