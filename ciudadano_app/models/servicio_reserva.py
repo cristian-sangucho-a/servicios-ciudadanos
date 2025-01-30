@@ -1,9 +1,10 @@
 from django.db import models
 
 from ciudadano_app.models import Ciudadano, AreaComunal, Reserva
+from ciudadano_app.models.repositorio_reserva import RespositorioReserva
 
 
-class ServicioReserva():
+class ServicioReserva(RespositorioReserva):
     MAXIMO_RESERVAS = 3
 
     def ciudadano_supera_maximo_reservas(self, ciudadano: Ciudadano):
