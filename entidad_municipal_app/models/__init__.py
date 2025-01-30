@@ -1,3 +1,16 @@
-from .EntidadMunicipal import EntidadMunicipal
+"""
+Modelos de la aplicación de entidad municipal.
+"""
 
-__all__ = ['EntidadMunicipachore: modularizar los modelos en EntidadMunicipal_appl']
+from .EntidadMunicipal import EntidadMunicipal
+from .evento_municipal import EventoMunicipal
+from .registro_asistencia import RegistroAsistencia
+
+from .canales.canal_informativo import CanalInformativo, Suscripcion
+from .canales.noticia import Noticia
+from .canales.reaccion import Reaccion
+from .canales.comentario import Comentario
+from .reporte.reporte_municipal import ReporteMunicipal
+from .departamento.departamento import Departamento
+
+__all__ = ['EntidadMunicipal', 'EventoMunicipal', 'RegistroAsistencia','CanalInformativo','Suscripcion','Noticia','Reaccion','Comentario','ReporteMunicipal', 'Departamento']
