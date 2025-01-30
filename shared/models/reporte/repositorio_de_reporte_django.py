@@ -1,4 +1,5 @@
-from ciudadano_app.models import Ciudadano, Reporte, TipoReporte
+from shared.models import Reporte, TipoReporte
+from ciudadano_app.models import Ciudadano
 from .repositorio_de_reporte import RepositorioDeReporte
 
 
