@@ -6,14 +6,8 @@ from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from ciudadano_app.models.ciudadano.gestor_ciudadano import GestorCiudadano
 from ciudadano_app.models.reserva import Reserva
 
-__all__ = ["Ciudadano", "GestorCiudadano", "Reserva"]
-from ciudadano_app.models.reporte.tipo_reporte import TipoReporte
-from ciudadano_app.models.reporte.reporte import Reporte
-
 __all__ = [
     "Ciudadano",
-    "TipoReporte",
-    "Reporte",
-    "RepositorioDeReporte",
-    "ServicioDeReporte",
+    "GestorCiudadano",
+    "Reserva"
 ]

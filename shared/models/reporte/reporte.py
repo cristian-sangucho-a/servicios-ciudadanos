@@ -2,7 +2,7 @@ from django.db import models
 
 # Importación de modelos necesarios desde la aplicación 'ciudadano_app'.
 from ciudadano_app.models import Ciudadano
-from ciudadano_app.models.reporte.tipo_reporte import TipoReporte
+from .tipo_reporte import TipoReporte
 
 class Reporte(models.Model):
     """

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 # Importación del modelo Reporte.
-from ciudadano_app.models.reporte.reporte import Reporte
+from .reporte import Reporte
 
 
 class RepositorioDeReporte(ABC):
