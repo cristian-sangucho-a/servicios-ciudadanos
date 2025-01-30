@@ -108,45 +108,8 @@ def step_impl(context):
 @step(
     'que el ciudadano tiene una reserva "{tipo_reserva}" en el espacio publico "{nombre_espacio}" en el area comunal "{nombre_area}" el "{fecha}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_inicio, hora_fin):
-    context.entidad_municipal = EntidadMunicipal(
-        nombre="Municipalidad Mock",
-        direccion=fake.address(),
-        telefono=fake.phone_number(),
-        correo_electronico=fake.email(),
-        fecha_registro=datetime.now()
-    )
-    context.entidad_municipal.id = 1
 
-    context.espacio_publico = EspacioPublico(
-        nombre=nombre_espacio,
-        entidad_municipal=context.entidad_municipal
-    )
-    context.espacio_publico.id = 1
-
-    index = 1
-
-    for i in range(0,3):
-        area = AreaComunal(
-            nombre_area=fake.word(),
-            hora_de_apertura=datetime.strptime("08:00", "%H:%M").time(),
-            hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
-            espacio_publico=context.espacio_publico
-        )
-        index += 1
-        area.id = index
-        # area.id = fake.random_number(digits=3)
-        servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
-
-
-
-
-    context.ciudadano = Ciudadano(
-        nombre_completo=fake.name(),
-        correo_electronico=fake.email(),
-        numero_identificacion=str(fake.random_number(digits=10)),
-        esta_activo=True
-    )
-    context.ciudadano.id = 1
+    crear_contexto_para_la_reserva(context, nombre_espacio)
 
     context.id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
         area_comunal=servicio_reserva_en_memoria.obtener_area_comunal(1),
@@ -166,6 +129,9 @@ def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_in
     assert reservado
 
 
+
+
+
 @step("cancele la reserva")
 def step_impl(context):
     pass # Da valor en el siguiente paso
@@ -179,3 +145,40 @@ def step_impl(context):
 @step("se enviará una correo de cancelacion a los invitados")
 def step_impl(context):
     assert servicio_reserva_en_memoria.enviar_cancelacion(servicio_reserva_en_memoria.obtener_reserva_por_id(context.id_reserva))
+
+
+
+
+def crear_contexto_para_la_reserva(context, nombre_espacio):
+    context.entidad_municipal = EntidadMunicipal(
+        nombre="Municipalidad Mock",
+        direccion=fake.address(),
+        telefono=fake.phone_number(),
+        correo_electronico=fake.email(),
+        fecha_registro=datetime.now()
+    )
+    context.entidad_municipal.id = 1
+    context.espacio_publico = EspacioPublico(
+        nombre=nombre_espacio,
+        entidad_municipal=context.entidad_municipal
+    )
+    context.espacio_publico.id = 1
+    index = 1
+    for i in range(0, 3):
+        area = AreaComunal(
+            nombre_area=fake.word(),
+            hora_de_apertura=datetime.strptime("08:00", "%H:%M").time(),
+            hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
+            espacio_publico=context.espacio_publico
+        )
+        index += 1
+        area.id = index
+        # area.id = fake.random_number(digits=3)
+        servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
+    context.ciudadano = Ciudadano(
+        nombre_completo=fake.name(),
+        correo_electronico=fake.email(),
+        numero_identificacion=str(fake.random_number(digits=10)),
+        esta_activo=True
+    )
+    context.ciudadano.id = 1
