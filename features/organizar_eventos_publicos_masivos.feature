@@ -21,9 +21,19 @@ Escenario: Organizar un evento en un espacio público no disponible
   Y se mostrarán los espacios públicos disponibles
 
 
- Escenario: Cancelar evento debido a caso fortuito externo
-  Dado que existe un evento llamado "Festival Cultural de Primavera" con el estado "Confirmado"
-  Y el espacio público destinado al evento está en una situación de "Riesgo" debido a un "Incendio forestal"
-  Cuando la entidad municipal cambia el estado del evento a "Cancelado"
-  Entonces se registra el motivo de la cancelación
+
+
+Esquema del escenario: Cancelar evento debido a caso fortuito externo
+   Dado que existe un evento llamado "<nombre_evento>" con el estado "<estado_evento>"
+   Y el espacio público destinado al evento "<nombre_espacio>" está en una situación de "<estado_espacio>" debido a un "<motivoRiesgo>"
+   Cuando la entidad municipal cambia el estado del evento a "<nuevo_estado_evento>"
+   Entonces se registra el motivo de la cancelación "<resultado>"
+
+   Ejemplos:
+    | nombre_evento                   | estado_evento | nombre_espacio         | estado_espacio | motivoRiesgo       | nuevo_estado_evento | resultado                                                       |
+    | Festival Cultural de Primavera  | PROGRAMADO    | Parque Bicentenario    | Afectado       | Incendio Forestal  | CANCELADO           | Se registra la cancelación con motivo "Incendio Forestal"       |
+    | Festival Cultural de Primavera  | PROGRAMADO    | Parque Bicentenario    | No Afectado    | Incendio Forestal  | PROGRAMADO          | El espacio no está afectado, no aplica cancelación              |
+    | Evento Inexistente              | NULL          | NULL                   | NULL           | NULL               | NULL                | No existe evento a cancelar                                     |
+    | Festival Cultural de Primavera  | EN_CURSO      | Parque Bicentenario    | Afectado       | Incendio Forestal  | EN_CURSO            | No se puede cancelar, evento en curso                           |
+    | Festival Cultural de Primavera  | FINALIZADO    | Parque Bicentenario    | Afectado       | Incendio Forestal  | FINALIZADO          | No se puede cancelar, evento finalizado                         |
 
