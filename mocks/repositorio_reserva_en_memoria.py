@@ -23,7 +23,8 @@ class RepositorioReservaMemoria(RespositorioReserva):
             'hora_fin': hora_fin,
             'tipo_reserva': tipo_reserva,
             'ciudadano': ciudadano,
-            'correos_invitados': ''
+            'correos_invitados': '',
+            'estado_reserva': 'Activa'
         }
 
         self.reservas_ciudadano_list.append(nueva_reserva)
@@ -62,7 +63,8 @@ class RepositorioReservaMemoria(RespositorioReserva):
     def cancelar_reserva(self, id_reserva, ciudadano):
         reserva = self.obtener_reserva_por_id(id_reserva)
         if reserva and reserva['ciudadano'] == ciudadano:
-            self.reservas_ciudadano_list.remove(reserva)
+            reserva['estado_reserva'] = 'Cancelada'
+            # self.reservas_ciudadano_list.remove(reserva)
             return True
         return False
 
@@ -80,4 +82,15 @@ class RepositorioReservaMemoria(RespositorioReserva):
         for reserva in self.reservas_ciudadano_list:
             if reserva['id'] == id_reserva:
                 reserva['correos_invitados'] = correos_invitados
+
+    def enviar_cancelacion(self, reserva):
+        print(f'''
+                From: Servicios
+                To: ${reserva['correos_invitados']},
+
+                Se cancelo el pary despues del pary
+                
+                Att: Cristina
+                ''')
+        return True
 
