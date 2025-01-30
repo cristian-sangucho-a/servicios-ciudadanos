@@ -130,19 +130,69 @@ def step_impl(context):
 ##--
 @step('que existe un evento llamado "{nombre_evento}" con el estado "{estado_evento}"')
 def step_impl(context, nombre_evento, estado_evento):
-    AssertionError("Not implemented")
+    # Simular la creación de una entidad municipal en memoria
+    entidad_municipal = {
+        'nombre': fake.company()
+    }
+
+    # Simular la creación de un espacio público en memoria
+    espacio_publico = {
+        'nombre': "Parque Bicentenario",  # Usando el nombre que defines en el escenario
+        'estado_espacio': 'No Afectado',  # Inicialmente no afectado
+        'entidad_municipal': entidad_municipal
+    }
+
+    # Simular la creación de un evento municipal en memoria
+    context.evento = {
+        'nombre_evento': nombre_evento,
+        'estado_actual': estado_evento,
+        'fecha_realizacion': fake.date_time(),
+        'capacidad_maxima': 100,
+        'lugar_evento': espacio_publico
+    }
 
 
-@step(
-    'el espacio público destinado al evento "{nombre_espacio}" está en una situación de "{estado_espacio}" debido a un "{motivoRiesgo}"')
+@step('el espacio público destinado al evento "{nombre_espacio}" está en una situación de "{estado_espacio}" debido a un "{motivoRiesgo}"')
 def step_impl(context, nombre_espacio, estado_espacio, motivoRiesgo):
-    AssertionError("Not implemented")
+    # Aquí simula la actualización del espacio público en memoria
+    if context.evento['lugar_evento']['nombre'] == nombre_espacio:
+        context.evento['lugar_evento']['estado_espacioPublico'] = estado_espacio
+        context.evento['lugar_evento']['motivo_riesgo'] = motivoRiesgo
+        context.espacio = context.evento['lugar_evento']
+    else:
+        print(f"No se encontró el espacio público con el nombre {nombre_espacio}")
+
 
 @step('la entidad municipal cambia el estado del evento a "{nuevo_estado_evento}"')
 def step_impl(context, nuevo_estado_evento):
-    AssertionError("Not implemented")
+    evento = context.evento
+
+    if not evento:
+        print("No existe evento a cancelar")
+        return
+
+    if evento['estado_actual'] == "EN_CURSO":
+        print("El estado del evento es no programado por lo tanto no puede haber cancelación")
+        return
+
+    if evento['estado_actual'] == "FINALIZADO":
+        print("El estado del evento es finalizado por lo tanto no puede haber cancelación")
+        return
+
+    if evento['lugar_evento']['estado_espacio'] == "No Afectado":
+        print("El espacio del evento no se ve afectado por lo que no aplica a cancelación")
+        return
+
+    evento['estado_actual'] = nuevo_estado_evento
+    context.evento = evento
 
 
 @step('se registra el motivo de la cancelación "{resultado}"')
 def step_impl(context, resultado):
-    AssertionError("Not implemented")
+    evento = context.evento
+
+    if evento['estado_actual'] == "CANCELADO":
+        evento['motivo_cancelacion'] = resultado
+        print(f"Motivo de cancelación registrado: {resultado}")
+
+
