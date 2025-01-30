@@ -39,7 +39,8 @@ def step_impl(context, nombre_espacio_publico):
             hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
             espacio_publico=context.espacio_publico
         )
-        area.id = ++index
+        area.id = index
+        index += 1
         # area.id = fake.random_number(digits=3)
         servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
 
@@ -134,7 +135,8 @@ def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_in
             hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
             espacio_publico=context.espacio_publico
         )
-        area.id = ++index
+        index += 1
+        area.id = index
         # area.id = fake.random_number(digits=3)
         servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
 
