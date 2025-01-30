@@ -6,7 +6,7 @@ Inicializa el paquete de modelos para la aplicación ciudadano_app.
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from ciudadano_app.models.ciudadano.gestor_ciudadano import GestorCiudadano
 from ciudadano_app.models.area_comunal import AreaComunal
-from ciudadano_app.models.reserva import Reserva
+from ciudadano_app.models.reserva.reserva import Reserva
 from shared.models.reporte.tipo_reporte import TipoReporte
 from shared.models.reporte.reporte import Reporte
 
@@ -19,4 +19,3 @@ __all__ = [
     "TipoReporte"
 ]
 
-default_app_config = 'ciudadano_app.apps.CiudadanoAppConfig'

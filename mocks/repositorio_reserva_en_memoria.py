@@ -1,7 +1,4 @@
-from ciudadano_app.admin import Ciudadano
-from ciudadano_app.models import Reserva
-from ciudadano_app.models.repositorio_reserva import RespositorioReserva
-from entidad_municipal_app.models import EspacioPublico, espacio_publico
+from ciudadano_app.models.reserva.repositorio_reserva import RespositorioReserva
 
 
 class RepositorioReservaMemoria(RespositorioReserva):

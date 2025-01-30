@@ -1,7 +1,5 @@
-from django.db import models
-
 from ciudadano_app.models import Ciudadano, AreaComunal, Reserva
-from ciudadano_app.models.repositorio_reserva import RespositorioReserva
+from ciudadano_app.models.reserva.repositorio_reserva import RespositorioReserva
 
 
 class ServicioReserva(RespositorioReserva):
