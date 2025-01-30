@@ -84,26 +84,33 @@ class EventoMunicipal(models.Model):
         verbose_name='Última Actualización',
         help_text='Fecha y hora de la última modificación'
     )
-
 #---
+
 
     lugar_evento = models.ForeignKey(
         'EspacioPublico',
         on_delete=models.CASCADE,
         null=True,  # Permite valores nulos
         blank=True,  # Permite valores vacíos en formularios
-        help_text="Ubicación donde se realizará el evento"
+        verbose_name='Lugar',
+        help_text='Espacio público donde se realizará el evento'
     )
 
-
-
-
-
+    #fecha y hora de inicio y fin
 
     class Meta:
         verbose_name = 'Evento Municipal'
         verbose_name_plural = 'Eventos Municipales'
         ordering = ['-fecha_realizacion']
+##--
+    @property
+    def estado_espacio(self):
+        """
+        Verifica el estado del espacio asociado al evento.
+        """
+        if self.lugar_evento:
+            return self.lugar_evento.estado_espacio
+        return None
 
     @property
     def cupos_disponibles(self):

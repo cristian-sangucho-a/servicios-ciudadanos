@@ -6,6 +6,8 @@ import django
 from django.utils import timezone
 from datetime import timedelta
 
+from entidad_municipal_app.models.espacio_publico import EspacioPublico
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'servicios_ciudadanos.settings')
 django.setup()
 
@@ -54,6 +56,7 @@ def crear_entidad_municipal():
         print(f'Error al crear entidad municipal: {e}')
         return None
 
+
 def crear_eventos():
     """Crea eventos de prueba"""
     eventos = [
@@ -89,6 +92,47 @@ def crear_eventos():
         except Exception as e:
             print(f'Error al crear evento: {e}')
 
+
+def crear_espacios_publicos():
+    """Crea espacios públicos de prueba"""
+    espacios = [
+        {
+            'nombre': 'Parque Central',
+            'entidad_municipal': crear_entidad_municipal(),
+            'direccion': 'Avenida Libertador, esquina con Calle 5',
+            'estado_espacioPublico': EspacioPublico.ESTADO_DISPONIBLE,
+            'estado_incedente_espacio': 'Afectado'
+        },
+        {
+            'nombre': 'Plaza de la Cultura',
+            'entidad_municipal': crear_entidad_municipal(),
+            'direccion': 'Avenida Libertador, esquina con Calle 5',
+            'estado_espacioPublico': EspacioPublico.ESTADO_NO_DISPONIBLE,
+            'estado_incedente_espacio': 'Afectado'
+        },
+        {
+            'nombre': 'Bicenterio',
+            'entidad_municipal': crear_entidad_municipal(),
+            'direccion': 'Avenida Libertador, esquina con Calle 5',
+            'estado_incedente_espacio': 'Afectado'
+        }
+    ]
+
+    for espacio_data in espacios:
+        try:
+            # Verificar si el espacio público ya existe
+            espacio, created = EspacioPublico.objects.get_or_create(
+                nombre=espacio_data['nombre'],
+                defaults=espacio_data
+            )
+            if created:
+                print(f'Espacio público creado: {espacio.nombre}')
+            else:
+                print(f'El espacio público {espacio.nombre} ya existe')
+        except Exception as e:
+            print(f'Error al crear espacio público: {e}')
+
+
 def main():
     """Función principal que ejecuta todas las inicializaciones"""
     print('Iniciando creación de datos de prueba...')
@@ -101,7 +145,9 @@ def main():
     
     # Crear eventos
     crear_eventos()
-    
+
+    crear_espacios_publicos()
+
     print('Proceso de inicialización completado.')
 
 if __name__ == '__main__':

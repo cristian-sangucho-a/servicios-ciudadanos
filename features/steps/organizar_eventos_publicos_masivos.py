@@ -14,131 +14,6 @@ ecuador_cities = [
 
 fake = Faker()
 
-@step('que la entidad municipal "Municipio de Quito" desea organizar el evento "Quito Fest"')
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(
-        u'STEP: Dado que la entidad municipal "Municipio de Quito" desea organizar el evento "Quito Fest"')
-
-
-@step('la fecha del evento es "2023-12-06" con hora de inicio a las "14:00"')
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(u'STEP: Y la fecha del evento es "2023-12-06" con hora de inicio a las "14:00"')
-
-
-@step('el espacio público "Parque Central" se encuentre disponible')
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(u'STEP: Cuando el espacio público "Parque Central" se encuentre disponible')
-
-
-@step("se publicará el evento en la Agenda Pública")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(u'STEP: Entonces se publicará el evento en la Agenda Pública')
-
-
-@step('el espacio público "{nombre_espacioPublico}" no se encuentre disponible')
-def step_impl(context, nombre_espacioPublico):
-    # Buscar el espacio público por nombre
-    espacio_publico = EspacioPublico.objects.filter(nombre=nombre_espacioPublico).first()
-
-    # Verificar si el espacio existe y si no está disponible
-    if espacio_publico and not espacio_publico.esta_disponible():
-        # Guardar el espacio no disponible en el contexto para usarlo más adelante
-        context.espacio_publico_no_disponible = espacio_publico
-        print(f"El espacio público {nombre_espacioPublico} no está disponible.")
-    else:
-        context.espacio_publico_no_disponible = None
-        print(f"El espacio público {nombre_espacioPublico} está disponible.")
-
-@step("no se incluirá el evento en la Agenda Pública")
-def step_impl(context):
-    if context.espacio_publico_no_disponible:
-        print("El evento no se incluirá en la Agenda Pública porque el espacio público no está disponible.")
-    else:
-        print("El evento se puede incluir en la Agenda Pública.")
-
-
-@step("se mostrarán los espacios públicos disponibles")
-def step_impl(context):
-    espacios_disponibles = EspacioPublico.objects.filter(disponibilidad=True)
-
-    if espacios_disponibles.exists():
-        print("Espacios públicos disponibles:")
-        for espacio in espacios_disponibles:
-            print(f"{espacio.nombre} - {espacio.direccion}")
-    else:
-        print("No hay espacios públicos disponibles.")
-
-
-@step("se registran mas de un espacio público para el evento")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(u'STEP: Cuando se registran los siguientes espacios públicos para el evento: ')
-
-
-@step("todos los espacios públicos son distintos entre sí")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(u'STEP: Y todos los espacios públicos son distintos entre sí')
-
-
-@step("se incluirá el evento en la Agenda Pública")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(u'STEP: Entonces se incluirá el evento en la Agenda Pública')
-
-
-@step('que existe un evento llamado "Festival Cultural de Primavera" con el estado "Confirmado"')
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(
-        u'STEP: Dado que existe un evento llamado "Festival Cultural de Primavera" con el estado "Confirmado"')
-
-
-@step('el espacio público destinado al evento está en una situación de "Riesgo" debido a un "Incendio forestal"')
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(
-        u'STEP: Y el espacio público destinado al evento está en una situación de "Riesgo" debido a un "Incendio forestal"')
-
-
-@step('la entidad municipal cambia el estado del evento a "Cancelado"')
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(u'STEP: Cuando la entidad municipal cambia el estado del evento a "Cancelado"')
-
-
-@step("se registra el motivo de la cancelación")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    raise NotImplementedError(u'STEP: Entonces se registra el motivo de la cancelación')
-
-
 @step("que una entidad municipal desea organizar un evento")
 def step_impl(context):
     ciudad = random.choice(ecuador_cities)
@@ -151,32 +26,91 @@ def step_impl(context):
     )
     context.nombre_evento = f"Evento {fake.word()}"
 
-@step('la fecha deseada del evento es 06/02/2025 14:00')
-def step_impl(context):
+@step('la fecha del evento es {fecha_evento}')
+def step_impl(context,fecha_evento):
     context.fecha_realizacion = fake.date_time().strftime("%Y-%m-%d %H:%M:%S")
 
 
-@step('se añada el espacio público {nombre_espacioPublico} que se encuentra disponible')
-def step_impl(context,nombre_espacioPublico):
-    context.espacio_publico = EspacioPublico.objects.create(
-        nombre=nombre_espacioPublico,
-        direccion=fake.address(),
-        entidad_municipal=context.entidad_municipal,
-        disponibilidad=True  # Marca como disponible
-    )
+@step('el espacio público {nombre_espacioPublico} que se encuentra disponible')
+def step_impl(context, nombre_espacioPublico):
+    """
+    Verifica que el espacio público con el nombre dado está disponible.
+    Si está disponible, lo guarda en context.espacio_publico.
+    Si no está disponible, imprime un mensaje.
 
-@step("se agregara el evento en la Agenda Pública")
+    :param context: Contexto de Behave.
+    :param nombre_espacioPublico: Nombre del espacio público a verificar.
+    """
+    # Obtener el espacio público por nombre
+    espacio_publico = EspacioPublico.obtener_por_nombre(nombre_espacioPublico)
+
+    # Verificar si el espacio público existe
+    if espacio_publico is None:
+        print(f"No se encontró el espacio público: {nombre_espacioPublico}")
+        context.espacio_publico = None  # Guardar None en el contexto
+        return
+
+    # Verificar si el espacio público está disponible
+    if espacio_publico.estado_espacioPublico == EspacioPublico.ESTADO_DISPONIBLE:
+        print(f"El espacio público '{nombre_espacioPublico}' está disponible.")
+        context.espacio_publico = espacio_publico  # Guardar en el contexto
+    else:
+        print(f"El espacio público '{nombre_espacioPublico}' no está disponible. Estado actual: {espacio_publico.estado_espacioPublico}")
+        context.espacio_publico = None  # Guardar None en el contexto
+
+
+@step("se creara el evento")
 def step_impl(context):
-    # Asegurarte de que el nombre o ID corresponda a un EspacioPublico
-
     # Verificar disponibilidad
     print("El espacio público no está disponible para este evento.")
-    if context.espacio_publico.esta_disponible():
-        context.evento = EventoMunicipal.objects.create(
-            nombre_evento=context.nombre_evento,
-            descripcion_evento=fake.paragraph(),
-            fecha_realizacion=context.fecha_realizacion,
-            lugar_evento=context.espacio_publico,  # Asegúrate de usar la instancia de EspacioPublico
-            capacidad_maxima=10,
-            estado_actual=EventoMunicipal.ESTADO_PROGRAMADO
-        )
+    #if context.espacio_publico.esta_disponible():
+    context.evento = EventoMunicipal.objects.create(
+        nombre_evento=context.nombre_evento,
+        descripcion_evento=fake.paragraph(),
+        fecha_realizacion=context.fecha_realizacion,
+        lugar_evento=context.espacio_publico,  # Asegúrate de usar la instancia de EspacioPublico
+        capacidad_maxima=10,
+        estado_actual=EventoMunicipal.ESTADO_PROGRAMADO
+    )
+    #print(context.evento)
+    print("Evento creado con los siguientes detalles:")
+    print(f"Nombre: {context.evento.nombre_evento}")
+    print(f"Descripción: {context.evento.descripcion_evento}")
+    print(f"Fecha: {context.evento.fecha_realizacion}")
+    print(f"Lugar: {context.evento.lugar_evento}")
+    print(f"Capacidad: {context.evento.capacidad_maxima}")
+    print(f"Estado: {context.evento.estado_actual}")
+
+
+@step('el espacio público "{nombre_espacioPublico}" no se encuentre disponible')
+def step_impl(context, nombre_espacioPublico):
+    AssertionError("Not implemented")
+
+
+@step("no se creara el evento")
+def step_impl(context):
+    AssertionError("Not implemented")
+
+@step("se mostrarán los espacios públicos disponibles")
+def step_impl(context):
+    AssertionError("Not implemented")
+
+##--
+@step('que existe un evento llamado "{nombre_evento}" con el estado "{estado_evento}"')
+def step_impl(context, nombre_evento, estado_evento):
+    AssertionError("Not implemented")
+
+
+@step(
+    'el espacio público destinado al evento "{nombre_espacio}" está en una situación de "{estado_espacio}" debido a un "{motivoRiesgo}"')
+def step_impl(context, nombre_espacio, estado_espacio, motivoRiesgo):
+    AssertionError("Not implemented")
+
+@step('la entidad municipal cambia el estado del evento a "{nuevo_estado_evento}"')
+def step_impl(context, nuevo_estado_evento):
+    AssertionError("Not implemented")
+
+
+@step('se registra el motivo de la cancelación "{resultado}"')
+def step_impl(context, resultado):
+    AssertionError("Not implemented")
