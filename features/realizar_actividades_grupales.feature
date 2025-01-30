@@ -23,6 +23,7 @@ Característica: Realización de actividades por ciudadanos
       | Cancha #1 |
       | Cancha #2 |
       | Cancha #3 |
+    Y el ciudadano no supera las "3" reservas activas
     Cuando el ciudadano realice una reserva "privada" en el area comunal "Cancha #2" el "15/01/2024" de "10:00" a "12:00"
     Y agregue los correos de los invitados "jean.cotera@epn.edu, cristian.sangucho@epn.edu.ec" a la reserva
     Entonces se guarda la reserva en la Agenda Pública
