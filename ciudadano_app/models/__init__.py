@@ -7,8 +7,8 @@ from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from ciudadano_app.models.ciudadano.gestor_ciudadano import GestorCiudadano
 from ciudadano_app.models.area_comunal import AreaComunal
 from ciudadano_app.models.reserva import Reserva
-from ciudadano_app.models.reporte.tipo_reporte import TipoReporte
-from ciudadano_app.models.reporte.reporte import Reporte
+from shared.models.reporte.tipo_reporte import TipoReporte
+from shared.models.reporte.reporte import Reporte
 
 __all__ = [
     "Ciudadano",
@@ -18,4 +18,5 @@ __all__ = [
     "Reporte",
     "TipoReporte"
 ]
+
 default_app_config = 'ciudadano_app.apps.CiudadanoAppConfig'
