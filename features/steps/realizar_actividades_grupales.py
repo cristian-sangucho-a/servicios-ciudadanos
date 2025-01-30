@@ -3,39 +3,49 @@ from behave import *
 from faker import Faker
 from datetime import datetime
 
-from ciudadano_app.admin import AreaComunal
+from ciudadano_app.models.area_comunal import AreaComunal
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
+from ciudadano_app.models.servicio_reserva import ServicioReserva
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from mocks.repositorio_reserva_en_memoria import RepositorioReservaMemoria
 
 fake = Faker()
 
 servicio_reserva_en_memoria = RepositorioReservaMemoria()
+servicio_reserva=ServicioReserva()
 
 @step('que existen areas comunales disponibles en el espacio publico "{nombre_espacio_publico}" en la ciudad y son')
 def step_impl(context, nombre_espacio_publico):
-    # Create mock objects instead of real database objects
-    context.entidad_municipal = EntidadMunicipal(nombre="Municipio de Quito")
-    context.espacio_publico = EspacioPublico(nombre=nombre_espacio_publico, entidad_municipal=context.entidad_municipal)
+    # Crear entidad y espacio público
+    context.entidad_municipal = EntidadMunicipal(...)
+    context.espacio_publico = EspacioPublico(...)
 
-    context.cancha1 = AreaComunal()
-    context.cancha2 = AreaComunal()
-    context.cancha3 = AreaComunal()
+    # Iterar sobre todas las filas de la tabla para crear áreas
+    for row in context.table:
+        area = AreaComunal(
+            nombre_area=row['Nombre'],
+            hora_de_apertura=fake.time(),
+            hora_de_cierre=fake.time(),
+            espacio_publico=context.espacio_publico
+        )
+        servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
 
-    # Set up the mock areas with their names from the table
-    context.cancha1.nombre_area = context.table[0].cells[0]
-    context.cancha2.nombre_area = context.table[1].cells[0]
-    context.cancha3.nombre_area = context.table[2].cells[0]
-
-    context.espacio_publico.areas_comunales = [context.cancha1, context.cancha2, context.cancha3]
-    # Set up mock behaviors
-    assert servicio_reserva_en_memoria.hay_areas_comunales_disponibles(espacio_publico=context.espacio_publico)
+    # Verificar disponibilidad
+    assert servicio_reserva_en_memoria.hay_areas_comunales_disponibles(context.espacio_publico)
 
 
 @step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
 def step_impl(context, maximo_reservas):
-     # Create mock citizen instead of database object
-    context.ciudadano = Ciudadano(nombre_completo=fake.name(), correo_electronico=fake.email(), numero_identificacion=str(fake.random_number(digits=10)), esta_activo=True)
+    # Crear ciudadano de prueba
+    context.ciudadano = Ciudadano(
+        nombre_completo=fake.name(),
+        correo_electronico=fake.email(),
+        numero_identificacion=str(fake.random_number(digits=10)),
+        esta_activo=True
+    )
+
+    # Convertir maximo_reservas a entero
+    context.maximo_reservas = int(maximo_reservas)
     assert not servicio_reserva_en_memoria.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
 
 @step(
