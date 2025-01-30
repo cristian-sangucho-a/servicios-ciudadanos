@@ -22,7 +22,10 @@ class ReporteMunicipal(models.Model):
         Reporte,
         on_delete=models.CASCADE,
         verbose_name="Reporte Ciudadano",
-        help_text="Reporte ciudadano original"
+        help_text="Reporte ciudadano original",
+        null=True,
+        blank=True,
+        default=None
     )
     
     estado = models.CharField(
