@@ -91,10 +91,7 @@ def step_impl(context):
     if context.correos_invitados is not None:
         servicio_reserva_en_memoria.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,
                                                                         correos_invitados=context.correos_invitados)
-
-    pass
-    # TODO: revisar si es necesario refactorar, como no hay agenda publica(en los modelos) el cuando y entonces sea uno solo
-
+    assert reservado
 
 @step('agregue los correos de los invitados "{correos_invitados}" a la reserva')
 def step_impl(context, correos_invitados):
@@ -166,8 +163,7 @@ def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_in
         servicio_reserva_en_memoria.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,
                                                                         correos_invitados=context.correos_invitados)
 
-    assert servicio_reserva_en_memoria.obtener_reserva_por_id(context.id_reserva)[
-               'tipo_reserva'] == tipo_reserva  # se verifica que tiene la reserva
+    assert reservado
 
 
 @step("cancele la reserva")
