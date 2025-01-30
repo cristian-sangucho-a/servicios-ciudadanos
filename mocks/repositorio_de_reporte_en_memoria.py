@@ -1,9 +1,9 @@
 from faker.proxy import Faker
 
 from ciudadano_app.models import Ciudadano
-from ciudadano_app.models.reporte.reporte import Reporte
-from ciudadano_app.models.reporte.repositorio_de_reporte import RepositorioDeReporte
-from ciudadano_app.models.reporte.tipo_reporte import TipoReporte
+from shared.models import Reporte
+from shared.models import RepositorioDeReporte
+from shared.models import TipoReporte
 
 
 class RepositorioDeReporteEnMemoria(RepositorioDeReporte):

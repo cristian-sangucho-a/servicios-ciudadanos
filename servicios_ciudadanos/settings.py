@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'behave_django',
     'ciudadano_app.apps.CiudadanoAppConfig',
     'entidad_municipal_app.apps.EntidadMunicipalAppConfig',
+    'shared'
 ]
 
 MIDDLEWARE = [
