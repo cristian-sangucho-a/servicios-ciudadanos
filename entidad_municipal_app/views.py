@@ -6,9 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
-from .models.evento_municipal import EventoMunicipal
-from .models.registro_asistencia import RegistroAsistencia
-from .services import GestorRegistroAsistencia, ErrorGestionEventos
+from .models.evento.evento_municipal import EventoMunicipal, ErrorGestionEventos
+from .models.evento.registro_asistencia import RegistroAsistencia
 
 def lista_eventos(request):
     """Vista para listar todos los eventos activos."""
@@ -46,13 +45,9 @@ def inscribir_evento(request, evento_id):
         return redirect('lista_eventos')
     
     evento = get_object_or_404(EventoMunicipal, pk=evento_id)
-    gestor = GestorRegistroAsistencia()
     
     try:
-        registro = gestor.procesar_solicitud_inscripcion(
-            evento_id=evento.id,
-            ciudadano=request.user
-        )
+        registro = evento.inscribir_ciudadano(request.user)
         
         if registro.estado_registro == RegistroAsistencia.ESTADO_INSCRITO:
             messages.success(
@@ -82,10 +77,8 @@ def cancelar_inscripcion(request, registro_id):
         ciudadano=request.user
     )
     
-    gestor = GestorRegistroAsistencia()
-    
     try:
-        registro_cancelado, registro_promovido = gestor.procesar_cancelacion_inscripcion(
+        registro_cancelado, registro_promovido = registro.evento.cancelar_inscripcion(
             registro_id=registro.id
         )
         
@@ -103,13 +96,9 @@ def lista_espera(request, evento_id):
         return redirect('lista_eventos')
     
     evento = get_object_or_404(EventoMunicipal, pk=evento_id)
-    gestor = GestorRegistroAsistencia()
     
     try:
-        registro = gestor.procesar_solicitud_inscripcion(
-            evento_id=evento.id,
-            ciudadano=request.user
-        )
+        registro = evento.inscribir_ciudadano(request.user)
         
         messages.info(
             request,
