@@ -15,9 +15,9 @@ Escenario: Organizar un evento en un espacio público disponible
 
 Escenario: Organizar un evento en un espacio público no disponible
   Dado que una entidad municipal desea organizar un evento
-  Y la fecha deseada del evento es 06/02/2025 14:00
+  Y la fecha del evento es "06/02/2025"
   Cuando el espacio público "Parque Central" no se encuentre disponible
-  Entonces no se incluirá el evento en la Agenda Pública
+  Entonces no se creara el evento
   Y se mostrarán los espacios públicos disponibles
 
 
