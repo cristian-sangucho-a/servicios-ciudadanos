@@ -32,6 +32,8 @@ def step_impl(context, nombre_espacio_publico):
     )
     context.espacio_publico.id = 1
 
+    index = 1
+
     for row in context.table:
         area = AreaComunal(
             nombre_area=row['Nombre'],
@@ -39,7 +41,8 @@ def step_impl(context, nombre_espacio_publico):
             hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
             espacio_publico=context.espacio_publico
         )
-        area.id = fake.random_number(digits=3)
+        area.id = ++index
+        # area.id = fake.random_number(digits=3)
         servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
 
     assert servicio_reserva_en_memoria.hay_areas_comunales_disponibles(context.espacio_publico)
@@ -75,8 +78,8 @@ def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, h
 
 @step("se guarda la reserva en la Agenda Pública")
 def step_impl(context):
-    id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
-        servicio_reserva_en_memoria.obtener_area_comunal(),
+    context.id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
+        area_comunal= servicio_reserva_en_memoria.obtener_area_comunal(1),
         fecha_reserva=context.fecha_reserva,
         hora_inicio=context.hora_inicio,
         hora_fin=context.hora_fin,
