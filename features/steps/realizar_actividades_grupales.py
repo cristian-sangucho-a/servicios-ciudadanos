@@ -14,39 +14,54 @@ fake = Faker()
 servicio_reserva_en_memoria = RepositorioReservaMemoria()
 servicio_reserva=ServicioReserva()
 
+
 @step('que existen areas comunales disponibles en el espacio publico "{nombre_espacio_publico}" en la ciudad y son')
 def step_impl(context, nombre_espacio_publico):
-    # Crear entidad y espacio público
-    context.entidad_municipal = EntidadMunicipal(...)
-    context.espacio_publico = EspacioPublico(...)
+    context.entidad_municipal = EntidadMunicipal(
+        nombre="Municipalidad Mock",
+        direccion=fake.address(),
+        telefono=fake.phone_number(),
+        correo_electronico=fake.email(),
+        fecha_registro=datetime.now()
+    )
+    context.entidad_municipal.id = 1
 
-    # Iterar sobre todas las filas de la tabla para crear áreas
+    context.espacio_publico = EspacioPublico(
+        nombre=nombre_espacio_publico,
+        entidad_municipal=context.entidad_municipal
+    )
+    context.espacio_publico.id = 1
+
     for row in context.table:
         area = AreaComunal(
             nombre_area=row['Nombre'],
-            hora_de_apertura=fake.time(),
-            hora_de_cierre=fake.time(),
+            hora_de_apertura=datetime.strptime("08:00", "%H:%M").time(),
+            hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
             espacio_publico=context.espacio_publico
         )
+        area.id = fake.random_number(digits=3)
         servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
 
-    # Verificar disponibilidad
     assert servicio_reserva_en_memoria.hay_areas_comunales_disponibles(context.espacio_publico)
 
 
 @step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
 def step_impl(context, maximo_reservas):
-    # Crear ciudadano de prueba
     context.ciudadano = Ciudadano(
         nombre_completo=fake.name(),
         correo_electronico=fake.email(),
         numero_identificacion=str(fake.random_number(digits=10)),
         esta_activo=True
     )
-
-    # Convertir maximo_reservas a entero
+    context.ciudadano.id = 1
     context.maximo_reservas = int(maximo_reservas)
+
     assert not servicio_reserva_en_memoria.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
+
+    # Simular que tiene 0 reservas (ajusta según tu lógica)
+    servicio_reserva_en_memoria.reservas = []
+
+    assert len(servicio_reserva_en_memoria.reservas) < int(maximo_reservas)
 
 @step(
     'el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
