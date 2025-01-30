@@ -64,7 +64,7 @@ class GestorDeDepartamentosYReportes(models.Model):
             return True
         return False
 
-    # **🔹 CRUD de Departamento**
+    # CRUD de Departamento**
 
     @staticmethod
     def obtener_departamentos():

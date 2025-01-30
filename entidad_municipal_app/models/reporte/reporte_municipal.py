@@ -17,12 +17,7 @@ class ReporteMunicipal(models.Model):
     ]
 
     id = models.AutoField(primary_key=True)
-    reporte_ciudadano = models.ForeignKey(
-        Reporte,
-        on_delete=models.CASCADE,
-        verbose_name="Reporte Ciudadano",
-        help_text="Reporte ciudadano original"
-    )
+
     estado = models.CharField(
         max_length=50,
         default="no_asignado",
@@ -66,6 +61,21 @@ class ReporteMunicipal(models.Model):
         """
         self.evidencia = descripcion_evidencia
         self.estado = "resuelto"
+
+    def obtener_departamento(self):
+        return self.reporte_ciudadano.tipo_reporte.departamento
+
+    def obtener_prioridad (self):
+        return self.reporte_ciudadano.tipo_reporte.prioridad_de_atencion
+
+    def obtener_estado (self):
+        return self.estado
+
+    def obtener_evidencia(self):
+        return self.evidencia
+
+    def obtener_id(self):
+        return self.id
 
     def __str__(self):
         """

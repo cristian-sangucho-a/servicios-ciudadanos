@@ -7,11 +7,15 @@ priorización y manejo de reportes en los departamentos municipales.
 
 from behave import *
 
-from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
-from ciudadano_app.models.reporte.reporte import Reporte
-from ciudadano_app.models.reporte.tipo_reporte import TipoReporte
-from entidad_municipal_app.models.reporte.reporte_municipal import ReporteMunicipal
-from entidad_municipal_app.models.departamento.gestor_de_departamentos_y_reportes import GestorDeDepartamentosYReportes
+from entidad_municipal_app.models.departamento.servicio_departamento import ServicioDepartamento
+from entidad_municipal_app.models.reporte.servicio_de_reporte_municipal import ServicioReporteMunicipal
+from mocks.repositorio_de_departamento_en_memoria import RepositorioDeDepartamentoEnMemoria
+from mocks.repositorio_de_reporte_municipal_en_memoria import RepositorioDeReporteMunicipalEnMemoria
+
+repositorio_de_departamento_en_memoria = RepositorioDeDepartamentoEnMemoria()
+repositorio_de_reporte_en_memoria = RepositorioDeReporteMunicipalEnMemoria()
+servicio_de_reporte = ServicioReporteMunicipal(repositorio_de_reporte_en_memoria)
+servicio_de_departamento = ServicioDepartamento(repositorio_de_departamento_en_memoria,)
 
 #     Escenario: Resolver reportes asignados a un departamento
 
@@ -23,38 +27,11 @@ def step_impl(context):
     :param context: Contexto de Behave.
     :type context: behave.runner.Context
     """
-    context.gestor_de_departamentos_y_reportes = GestorDeDepartamentosYReportes()
 
     #Para obtener datos del escenario
-    for row in context.table:
-        # Crear ciudadano
-        context.ciudadano, created = Ciudadano.objects.get_or_create(
-            nombre_completo=row["nombre"],
-            correo_electronico=row["correo"],
-            numero_identificacion=row["identificacion"]
-        )
+    context.reportes_municipales = servicio_de_reporte.obtener_reportes_municipales()
 
-        # Crear tipo de reporte
-        tipo_reporte, created = TipoReporte.objects.get_or_create(
-            asunto=row["asunto"],
-            descripcion=row["descripcion"]
-        )
-
-        # Crear reporte
-        reporte_ciudadano = Reporte.objects.create(
-            ciudadano=context.ciudadano,
-            tipo_reporte=tipo_reporte,
-            ubicacion=row["ubicacion"]
-        )
-
-        # Crear reporte municipal
-        ReporteMunicipal.objects.create(
-            reporte_ciudadano=reporte_ciudadano, estado="asignado", evidencia=""
-        )
-
-    context.reportes_municipales = context.gestor_de_departamentos_y_reportes.obtener_reportes_municipales()
-
-    assert context.reportes_municipales, "No hay reportes municipales disponibles."
+    assert len(context.reportes_municipales)>0, "No hay reportes municipales disponibles."
 
 
 @step('los reportes han sido asignados automáticamente a un departamento')
@@ -95,12 +72,11 @@ def step_impl(context, nombre_departamento, id_reporte_atendido):
     :param context: Contexto de Behave.
     :type context: behave.runner.Context
     """
-    context.departamento = context.gestor_de_departamentos_y_reportes.obtener_departamento_por_nombre(nombre_departamento)
-    context.reporte_atendido = context.gestor_de_departamentos_y_reportes.obtener_reporte_municipal_por_id(id_reporte_atendido)
+    context.departamento = servicio_de_departamento.obtener_departamento_por_nombre(nombre_departamento)
 
-    context.departamento.atender_reporte_municipal(context.reporte_atendido)
+    context.reporte_atendido = servicio_de_reporte.obtener_reporte_municipal_por_id(id_reporte_atendido)
 
-    assert context.reporte_atendido.obtener_estado() == "atendiendo", \
+    assert servicio_de_reporte.atender_reporte_municipal(context.reporte_atendido),\
         f"El reporte {context.reporte_atendido.obtener_id()} no está siendo atendido."
 
 
@@ -114,7 +90,7 @@ def step_impl(context, descripcion_evidencia):
     :param context: Contexto de Behave.
     :type context: behave.runner.Context
     """
-    context.reporte_atendido.registrar_evidencia(descripcion_evidencia)
+    servicio_de_reporte.registrar_evidencia(context.reporte_atendido, descripcion_evidencia)
 
     assert context.reporte_atendido.obtener_evidencia() != "", \
         f"El reporte {context.reporte_atendido.obtener_id()} no tiene evidencia registrada."
@@ -145,10 +121,7 @@ def step_impl(context, nombre_departamento, id_reporte_postergado):
     :param context: Contexto de Behave.
     :type context: behave.runner.Context
     """
-    context.departamento = context.gestor_de_departamentos_y_reportes.obtener_departamento_por_nombre(nombre_departamento)
-    context.reporte_postergado = context.gestor_de_departamentos_y_reportes.obtener_reporte_municipal_por_id(id_reporte_postergado)
-
-    context.departamento.postergar_reporte(context.reporte_postergado)
-
-    assert context.reporte_postergado.obtener_estado() == "postergado", \
-        f"El estado del reporte {context.reporte_postergado.obtener_id()} no se actualizó correctamente."
+    context.departamento = servicio_de_departamento.obtener_departamento_por_nombre(nombre_departamento)
+    context.reporte_postergado = servicio_de_reporte.obtener_reporte_municipal_por_id(id_reporte_postergado)
+    assert servicio_de_reporte.postergar_reporte(context.reporte_postergado), \
+        "El reporte no ha su=ido postergado"

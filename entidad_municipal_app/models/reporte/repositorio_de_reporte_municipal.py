@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from ciudadano_app.models.reporte.reporte import Reporte
+from entidad_municipal_app.models.reporte.reporte_municipal import ReporteMunicipal
 
 
 class RepositorioDeReporteMunicipal(ABC):
@@ -44,7 +44,7 @@ class RepositorioDeReporteMunicipal(ABC):
         pass
 
     @abstractmethod
-    def crear(self, reporte_ciudadano: Reporte):
+    def crear(self, reporte_ciudadano: ReporteMunicipal):
         """
         Crea un nuevo reporte municipal a partir de un reporte ciudadano.
 
