@@ -17,7 +17,12 @@ class ReporteMunicipal(models.Model):
     ]
 
     id = models.AutoField(primary_key=True)
-
+    reporte_ciudadano = models.ForeignKey(
+        Reporte,
+        on_delete=models.CASCADE,
+        verbose_name="Reporte Ciudadano",
+        help_text="Reporte ciudadano original"
+    )
     estado = models.CharField(
         max_length=50,
         default="no_asignado",
