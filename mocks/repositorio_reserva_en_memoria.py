@@ -1,6 +1,6 @@
 from ciudadano_app.admin import Ciudadano
 from ciudadano_app.models.repositorio_reserva import RespositorioReserva
-from entidad_municipal_app.models import EspacioPublico
+from entidad_municipal_app.models import EspacioPublico, espacio_publico
 
 
 class RepositorioReservaMemoria(RespositorioReserva):
@@ -43,8 +43,8 @@ class RepositorioReservaMemoria(RespositorioReserva):
             self.areas_por_espacio[espacio_publico] = []
         self.areas_por_espacio[espacio_publico].append(area_comunal)
 
-    def obtener_reserva_por_id(self, id_reserva):
-        for reserva in self.reservas_ciudadano_list:
-            if reserva['id'] == id_reserva:
-                return reserva
-        return None
+    def obtener_area_comunal(self):
+        for espacio, areas in self.areas_por_espacio.items():
+            if areas:  # Verifica si hay áreas disponibles
+                return areas[0]  # Devuelve la primera área comunal encontrada
+        return None  # Si no hay áreas disponibles, devuelve None

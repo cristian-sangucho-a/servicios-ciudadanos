@@ -66,11 +66,24 @@ def step_impl(context, maximo_reservas):
 @step(
     'el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, hora_fin):
+    context.tipo_reserva = tipo_reserva
+    context.fecha_reserva = fecha_reserva
+    context.hora_inicio = hora_inicio
+    context.hora_fin = hora_fin
+
     pass
 
 @step("se guarda la reserva en la Agenda Pública")
 def step_impl(context):
-    pass
+    id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
+        servicio_reserva_en_memoria.obtener_area_comunal(),
+        fecha_reserva=context.fecha_reserva,
+        hora_inicio=context.hora_inicio,
+        hora_fin=context.hora_fin,
+        tipo_reserva=context.tipo_reserva,
+        ciudadano=context.ciudadano
+    )
+    assert reservado
     # TODO: revisar si es necesario refactorar, como no hay agenda publica(en los modelos) el cuando y entonces sea uno solo
 
 # ##########################FIN PRIMER ESCENARIO####################################
