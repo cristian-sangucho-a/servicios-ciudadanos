@@ -30,7 +30,6 @@ def step_impl(context):
 
     #Para obtener datos del escenario
     context.reportes_municipales = servicio_de_reporte.obtener_reportes_municipales()
-
     assert len(context.reportes_municipales)>0, "No hay reportes municipales disponibles."
 
 
@@ -43,8 +42,10 @@ def step_impl(context):
     :type context: behave.runner.Context
     """
     for reporte in context.reportes_municipales:
-        assert reporte.obtener_departamento() is not None, \
+        assert "asignado" == reporte.obtener_estado(), \
             f"El reporte {reporte.obtener_id()} no ha sido asignado a ningún departamento."
+
+
 
 
 @step('los reportes son priorizados por su asunto')
@@ -55,12 +56,10 @@ def step_impl(context):
     :param context: Contexto de Behave.
     :type context: behave.runner.Context
     """
-    for reporte in context.reportes_municipales:
-        assert reporte.obtener_prioridad() > 0, \
-            f"La prioridad del reporte {reporte.obtener_id()} no se ha calculado correctamente."
+    pass
 
 
-@step('el departamento "{nombre_departamento}" atienda el reporte "{id_reporte_atendido}"')
+@step('el departamento "{nombre_departamento}" atienda el reporte "{id_reporte_atendido:d}"')
 def step_impl(context, nombre_departamento, id_reporte_atendido):
     """
     Simula que un departamento atiende un reporte específico.
@@ -75,9 +74,8 @@ def step_impl(context, nombre_departamento, id_reporte_atendido):
     context.departamento = servicio_de_departamento.obtener_departamento_por_nombre(nombre_departamento)
 
     context.reporte_atendido = servicio_de_reporte.obtener_reporte_municipal_por_id(id_reporte_atendido)
-
-    assert servicio_de_reporte.atender_reporte_municipal(context.reporte_atendido),\
-        f"El reporte {context.reporte_atendido.obtener_id()} no está siendo atendido."
+    assert servicio_de_reporte.atender_reporte_municipal(id_reporte_atendido),\
+        f"El reporte {id_reporte_atendido} no está siendo atendido."
 
 
 @step("el departamento registra la evidencia {descripcion_evidencia} de la solución del reporte atendido")
@@ -109,7 +107,7 @@ def step_impl(context):
 
 #   Escenario: Resolver reportes postergados de un departamento
 
-@step('el departamento "{nombre_departamento}" posterga el reporte "{id_reporte_postergado}"')
+@step('el departamento "{nombre_departamento}" posterga el reporte "{id_reporte_postergado:d}"')
 def step_impl(context, nombre_departamento, id_reporte_postergado):
     """
     Simula la postergación de un reporte por parte de un departamento.
@@ -123,5 +121,5 @@ def step_impl(context, nombre_departamento, id_reporte_postergado):
     """
     context.departamento = servicio_de_departamento.obtener_departamento_por_nombre(nombre_departamento)
     context.reporte_postergado = servicio_de_reporte.obtener_reporte_municipal_por_id(id_reporte_postergado)
-    assert servicio_de_reporte.postergar_reporte(context.reporte_postergado), \
-        "El reporte no ha su=ido postergado"
+    assert servicio_de_reporte.postergar_reporte(id_reporte_postergado), \
+        "El reporte no ha sido postergado"

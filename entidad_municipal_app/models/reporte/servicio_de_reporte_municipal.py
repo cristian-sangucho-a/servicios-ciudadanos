@@ -27,21 +27,23 @@ class ServicioReporteMunicipal():
         return self.repositorio_reporte.obtener_por_id(id_reporte)
 
 
-    def atender_reporte_municipal(self, reporte):
+    def atender_reporte_municipal(self, id_reporte):
         """
         Marca un reporte como 'atendiendo'.
 
         """
+        reporte = self.repositorio_reporte.obtener_por_id(id_reporte)
         if reporte:
             reporte.cambiar_estado("atendiendo")
             return True
         return False
 
-    def postergar_reporte(self, reporte):
+    def postergar_reporte(self, id_reporte):
         """
         Marca un reporte como 'postergado'.
 
         """
+        reporte = self.repositorio_reporte.obtener_por_id(id_reporte)
         if reporte:
             reporte.cambiar_estado("postergado")
             return True

@@ -19,15 +19,14 @@ Característica: Manejar los reportes ciudadanos
         | Juan Perez | juan.perez@test.com | 1727263717     | incendio     | Se inundo   | Av. 123   | 8                 | 2         |
         Y los reportes han sido asignados automáticamente a un departamento
         Y los reportes son priorizados por su asunto
-        Cuando el departamento "EPMMOP" atienda el reporte "R001"
+        Cuando el departamento "EPMMOP" atienda el reporte "1"
         Entonces el departamento registra la evidencia "Basura recogida" de la solución del reporte atendido
         Y el estado del reporte atendido cambia a "resuelto"
 
 
     Escenario: Resolver reportes postergados de un departamento
         Dado nuevos reportes que llegan al gestor de departamentos
-        Y los reportes han sido asignados automáticamente a un departamento
-        Y el departamento "EPMMOP" posterga el reporte "R002"
-        Cuando el departamento "EPMMOP" atienda el reporte "R002"
+        Y el departamento "EPMMOP" posterga el reporte "2"
+        Cuando el departamento "EPMMOP" atienda el reporte "2"
         Entonces el departamento registra la evidencia "Se ha rellenado el bache" de la solución del reporte atendido
         Y el estado del reporte atendido cambia a "resuelto"

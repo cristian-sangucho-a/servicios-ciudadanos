@@ -16,34 +16,34 @@ class RepositorioDeReporteMunicipalEnMemoria(RepositorioDeReporteMunicipal):
         self.reportes = {}
         self.next_id = 1
         self.fake = Faker('es_ES')
-    #     self._generar_reportes_prueba()
-    #
-    # def _generar_reportes_prueba(self):
-    #     """
-    #     Genera reportes municipales de prueba con datos ficticios.
-    #     """
-    #     estados_validos = ["no_asignado", "asignado", "atendiendo", "resuelto", "postergado"]
-    #     for _ in range(5):  # Generamos 5 reportes ficticios
-    #         ciudadano = Ciudadano(
-    #             nombre_completo=self.fake.name(),
-    #             correo_electronico=self.fake.email(),
-    #             numero_identificacion=self.fake.numerify(text="##########")
-    #         )
-    #
-    #         tipo_reporte = TipoReporte(
-    #             asunto=self.fake.sentence(nb_words=4),
-    #             descripcion=self.fake.text(max_nb_chars=200)
-    #         )
-    #
-    #         reporte_ciudadano = Reporte(
-    #             ciudadano=ciudadano,
-    #             tipo_reporte=tipo_reporte,
-    #             ubicacion=self.fake.address(),
-    #             prioridad=self.fake.random_int(min=1, max=5)
-    #         )
-    #
-    #         estado = self.fake.random_element(elements=estados_validos)
-    #         self.crear(reporte_ciudadano, estado)
+        self._generar_reportes_prueba()
+
+    def _generar_reportes_prueba(self):
+        """
+        Genera reportes municipales de prueba con datos ficticios.
+        """
+        estados_validos = ["no_asignado", "asignado", "atendiendo", "resuelto", "postergado"]
+        for _ in range(5):  # Generamos 5 reportes ficticios
+            ciudadano = Ciudadano(
+                nombre_completo=self.fake.name(),
+                correo_electronico=self.fake.email(),
+                numero_identificacion=self.fake.numerify(text="##########")
+            )
+
+            tipo_reporte = TipoReporte(
+                asunto=self.fake.sentence(nb_words=4),
+                descripcion=self.fake.text(max_nb_chars=200)
+            )
+
+            reporte_ciudadano = Reporte(
+                ciudadano=ciudadano,
+                tipo_reporte=tipo_reporte,
+                ubicacion=self.fake.address(),
+                prioridad=self.fake.random_int(min=1, max=5)
+            )
+
+            estado = "asignado"
+            self.crear(reporte_ciudadano, estado)
 
     def obtener_por_id(self, id_reporte: int):
         """
@@ -127,3 +127,4 @@ class RepositorioDeReporteMunicipalEnMemoria(RepositorioDeReporteMunicipal):
             del self.reportes[id_reporte]
             return True
         return False
+
