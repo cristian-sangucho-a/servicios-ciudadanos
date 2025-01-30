@@ -83,10 +83,12 @@ def step_impl(context):
 #     context.hora_fin = hora_fin
 #     pass #da valor en el siguiente paso
 #
-# @step('agregue los correos de los invitados "{correos_invitados}" a la reserva')
-# def step_impl(context, correos_invitados):
-#     assert context.controlador_reserva.obtener_reserva_por_id(id_reserva = context.id_reserva).agregar_correos_invitados(correos_invitados = correos_invitados)
-#     # esto puede ser verificado en el siguiente paso o no xd
+@step('agregue los correos de los invitados "{correos_invitados}" a la reserva')
+def step_impl(context, correos_invitados):
+    reserva = servicio_reserva_en_memoria.obtener_reserva_por_id(id_reserva=context.id_reserva)
+    assert reserva.agregar_correos_invitados(correos_invitados = correos_invitados)
+
+
 #
 # #--------------------AQUI SE USA EL ENTONCES DE ARRIBA --------------------------#
 #

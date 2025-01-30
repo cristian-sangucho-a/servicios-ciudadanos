@@ -42,3 +42,9 @@ class RepositorioReservaMemoria(RespositorioReserva):
         if espacio_publico not in self.areas_por_espacio:
             self.areas_por_espacio[espacio_publico] = []
         self.areas_por_espacio[espacio_publico].append(area_comunal)
+
+    def obtener_reserva_por_id(self, id_reserva):
+        for reserva in self.reservas_ciudadano_list:
+            if reserva['id'] == id_reserva:
+                return reserva
+        return None
