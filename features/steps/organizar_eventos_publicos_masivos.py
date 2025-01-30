@@ -83,13 +83,50 @@ def step_impl(context):
 
 
 @step('el espacio público "{nombre_espacioPublico}" no se encuentre disponible')
+@step('el espacio público "{nombre_espacioPublico}" no se encuentre disponible')
 def step_impl(context, nombre_espacioPublico):
-    AssertionError("Not implemented")
+    """
+       Verifica que el espacio público con el nombre dado está disponible.
+       Si está disponible, lo guarda en context.espacio_publico.
+       Si no está disponible, imprime un mensaje.
+
+       :param context: Contexto de Behave.
+       :param nombre_espacioPublico: Nombre del espacio público a verificar.
+       """
+    # Obtener el espacio público por nombre
+    espacio_publico = EspacioPublico.obtener_por_nombre(nombre_espacioPublico)
+
+    # Verificar si el espacio público existe
+    if espacio_publico is None:
+        print(f"No se encontró el espacio público: {nombre_espacioPublico}")
+        context.espacio_publico = None  # Guardar None en el contexto
+        return
+
+    # Verificar si el espacio público está disponible
+    if espacio_publico.estado_espacioPublico == EspacioPublico.ESTADO_DISPONIBLE:
+        print(f"El espacio público '{nombre_espacioPublico}' está disponible.")
+        context.espacio_publico = espacio_publico  # Guardar en el contexto
+    else:
+        print(
+            f"El espacio público '{nombre_espacioPublico}' no está disponible. Estado actual: {espacio_publico.estado_espacioPublico}")
+        context.espacio_publico = None  # Guardar None en el contexto
+
 
 
 @step("no se creara el evento")
 def step_impl(context):
-    AssertionError("Not implemented")
+    context.espacio_publico = None
+
+@step("se mostrarán los espacios públicos disponibles")
+def step_impl(context):
+    espacios_disponibles = EspacioPublico.objects.filter(estado_espacioPublico=EspacioPublico.ESTADO_DISPONIBLE)
+
+    if espacios_disponibles.exists():
+        print("Espacios públicos disponibles:")
+        for espacio in espacios_disponibles:
+            print(f"{espacio.nombre} - {espacio.direccion}")
+    else:
+        print("No hay espacios públicos disponibles.")
 
 @step("se mostrarán los espacios públicos disponibles")
 def step_impl(context):
