@@ -77,6 +77,3 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
         """Retorna una representación en cadena del ciudadano"""
         return f"Ciudadano: {self.nombre_completo} ({self.correo_electronico})"
 
-    def obtener_reservas_activas(self):
-        """Retorna el número de reservas activas del ciudadano"""
-        return self.reservas.filter(estado_reserva='Activa').count()
