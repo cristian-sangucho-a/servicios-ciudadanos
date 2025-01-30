@@ -5,14 +5,12 @@ from datetime import datetime
 
 from ciudadano_app.models.area_comunal import AreaComunal
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
-from ciudadano_app.models.servicio_reserva import ServicioReserva
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from mocks.repositorio_reserva_en_memoria import RepositorioReservaMemoria
 
 fake = Faker()
 
 servicio_reserva_en_memoria = RepositorioReservaMemoria()
-servicio_reserva = ServicioReserva()
 
 
 @step('que existen areas comunales disponibles en el espacio publico "{nombre_espacio_publico}" en la ciudad y son')
