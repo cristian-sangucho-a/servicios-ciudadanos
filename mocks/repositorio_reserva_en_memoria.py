@@ -22,7 +22,8 @@ class RepositorioReservaMemoria(RespositorioReserva):
             'hora_inicio': hora_inicio,
             'hora_fin': hora_fin,
             'tipo_reserva': tipo_reserva,
-            'ciudadano': ciudadano
+            'ciudadano': ciudadano,
+            'correos_invitados': ''
         }
 
         self.reservas_ciudadano_list.append(nueva_reserva)
@@ -54,7 +55,7 @@ class RepositorioReservaMemoria(RespositorioReserva):
 
     def obtener_reserva_por_id(self, id_reserva):
         for reserva in self.reservas_ciudadano_list:
-            if reserva.id == id_reserva:
+            if reserva['id'] == id_reserva:
                 return reserva
 
 
@@ -69,7 +70,14 @@ class RepositorioReservaMemoria(RespositorioReserva):
 
         print(f'''
         From: Servicios
-        To: ${reserva.correos_invitados}
+        To: ${reserva['correos_invitados']},
 
-        Estan cordialmente invitados a ${reserva}
+        Estan cordialmente invitados
         ''')
+        return True
+
+    def agregar_correos_invitados_a_reserva(self, id_reserva, correos_invitados):
+        for reserva in self.reservas_ciudadano_list:
+            if reserva['id'] == id_reserva:
+                reserva['correos_invitados'] = correos_invitados
+
