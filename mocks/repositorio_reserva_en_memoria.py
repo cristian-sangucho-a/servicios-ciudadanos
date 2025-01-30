@@ -6,9 +6,10 @@ from entidad_municipal_app.models import EspacioPublico
 class RepositorioReservaMemoria(RespositorioReserva):
     def __init__(self):
         self.base_datos = {}
-        self.reservas = []
         self.contador_reservas = 0
-        self.espacios_publicos = {}
+        self.areas_por_espacio = {}  # {EspacioPublico: [AreaComunal]}
+        self.reservas = []
+        self.contador_ids = 0  # Simular autoincremento de IDs
 
 
     def reservar_area_comunal(self, area_comunal, fecha_reserva, hora_inicio, hora_fin, tipo_reserva, ciudadano):
@@ -30,9 +31,14 @@ class RepositorioReservaMemoria(RespositorioReserva):
         return len(reservas_ciudadano) >= 3
 
     def hay_areas_comunales_disponibles(self, espacio_publico):
-        return len(self.espacios_publicos.get(espacio_publico, [])) > 0
+        return len(self.areas_por_espacio.get(espacio_publico, [])) > 0
 
     def agregar_area_comunal(self, area_comunal, espacio_publico):
-        if espacio_publico not in self.espacios_publicos:
-            self.espacios_publicos[espacio_publico] = []
-        self.espacios_publicos[espacio_publico].append(area_comunal)
+        # Asignar un ID simulado
+        self.contador_ids += 1
+        area_comunal.id = self.contador_ids
+
+        # Simular la relación
+        if espacio_publico not in self.areas_por_espacio:
+            self.areas_por_espacio[espacio_publico] = []
+        self.areas_por_espacio[espacio_publico].append(area_comunal)
