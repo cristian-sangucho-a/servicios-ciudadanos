@@ -15,6 +15,7 @@ class TipoReporte(models.Model):
         __str__(self):
             Devuelve una representación en cadena del objeto, utilizando el asunto del tipo de reporte.
     """
+
     # Campo para el asunto o título del tipo de reporte.
     asunto = models.CharField(max_length=200)
 
@@ -23,12 +24,11 @@ class TipoReporte(models.Model):
 
     # Campo para el departamento al cual se asigna el reporte
     departamento = models.ForeignKey(
-        Departamento,
-        on_delete=models.CASCADE,
-        default=None, null=True, blank=True
+        Departamento, on_delete=models.CASCADE, null=True, blank=True
     )
     # Campo para la prioridad de atención del reporte dependiendo del asunto que tenga
     prioridad_de_atencion = models.IntegerField(default=0)
+
     def __str__(self):
         """
         Devuelve el asunto del tipo de reporte como su representación en cadena, facilitando la identificación en interfaces de usuario.

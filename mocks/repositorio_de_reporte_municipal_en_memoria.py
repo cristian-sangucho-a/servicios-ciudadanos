@@ -1,8 +1,8 @@
 from faker import Faker
 from entidad_municipal_app.models.reporte.repositorio_de_reporte_municipal import RepositorioDeReporteMunicipal
 from entidad_municipal_app.models.reporte.reporte_municipal import ReporteMunicipal
-from ciudadano_app.models import Ciudadano, TipoReporte, Reporte
-
+from shared.models import TipoReporte, Reporte
+from ciudadano_app.models import Ciudadano
 
 class RepositorioDeReporteMunicipalEnMemoria(RepositorioDeReporteMunicipal):
     """

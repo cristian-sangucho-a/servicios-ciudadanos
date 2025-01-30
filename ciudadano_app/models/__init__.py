@@ -8,8 +8,6 @@ from ciudadano_app.models.reserva import Reserva
 
 __all__ = [
     "Ciudadano",
-    "RepositorioDeReporte",
-    "ServicioDeReporte",
     "GestorCiudadano",
     "Reserva"
 ]

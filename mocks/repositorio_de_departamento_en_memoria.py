@@ -33,7 +33,7 @@ class RepositorioDeDepartamentoEnMemoria(RepositorioDepartamento):
 
         for nombre in nombres_departamentos:
             descripcion = self.fake.sentence(nb_words=10)  # Genera una descripción aleatoria
-            departamento = Departamento(id=self.next_id, nombre=nombre, descripcion=descripcion)  # Asigna un ID manualmente
+            departamento = Departamento(nombre=nombre, descripcion=descripcion)  # Asigna un ID manualmente
             self.departamentos[nombre.upper()] = departamento
             self.next_id += 1  # Incrementa el ID para el siguiente departamento
 
