@@ -2,14 +2,12 @@ from unittest.mock import Mock, patch
 from behave import *
 from faker import Faker
 from datetime import datetime
-
 from ciudadano_app.models.area_comunal import AreaComunal
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from mocks.repositorio_reserva_en_memoria import RepositorioReservaMemoria
 
 fake = Faker()
-
 servicio_reserva_en_memoria = RepositorioReservaMemoria()
 
 
@@ -41,7 +39,6 @@ def step_impl(context, nombre_espacio_publico):
         )
         area.id = index
         index += 1
-        # area.id = fake.random_number(digits=3)
         servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
 
     assert servicio_reserva_en_memoria.hay_areas_comunales_disponibles(context.espacio_publico)
@@ -57,13 +54,7 @@ def step_impl(context, maximo_reservas):
     )
     context.ciudadano.id = 1
     context.maximo_reservas = int(maximo_reservas)
-
     assert not servicio_reserva_en_memoria.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
-
-    # Simular que tiene 0 reservas (ajusta según tu lógica)
-    servicio_reserva_en_memoria.reservas_ciudadano_list = []
-
-    assert len(servicio_reserva_en_memoria.reservas_ciudadano_list) < int(maximo_reservas)
 
 
 @step(
@@ -86,7 +77,7 @@ def step_impl(context):
         hora_fin=context.hora_fin,
         tipo_reserva=context.tipo_reserva,
         ciudadano=context.ciudadano
-    )  ##SALTA ERROR AL MOMENTO DE RESERVAR ----- no hay que usar el modelo
+    )
 
     if context.correos_invitados is not None:
         servicio_reserva_en_memoria.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,
@@ -145,9 +136,6 @@ def step_impl(context):
 @step("se enviará una correo de cancelacion a los invitados")
 def step_impl(context):
     assert servicio_reserva_en_memoria.enviar_cancelacion(servicio_reserva_en_memoria.obtener_reserva_por_id(context.id_reserva))
-
-
-
 
 def crear_contexto_para_la_reserva(context, nombre_espacio):
     context.entidad_municipal = EntidadMunicipal(
