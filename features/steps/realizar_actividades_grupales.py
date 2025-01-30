@@ -1,5 +1,5 @@
 from unittest.mock import Mock, patch
-from behave import *
+from behave import step
 from faker import Faker
 from datetime import datetime
 from ciudadano_app.models.area_comunal import AreaComunal
@@ -65,7 +65,6 @@ def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, h
     context.hora_inicio = hora_inicio
     context.hora_fin = hora_fin
     context.correos_invitados = None
-    pass
 
 
 @step("se guarda la reserva en la Agenda Pública")
@@ -87,7 +86,6 @@ def step_impl(context):
 @step('agregue los correos de los invitados "{correos_invitados}" a la reserva')
 def step_impl(context, correos_invitados):
     context.correos_invitados = correos_invitados
-    pass
 
 
 @step("se enviará una invitación por correo con los detalles de la reserva.")
@@ -152,7 +150,7 @@ def crear_contexto_para_la_reserva(context, nombre_espacio):
     )
     context.espacio_publico.id = 1
     index = 1
-    for i in range(0, 3):
+    for _ in range(0, 3):
         area = AreaComunal(
             nombre_area=fake.word(),
             hora_de_apertura=datetime.strptime("08:00", "%H:%M").time(),
@@ -161,7 +159,6 @@ def crear_contexto_para_la_reserva(context, nombre_espacio):
         )
         index += 1
         area.id = index
-        # area.id = fake.random_number(digits=3)
         servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
     context.ciudadano = Ciudadano(
         nombre_completo=fake.name(),

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ciudadano_app.models import *
+from ciudadano_app.models import AreaComunal, Reserva, Ciudadano
 
 # Register your models here.
 @admin.register(AreaComunal)
