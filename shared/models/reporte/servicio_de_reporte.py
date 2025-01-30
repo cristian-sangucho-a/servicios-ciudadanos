@@ -1,5 +1,5 @@
-from ciudadano_app.models.reporte.reporte import Reporte
-from ciudadano_app.models.reporte.repositorio_de_reporte import RepositorioDeReporte
+from .reporte import Reporte
+from .repositorio_de_reporte import RepositorioDeReporte
 
 
 class ServicioDeReporte():
