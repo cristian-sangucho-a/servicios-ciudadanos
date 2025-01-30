@@ -73,12 +73,12 @@ def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, h
     context.fecha_reserva = fecha_reserva
     context.hora_inicio = hora_inicio
     context.hora_fin = hora_fin
-
+    context.correos_invitados = None
     pass
 
 @step("se guarda la reserva en la Agenda Pública")
 def step_impl(context):
-    id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
+    context.id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
         area_comunal= servicio_reserva_en_memoria.obtener_area_comunal(1),
         fecha_reserva=context.fecha_reserva,
         hora_inicio=context.hora_inicio,
@@ -87,21 +87,12 @@ def step_impl(context):
         ciudadano=context.ciudadano
     ) ##SALTA ERROR AL MOMENTO DE RESERVAR ----- no hay que usar el modelo
 
-    if context.correos_invitados:
-        context.reserva = servicio_reserva_en_memoria.obtener_reserva_por_id(id_reserva=context.id_reserva)
-        assert context.reserva.agregar_correos_invitados(correos_invitados=context.correos_invitados)
+    if context.correos_invitados is not None:
+        servicio_reserva_en_memoria.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva, correos_invitados=context.correos_invitados)
+
+    pass
      #TODO: revisar si es necesario refactorar, como no hay agenda publica(en los modelos) el cuando y entonces sea uno solo
 
-# ##########################FIN PRIMER ESCENARIO####################################
-#
-# @step('el ciudadano realice una reserva "privada" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
-# def step_impl(context, area_comunal, fecha_reserva, hora_inicio, hora_fin):
-#     context.tipo_reserva = "privada"
-#     context.fecha_reserva = fecha_reserva
-#     context.hora_inicio = hora_inicio
-#     context.hora_fin = hora_fin
-#     pass #da valor en el siguiente paso
-#
 @step('agregue los correos de los invitados "{correos_invitados}" a la reserva')
 def step_impl(context, correos_invitados):
     context.correos_invitados = correos_invitados
