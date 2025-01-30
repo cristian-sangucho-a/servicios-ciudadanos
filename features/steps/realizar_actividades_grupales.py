@@ -100,8 +100,8 @@ def step_impl(context, correos_invitados):
 
 @step("se enviará una invitación por correo con los detalles de la reserva.")
 def step_impl(context):
-    servicio_reserva_en_memoria.enviar_invitacion(context.reserva)
-    pass
+    assert servicio_reserva_en_memoria.enviar_invitacion(servicio_reserva_en_memoria.obtener_reserva_por_id(context.id_reserva))
+
 
 
 #
