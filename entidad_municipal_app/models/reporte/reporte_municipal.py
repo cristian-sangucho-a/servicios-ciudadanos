@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from ciudadano_app.models.reporte.reporte import Reporte
+from shared.models import Reporte
 
 
 class ReporteMunicipal(models.Model):
@@ -17,18 +17,21 @@ class ReporteMunicipal(models.Model):
     ]
 
     id = models.AutoField(primary_key=True)
+    
     reporte_ciudadano = models.ForeignKey(
         Reporte,
         on_delete=models.CASCADE,
         verbose_name="Reporte Ciudadano",
         help_text="Reporte ciudadano original"
     )
+    
     estado = models.CharField(
         max_length=50,
         default="no_asignado",
         verbose_name="Estado",
         help_text="Estado actual del reporte municipal"
     )
+    
     evidencia = models.TextField(
         blank=True,
         null=True,

@@ -1,5 +1,5 @@
 from ciudadano_app.models import Ciudadano, Reporte, TipoReporte
-from ciudadano_app.models.reporte.repositorio_de_reporte import RepositorioDeReporte
+from .repositorio_de_reporte import RepositorioDeReporte
 
 
 class RepositorioDeReporteDjango(RepositorioDeReporte):

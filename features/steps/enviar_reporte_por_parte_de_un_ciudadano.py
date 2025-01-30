@@ -1,7 +1,8 @@
 from behave import step
 
 from ciudadano_app.models import Ciudadano, TipoReporte, Reporte
-from ciudadano_app.models.reporte.servicio_de_reporte import ServicioDeReporte
+from shared.models import ServicioDeReporte
+
 from mocks.repositorio_de_reporte_en_memoria import (
     RepositorioDeReporteEnMemoria,
     generar_registros,
