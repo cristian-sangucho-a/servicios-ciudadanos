@@ -42,6 +42,8 @@ class Reserva(models.Model):
 
     def agregar_correos_invitados(self, correos_invitados):
         try:
+            if self.tipo_reserva == "publica":
+                raise Exception("No se pueden agregar invitados a una reserva pública")
             self.correos_invitados = correos_invitados
         except Exception as e:
             return False
