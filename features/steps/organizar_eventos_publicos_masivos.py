@@ -81,8 +81,6 @@ def step_impl(context):
     print(f"Capacidad: {context.evento.capacidad_maxima}")
     print(f"Estado: {context.evento.estado_actual}")
 
-
-@step('el espacio público "{nombre_espacioPublico}" no se encuentre disponible')
 @step('el espacio público "{nombre_espacioPublico}" no se encuentre disponible')
 def step_impl(context, nombre_espacioPublico):
     """
@@ -128,9 +126,6 @@ def step_impl(context):
     else:
         print("No hay espacios públicos disponibles.")
 
-@step("se mostrarán los espacios públicos disponibles")
-def step_impl(context):
-    AssertionError("Not implemented")
 
 ##--
 @step('que existe un evento llamado "{nombre_evento}" con el estado "{estado_evento}"')
