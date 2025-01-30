@@ -8,7 +8,7 @@ class RepositorioReservaMemoria(RespositorioReserva):
         self.base_datos = {}
         self.contador_reservas = 0
         self.areas_por_espacio = {}  # {EspacioPublico: [AreaComunal]}
-        self.reservas = []
+        self.reservas_ciudadano_list = []
         self.contador_ids = 0  # Simular autoincremento de IDs
 
 
@@ -23,7 +23,7 @@ class RepositorioReservaMemoria(RespositorioReserva):
             'tipo_reserva': tipo_reserva,
             'ciudadano': ciudadano
         }
-        self.reservas.append(nueva_reserva)
+        self.reservas_ciudadano_list.append(nueva_reserva)
         return self.contador_reservas, True
 
     def ciudadano_supera_maximo_reservas(self, ciudadano):

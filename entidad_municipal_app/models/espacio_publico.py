@@ -12,5 +12,6 @@ class EspacioPublico(models.Model):
     entidad_municipal = models.ForeignKey(
         EntidadMunicipal,
         on_delete=models.CASCADE,
-        help_text="Entidad municipal a la que pertenece el espacio público"
+        help_text="Entidad municipal a la que pertenece el espacio público",
+        related_name = 'espacios_publicos'
     )

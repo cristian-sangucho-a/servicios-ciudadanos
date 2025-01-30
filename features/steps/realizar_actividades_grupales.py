@@ -59,9 +59,9 @@ def step_impl(context, maximo_reservas):
     assert not servicio_reserva_en_memoria.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
 
     # Simular que tiene 0 reservas (ajusta según tu lógica)
-    servicio_reserva_en_memoria.reservas = []
+    servicio_reserva_en_memoria.reservas_ciudadano_list = []
 
-    assert len(servicio_reserva_en_memoria.reservas) < int(maximo_reservas)
+    assert len(servicio_reserva_en_memoria.reservas_ciudadano_list) < int(maximo_reservas)
 
 @step(
     'el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
