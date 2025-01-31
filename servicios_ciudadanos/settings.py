@@ -14,7 +14,18 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from shutil import which
 
+
+# Configuración automática para cualquier SO
+NPM_BIN_PATH = which('npm') or which('npm.cmd')
+
+# Verificación obligatoria
+if not NPM_BIN_PATH:
+    raise RuntimeError(
+        "Node.js/npm no está instalado o no está en el PATH. "
+        "Descarga Node.js desde https://nodejs.org/es/"
+    )
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,7 +52,15 @@ INSTALLED_APPS = [
     'behave_django',
     'ciudadano_app.apps.CiudadanoAppConfig',
     'entidad_municipal_app.apps.EntidadMunicipalAppConfig',
-    'shared'
+    'shared',
+    'tailwind',
+    'theme',
+]
+
+TAILWIND_APP_NAME = 'theme'
+
+INTERNAL_IPS = [
+    "127.0.0.1",
 ]
 
 MIDDLEWARE = [
