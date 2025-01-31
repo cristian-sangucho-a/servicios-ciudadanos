@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from ciudadano_app.models.ciudadano.gestor_ciudadano import GestorCiudadano
 
 
-class Ciudadano(AbstractBaseUser, PermissionsMixin):
+class Ciudadano(AbstractBaseUser):
     """
     Modelo que representa a un ciudadano en el sistema municipal.
     Extiende el modelo base de usuario de Django para incluir campos específicos.
@@ -49,17 +49,14 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
         verbose_name="Fecha de Registro",
         help_text="Fecha y hora en que el ciudadano se registró en el sistema",
     )
-
+    
+    is_active: models.BooleanField = models.BooleanField(default=True)
+    is_admin: models.BooleanField = models.BooleanField(default=False)
 
     objects = GestorCiudadano()
 
     USERNAME_FIELD = "correo_electronico"
     REQUIRED_FIELDS = ["nombre_completo", "numero_identificacion"]
-
-    class Meta:
-        verbose_name = "Ciudadano"
-        verbose_name_plural = "Ciudadanos"
-        ordering = ["-fecha_registro"]
 
     def obtener_nombre_completo(self):
         """Retorna el nombre completo del ciudadano"""
@@ -76,4 +73,18 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         """Retorna una representación en cadena del ciudadano"""
         return f"Ciudadano: {self.nombre_completo} ({self.correo_electronico})"
+    
+    def has_perm(self, perm, obj=None):
+        return True
 
+    def has_module_perms(self, app_label):
+        return True
+
+    @property
+    def is_staff(self):
+        return self.is_admin
+
+    class Meta:
+        verbose_name = "Ciudadano"
+        verbose_name_plural = "Ciudadanos"
+        ordering = ["-fecha_registro"]
