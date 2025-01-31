@@ -12,10 +12,7 @@ def redirect_to_login(request):
     return redirect('login_ciudadano')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', redirect_to_login, name='landing_page'),
-    path('ciudadano/', include('ciudadano_app.urls')),
-    path('entidad/', include('entidad_municipal_app.urls')),
-    path('logout/', auth_views.LogoutView.as_view(next_page='landing_page'), name='logout'),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('', include('shared.urls'), name='shared'),
+    path('ciudadano/', include('ciudadano_app.urls'), name='ciudadano'),
+    path('entidad_municipal/', include('entidad_municipal_app.urls'), name='entidad_municipal'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

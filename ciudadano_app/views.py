@@ -90,7 +90,7 @@ def registro_ciudadano(request):
 @login_required
 def bienvenida_ciudadano(request):
     """Vista de bienvenida después del login"""
-    return render(request, 'ciudadano/bienvenida.html')
+    return render(request, 'bienvenida.html')
 
 def logout_ciudadano(request):
     """Vista para cerrar sesión"""
