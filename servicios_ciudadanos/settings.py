@@ -41,8 +41,20 @@ INSTALLED_APPS = [
     'behave_django',
     'ciudadano_app.apps.CiudadanoAppConfig',
     'entidad_municipal_app.apps.EntidadMunicipalAppConfig',
-    'shared'
+    'shared',
+    'tailwind',
+    'theme',
+    'django_browser_reload'
 ]
+
+TAILWIND_APP_NAME = 'theme'
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+from shutil import which
+NPM_BIN_PATH = which("npm")
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_browser_reload.middleware.BrowserReloadMiddleware'
 ]
 
 ROOT_URLCONF = 'servicios_ciudadanos.urls'
