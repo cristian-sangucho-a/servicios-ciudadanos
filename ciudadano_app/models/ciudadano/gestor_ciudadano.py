@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 class GestorCiudadano(BaseUserManager):
     """Gestor para la creación y administración de ciudadanos en el sistema"""
     
-    def create_user(self, correo_electronico, contrasena=None, **campos_adicionales):
+    def create_user(self, correo_electronico, password, **campos_adicionales):
         """
         Crea un nuevo ciudadano regular en el sistema.
         
@@ -24,11 +24,17 @@ class GestorCiudadano(BaseUserManager):
         """
         if not correo_electronico:
             raise ValidationError('El correo electrónico es obligatorio para crear un ciudadano')
-            
+        if not password:
+            raise ValidationError('La contraseña es obligatoria para crear un ciudadano')
+
         correo_normalizado = self.normalize_email(correo_electronico)
+
         ciudadano = self.model(correo_electronico=correo_normalizado, **campos_adicionales)
-        ciudadano.set_password(contrasena)
+
+        ciudadano.set_password(password)
+
         ciudadano.save(using=self._db)
+
         return ciudadano
 
     def create_superuser(self, correo_electronico, contrasena=None, **campos_adicionales):
