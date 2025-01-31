@@ -18,7 +18,7 @@ from shutil import which
 
 
 # Configuración automática para cualquier SO
-NPM_BIN_PATH = which('npm') or which('npm.cmd')
+NPM_BIN_PATH = which('npm') or which('npm.cmd') or which('nodeenv')
 
 # Verificación obligatoria
 if not NPM_BIN_PATH:
