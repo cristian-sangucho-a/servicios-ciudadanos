@@ -20,8 +20,6 @@ class EntidadMunicipalManager(BaseUserManager):
     def create_superuser(self, correo_electronico, password=None, **extra_fields):
         if not password:
             raise ValueError('The password must be set')
-        if not correo_electronico:
-            raise ValueError('The Email field must be set')
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -62,5 +60,10 @@ class EntidadMunicipal(AbstractBaseUser):
     def is_superuser(self):
         return self.is_staff
 
+    @property
+    def es_ciudadano(self):
+        """Identifica que este usuario NO es un ciudadano"""
+        return False
+
     def __str__(self):
-        return self.nombre
+        return f"Entidad Municipal: {self.nombre}"

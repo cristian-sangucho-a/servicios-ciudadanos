@@ -50,8 +50,8 @@ class Ciudadano(AbstractBaseUser):
         help_text="Fecha y hora en que el ciudadano se registró en el sistema",
     )
     
-    is_active: models.BooleanField = models.BooleanField(default=True)
-    is_admin: models.BooleanField = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
 
     objects = GestorCiudadano()
 
@@ -83,6 +83,11 @@ class Ciudadano(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+
+    @property
+    def es_ciudadano(self):
+        """Identifica que este usuario es un ciudadano"""
+        return True
 
     class Meta:
         verbose_name = "Ciudadano"

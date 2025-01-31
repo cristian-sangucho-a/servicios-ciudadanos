@@ -1,111 +1,45 @@
 """
 Vistas para la aplicación de entidad municipal.
 """
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.urls import reverse
-from django.utils import timezone
-from .models.evento.evento_municipal import EventoMunicipal, ErrorGestionEventos
-from .models.evento.registro_asistencia import RegistroAsistencia
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
+from .forms import EntidadLoginForm
+from .backends import EntidadBackend
+from .models import EntidadMunicipal
 
-def lista_eventos(request):
-    """Vista para listar todos los eventos activos."""
-    eventos = EventoMunicipal.objects.filter(
-        fecha_realizacion__gte=timezone.now(),
-        estado_actual=EventoMunicipal.ESTADO_PROGRAMADO
-    ).order_by('fecha_realizacion')
-    
-    return render(request, 'entidad/eventos/lista_eventos.html', {
-        'eventos': eventos
-    })
-
-def detalle_evento(request, evento_id):
-    """Vista para mostrar los detalles de un evento específico."""
-    evento = get_object_or_404(EventoMunicipal, pk=evento_id)
-    
-    # Si el usuario está autenticado, verificar si ya está inscrito
-    if request.user.is_authenticated:
-        registro = RegistroAsistencia.objects.filter(
-            evento=evento,
-            ciudadano=request.user
-        ).first()
+def login_entidad(request):
+    """Vista para el login de la entidad municipal"""
+    if request.method == 'POST':
+        form = EntidadLoginForm(request.POST)
+        if form.is_valid():
+            correo = form.cleaned_data['correo_electronico']
+            password = form.cleaned_data['password']
+            user = authenticate(request, correo_electronico=correo, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'Bienvenido/a')
+                return redirect('landing_page')
+            else:
+                messages.error(request, 'Credenciales inválidas')
     else:
-        registro = None
-    
-    return render(request, 'entidad/eventos/detalle_evento.html', {
-        'evento': evento,
-        'registro': registro
-    })
+        form = EntidadLoginForm()
+    return render(request, 'entidad/login_entidad.html', {'form': form})
 
 @login_required
-def inscribir_evento(request, evento_id):
-    """Vista para procesar la inscripción a un evento."""
-    if request.method != 'POST':
-        return redirect('lista_eventos')
-    
-    evento = get_object_or_404(EventoMunicipal, pk=evento_id)
-    
-    try:
-        registro = evento.inscribir_ciudadano(request.user)
-        
-        if registro.estado_registro == RegistroAsistencia.ESTADO_INSCRITO:
-            messages.success(
-                request,
-                'Te has inscrito exitosamente al evento.'
-            )
-        else:
-            messages.info(
-                request,
-                'Has sido agregado a la lista de espera del evento.'
-            )
-            
-    except ErrorGestionEventos as e:
-        messages.error(request, str(e))
-    
-    return redirect('detalle_evento', evento_id=evento_id)
+def bienvenida_entidad(request):
+    """Vista de bienvenida para la entidad municipal"""
+    return render(request, 'entidad/bienvenida.html')
 
 @login_required
-def cancelar_inscripcion(request, registro_id):
-    """Vista para cancelar una inscripción a un evento."""
-    if request.method != 'POST':
-        return redirect('lista_eventos')
+def dashboard_entidad(request):
+    """Dashboard principal de la entidad municipal"""
+    if not isinstance(request.user, EntidadMunicipal):
+        messages.error(request, 'Acceso no autorizado')
+        return redirect('landing_page')
     
-    registro = get_object_or_404(
-        RegistroAsistencia,
-        pk=registro_id,
-        ciudadano=request.user
-    )
-    
-    try:
-        registro_cancelado, registro_promovido = registro.evento.cancelar_inscripcion(
-            registro_id=registro.id
-        )
-        
-        messages.success(request, 'Tu inscripción ha sido cancelada exitosamente.')
-        
-    except ErrorGestionEventos as e:
-        messages.error(request, str(e))
-    
-    return redirect('detalle_evento', evento_id=registro.evento.id)
-
-@login_required
-def lista_espera(request, evento_id):
-    """Vista para unirse a la lista de espera de un evento."""
-    if request.method != 'POST':
-        return redirect('lista_eventos')
-    
-    evento = get_object_or_404(EventoMunicipal, pk=evento_id)
-    
-    try:
-        registro = evento.inscribir_ciudadano(request.user)
-        
-        messages.info(
-            request,
-            'Has sido agregado a la lista de espera del evento.'
-        )
-        
-    except ErrorGestionEventos as e:
-        messages.error(request, str(e))
-    
-    return redirect('detalle_evento', evento_id=evento_id)
+    context = {
+        'entidad': request.user
+    }
+    return render(request, 'entidad/dashboard.html', context)

@@ -25,9 +25,22 @@ class GestorCiudadano(BaseUserManager):
         if not correo_electronico:
             raise ValidationError('El correo electrónico es obligatorio para crear un ciudadano')
             
+        print("\nDEBUG CREACIÓN DE USUARIO:")
+        print(f"Correo a registrar: {correo_electronico}")
+        print(f"Contraseña recibida: {contrasena}")
+            
         correo_normalizado = self.normalize_email(correo_electronico)
         ciudadano = self.model(correo_electronico=correo_normalizado, **campos_adicionales)
-        ciudadano.set_password(contrasena)
+        
+        print("Estableciendo contraseña...")
+        if contrasena:
+            ciudadano.set_password(contrasena)
+        else:
+            print("¡ADVERTENCIA! No se recibió contraseña")
+            ciudadano.set_unusable_password()
+            
+        print(f"Hash de contraseña generado: {ciudadano.password}")
+        
         ciudadano.save(using=self._db)
         return ciudadano
 

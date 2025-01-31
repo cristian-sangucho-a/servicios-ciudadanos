@@ -146,9 +146,10 @@ LOGIN_REDIRECT_URL = 'lista_eventos'
 LOGOUT_REDIRECT_URL = 'lista_eventos'
 
 # Configuración de autenticación personalizada
-# AUTHENTICATION_BACKENDS = [
-#     'ciudadano_app.auth_backend.EmailBackend',
-# ]
+AUTHENTICATION_BACKENDS = [
+    'ciudadano_app.backends.CiudadanoBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Configuración de logging
 LOGGING = {
