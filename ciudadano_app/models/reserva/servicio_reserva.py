@@ -13,7 +13,7 @@ class ServicioReserva(RespositorioReserva):
                               ciudadano: Ciudadano):
         if self.ciudadano_supera_maximo_reservas(ciudadano):
             return 0, False
-
+        #TODO: verificar que el espacio publico al que pertenece el area comunal este libre para reservar
         reserva = Reserva.objects.create(
             area_comunal=area_comunal,
             fecha_reserva=fecha_reserva,
@@ -66,3 +66,13 @@ class ServicioReserva(RespositorioReserva):
         servicio_notificion_correo = ServicioNotificacionPorCorreo()
         servicio_notificion_correo.enviar_invitacion(reserva_realizada)
         return id_reserva, fue_reservado
+
+    def cancelar_reserva_creada(self, id_reserva, ciudadano):
+        reserva = self.obtener_reserva_por_id(id_reserva)
+        if reserva.ciudadano != ciudadano:
+            return False
+        reserva.estado_reserva = 'Cancelada'
+        reserva.save()
+        servicio_notificion_correo = ServicioNotificacionPorCorreo()
+        servicio_notificion_correo.enviar_cancelacion(reserva)
+        return True
