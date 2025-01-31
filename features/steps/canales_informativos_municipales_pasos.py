@@ -15,7 +15,7 @@ def crear_ciudadano():
         correo_electronico=fake.email(),
         nombre_completo=fake.name(),
         numero_identificacion=str(fake.random_number(digits=10)),
-        contrasena="test123"
+        password="test123"
     )
 
 def crear_canal(nombre, es_emergencia=False):
