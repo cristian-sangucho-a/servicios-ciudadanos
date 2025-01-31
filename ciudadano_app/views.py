@@ -44,44 +44,26 @@ def registro_ciudadano(request):
     """Vista para el registro de nuevos ciudadanos"""
     if request.method == 'POST':
         nombre_completo = request.POST.get('nombre_completo')
-        correo = request.POST.get('correo_electronico')
+        correo_electronico = request.POST.get('correo_electronico')
         numero_identificacion = request.POST.get('numero_identificacion')
         password = request.POST.get('password')
         password2 = request.POST.get('password2')
-        
-        # Prints de depuración
-        print("="*50)
-        print("DATOS DE REGISTRO RECIBIDOS:")
-        print(f"Nombre completo: {nombre_completo}")
-        print(f"Correo electrónico: {correo}")
-        print(f"Número de identificación: {numero_identificacion}")
-        print(f"Contraseña: {password}")
-        print(f"Confirmación de contraseña: {password2}")
-        print("="*50)
-        
+
         if password != password2:
             messages.error(request, 'Las contraseñas no coinciden')
             return redirect('registro_ciudadano')
-            
-        if Ciudadano.objects.filter(correo_electronico=correo).exists():
+
+        if Ciudadano.objects.filter(correo_electronico=correo_electronico).exists():
             messages.error(request, 'Este correo electrónico ya está registrado')
             return redirect('registro_ciudadano')
             
-        ciudadano = Ciudadano.objects.create_user(
-            correo_electronico=correo,
+        Ciudadano.objects.create_user(
+            correo_electronico=correo_electronico,
             password=password,
             nombre_completo=nombre_completo,
-            numero_identificacion=numero_identificacion
+            numero_identificacion=numero_identificacion,
         )
-        
-        # Print de confirmación
-        print("\nUSUARIO CREADO EXITOSAMENTE:")
-        print(f"ID: {ciudadano.id}")
-        print(f"Nombre: {ciudadano.nombre_completo}")
-        print(f"Correo: {ciudadano.correo_electronico}")
-        print(f"Fecha de registro: {ciudadano.fecha_registro}")
-        print("="*50)
-        
+
         messages.success(request, 'Registro exitoso. Por favor inicia sesión.')
         return redirect('landing_page')
         

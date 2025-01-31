@@ -10,7 +10,7 @@ class CiudadanoBackend(BaseBackend):
         print("\nDEBUG BACKEND DE AUTENTICACIÓN:")
         print(f"Intentando autenticar correo: {correo_electronico}")
         print(f"Contraseña recibida: {password}")
-        
+
         try:
             user = Ciudadano.objects.get(correo_electronico=correo_electronico)
             print(f"Usuario encontrado: {user.nombre_completo}")

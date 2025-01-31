@@ -13,6 +13,7 @@ def redirect_to_login(request):
 
 urlpatterns = [
     path('', include('shared.urls'), name='shared'),
+    path('admin/', admin.site.urls),
     path('ciudadano/', include('ciudadano_app.urls'), name='ciudadano'),
     path('entidad_municipal/', include('entidad_municipal_app.urls'), name='entidad_municipal'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
