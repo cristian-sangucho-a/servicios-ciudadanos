@@ -50,6 +50,7 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
         help_text="Fecha y hora en que el ciudadano se registró en el sistema",
     )
 
+
     objects = GestorCiudadano()
 
     USERNAME_FIELD = "correo_electronico"
@@ -75,3 +76,4 @@ class Ciudadano(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         """Retorna una representación en cadena del ciudadano"""
         return f"Ciudadano: {self.nombre_completo} ({self.correo_electronico})"
+

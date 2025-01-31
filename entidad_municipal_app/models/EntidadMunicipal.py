@@ -8,6 +8,7 @@ class EntidadMunicipal(models.Model):
     """
     Representa una entidad municipal que puede organizar eventos.
     """
+
     nombre = models.CharField(
         max_length=100,
         help_text="Nombre de la entidad municipal",
