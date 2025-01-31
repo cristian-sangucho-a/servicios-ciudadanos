@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Generador de Reportes</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+</head>
+<body class="h-full flex flex-col">
+<!-- Header -->
+<nav class="bg-[#002395]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo -->
+            <div class="flex-shrink-0">
+                <a href="/" class="flex items-center text-white font-bold text-xl">
+                    <i class="fas fa-city mr-2"></i>
+                    Municipio
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenido principal -->
+<main class="flex-grow max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 lg:px-8">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Información del Reporte
+            </h3>
+        </div>
+        <form action="{% url 'submit_reporte' %}" method="post">
+            {% csrf_token %}
+            <div class="border-t border-gray-200">
+                <dl>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Asunto del Reporte
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <select name="tipo_reporte" id="tipo_reporte" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                {% for tipo in tipos_de_reporte %}
+                                    <option value="{{ tipo.id }}">{{ tipo.asunto }}</option>
+                                {% endfor %}
+                            </select>
+                        </dd>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Ubicación
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <input type="text" name="ubicacion" id="ubicacion" required class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Descripción
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <textarea name="descripcion" id="descripcion" rows="3"
+                                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md h-24 resize-none text-start align-top"></textarea>
+                        </dd>
+                    </div>
+                    <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#002395] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Enviar Reporte
+                        </button>
+                    </div>
+                </dl>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-white">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-sm text-gray-500">
+            &copy; {% now "Y" %} Municipio. Todos los derechos reservados.
+        </div>
+    </div>
+</footer>
+
+<!-- Alpine.js (para dropdowns) -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</body>
+</html>
