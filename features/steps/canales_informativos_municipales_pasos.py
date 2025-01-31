@@ -5,8 +5,14 @@ from entidad_municipal_app.models.canales.canal_informativo import CanalInformat
 from entidad_municipal_app.models.canales.noticia import Noticia
 from entidad_municipal_app.models.canales.reaccion import Reaccion
 from entidad_municipal_app.models.canales.comentario import Comentario
+import string
+import secrets
 
 fake = Faker()
+
+def generate_random_string(length):
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
 
 # --- Métodos Auxiliares ---
 def crear_ciudadano():
@@ -15,7 +21,7 @@ def crear_ciudadano():
         correo_electronico=fake.email(),
         nombre_completo=fake.name(),
         numero_identificacion=str(fake.random_number(digits=10)),
-        contrasena="test123"
+        password=generate_random_string(7)
     )
 
 def crear_canal(nombre, es_emergencia=False):

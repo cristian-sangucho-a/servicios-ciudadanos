@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Ciudadano{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-primario-DEFAULT mb-2">Bienvenido/a, {{ ciudadano.nombre_completo }}</h1>
+        <p class="text-gray-600">Este es tu panel de control personal</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Sección de Perfil -->
+        <div class="bg-neutral-gris p-6 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Tu Perfil</h2>
+            <div class="space-y-3">
+                <p><span class="font-medium">Nombre:</span> {{ ciudadano.nombre_completo }}</p>
+                <p><span class="font-medium">Email:</span> {{ ciudadano.correo_electronico }}</p>
+                <p><span class="font-medium">ID:</span> {{ ciudadano.numero_identificacion }}</p>
+            </div>
+        </div>
+
+        <!-- Sección de Eventos -->
+        <div class="bg-neutral-gris p-6 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Tus Eventos</h2>
+            {% if eventos_inscritos %}
+                <div class="space-y-4">
+                    {% for evento in eventos_inscritos %}
+                    <div class="bg-white p-4 rounded shadow">
+                        <h3 class="font-medium text-primario-DEFAULT">{{ evento.nombre }}</h3>
+                        <p class="text-sm text-gray-600">{{ evento.fecha_hora|date:"d/m/Y H:i" }}</p>
+                        <a href="{% url 'detalle_evento' evento.id %}" 
+                           class="text-secundario-DEFAULT hover:text-secundario-dark text-sm">
+                            Ver detalles →
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-600">No estás inscrito en ningún evento actualmente.</p>
+                <a href="{% url 'lista_eventos' %}" 
+                   class="inline-block mt-4 text-secundario-DEFAULT hover:text-secundario-dark">
+                    Ver eventos disponibles →
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

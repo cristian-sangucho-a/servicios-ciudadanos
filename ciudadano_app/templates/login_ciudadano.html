@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Login Ciudadano{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center text-primario-DEFAULT">Iniciar Sesión como Ciudadano</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="correo_electronico" class="block text-gray-700 font-semibold mb-2">Correo Electrónico</label>
+                <input type="email" name="correo_electronico" id="correo_electronico"
+                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-primario-DEFAULT"
+                       required>
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 font-semibold mb-2">Contraseña</label>
+                <input type="password" name="password" id="password"
+                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-primario-DEFAULT"
+                       required>
+            </div>
+            <button type="submit"
+                    class="w-full bg-primario-DEFAULT text-white py-2 px-4 rounded hover:bg-primario-light transition duration-200">
+                Iniciar Sesión
+            </button>
+        </form>
+        <p class="mt-4 text-center text-gray-600">
+            ¿No tienes una cuenta?
+            <a href="{% url 'registro_ciudadano' %}" class="text-primario-DEFAULT hover:text-primario-light">Regístrate aquí</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
