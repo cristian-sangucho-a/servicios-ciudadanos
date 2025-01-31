@@ -10,4 +10,5 @@ urlpatterns = [
     path('registro/', views.registro_ciudadano, name='registro_ciudadano'),
     path('login/', views.login_ciudadano, name='login_ciudadano'),
     path('logout/', views.logout_ciudadano, name='logout_ciudadano'),
+    path('reserva/', views.reserva, name='reservar_area_comunal'),
 ]

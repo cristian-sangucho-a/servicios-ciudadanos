@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Realiza tu reserva{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center text-primario-DEFAULT">Realiza tu reserva</h1>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit"
+                    class="w-full bg-primario-DEFAULT text-white py-2 px-4 rounded hover:bg-primario-light transition duration-200">
+                Reservar
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tipoReservaField = document.querySelector('select[name="tipo_reserva"]');
+        const correosInvitadosField = document.querySelector('input[name="correos_invitados"]').parentElement;
+
+        function toggleCorreosInvitados() {
+            if (tipoReservaField.value === 'privado') {
+                correosInvitadosField.style.display = 'block';
+            } else {
+                correosInvitadosField.style.display = 'none';
+            }
+        }
+
+        tipoReservaField.addEventListener('change', toggleCorreosInvitados);
+        toggleCorreosInvitados();
+    });
+</script>
+{% endblock %}
