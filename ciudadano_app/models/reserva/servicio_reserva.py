@@ -67,7 +67,7 @@ class ServicioReserva(RespositorioReserva):
         servicio_notificion_correo.enviar_invitacion(reserva_realizada)
         return id_reserva, fue_reservado
 
-    def cancelar_reserva_creada(self, id_reserva, ciudadano):
+    def cancelar_reserva_privada(self, id_reserva, ciudadano):
         reserva = self.obtener_reserva_por_id(id_reserva)
         if reserva.ciudadano != ciudadano:
             return False
