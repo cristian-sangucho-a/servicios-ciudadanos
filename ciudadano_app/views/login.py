@@ -15,7 +15,7 @@ def login_ciudadano(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'Has iniciado sesión exitosamente.')
-            return redirect('landing_page')
+            return redirect('dashboard_ciudadano')
         else:
             messages.error(request, 'Credenciales inválidas. Por favor intenta de nuevo.')
     
