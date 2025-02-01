@@ -17,7 +17,7 @@ Escenario: Organizar un evento en un espacio público disponible
 Escenario: Organizar un evento en un espacio público no disponible
   Dado que una entidad municipal desea organizar un evento
   Y la fecha del evento es "06/02/2025"
-  Cuando el espacio público "Plaza de la Cultura" no se encuentre disponible
+  Cuando el espacio público "Plaza de la Cultura" se encuentra en estado "NO_DISPONIBLE"
   Entonces no se creara el evento
   Y se mostrarán los espacios públicos disponibles
 
