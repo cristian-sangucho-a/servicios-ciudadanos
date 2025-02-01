@@ -5,6 +5,8 @@ Modelo principal de Ciudadano.
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from ciudadano_app.models.ciudadano.gestor_ciudadano import GestorCiudadano
+from shared.models.ciudad.sector import Sector
+
 
 
 class Ciudadano(AbstractBaseUser):
@@ -53,6 +55,10 @@ class Ciudadano(AbstractBaseUser):
     is_active: models.BooleanField = models.BooleanField(default=True)
     is_admin: models.BooleanField = models.BooleanField(default=False)
 
+    sectores_de_interes = models.ManyToManyField(Sector, related_name="ciudadanos_interesados", blank=True)
+    ubicacion_actual = models.ForeignKey(Sector, on_delete=models.SET_NULL, null=True, blank=True,
+                                         related_name="ciudadanos_presentes")
+
     objects = GestorCiudadano()
 
     USERNAME_FIELD = "correo_electronico"
@@ -70,6 +76,16 @@ class Ciudadano(AbstractBaseUser):
     def obtener_identificacion(self):
         """Retorna el número de identificación del ciudadano"""
         return self.numero_identificacion
+
+    def agregar_sector_de_interes(self, sector):
+        """Agrega un sector a la lista de sectores de interés del ciudadano."""
+        self.sectores_de_interes.add(sector)
+        self.save()
+
+    def actualizar_ubicacion(self, sector):
+        """Actualiza la ubicación actual del ciudadano."""
+        self.ubicacion_actual = sector
+        self.save()
 
     def __str__(self):
         """Retorna una representación en cadena del ciudadano"""
