@@ -4,12 +4,12 @@ from django.core.exceptions import ValidationError
 
 class CiudadanoLoginForm(forms.Form):
     correo_electronico = forms.EmailField(
-        label="Correo electrónico",
-        widget=forms.EmailInput(attrs={'class': 'w-full p-2 border rounded'})
+        label="Correo Electrónico",
+        widget=forms.EmailInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded'})
     )
     password = forms.CharField(
         label="Contraseña",
-        widget=forms.PasswordInput(attrs={'class': 'w-full p-2 border rounded'})
+        widget=forms.PasswordInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded'})
     )
 
 class CiudadanoRegisterForm(forms.ModelForm):

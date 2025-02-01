@@ -4,6 +4,7 @@ Modelo para representar una entidad municipal.
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.core.exceptions import ValidationError
 
 
 class EntidadMunicipalManager(BaseUserManager):
@@ -62,6 +63,14 @@ class EntidadMunicipal(AbstractBaseUser):
     def es_ciudadano(self):
         """Identifica que este usuario NO es un ciudadano"""
         return False
+
+    def clean(self):
+        super().clean()
+        from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
+        if Ciudadano.objects.filter(correo_electronico=self.correo_electronico).exists():
+            raise ValidationError({
+                'correo_electronico': "Este correo ya está registrado como Ciudadano."
+            })
 
     def __str__(self):
         return f"Entidad Municipal: {self.nombre}"
