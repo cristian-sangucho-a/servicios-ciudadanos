@@ -24,26 +24,43 @@
         <div class="bg-neutral-gris p-6 rounded-lg">
             <h2 class="text-xl font-semibold mb-4">Tus Eventos</h2>
             {% if eventos_inscritos %}
-                <div class="space-y-4">
-                    {% for evento in eventos_inscritos %}
-                    <div class="bg-white p-4 rounded shadow">
-                        <h3 class="font-medium text-primario-DEFAULT">{{ evento.nombre }}</h3>
-                        <p class="text-sm text-gray-600">{{ evento.fecha_hora|date:"d/m/Y H:i" }}</p>
-                        <a href="{% url 'detalle_evento' evento.id %}" 
-                           class="text-secundario-DEFAULT hover:text-secundario-dark text-sm">
-                            Ver detalles →
-                        </a>
-                    </div>
-                    {% endfor %}
+            <div class="space-y-4">
+                {% for evento in eventos_inscritos %}
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="font-medium text-primario-DEFAULT">{{ evento.nombre }}</h3>
+                    <p class="text-sm text-gray-600">{{ evento.fecha_hora|date:"d/m/Y H:i" }}</p>
+                    <a href="{% url 'detalle_evento' evento.id %}"
+                       class="text-secundario-DEFAULT hover:text-secundario-dark text-sm">
+                        Ver detalles →
+                    </a>
                 </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <p class="text-gray-600">No estás inscrito en ningún evento actualmente.</p>
-                <a href="{% url 'lista_eventos' %}" 
-                   class="inline-block mt-4 text-secundario-DEFAULT hover:text-secundario-dark">
-                    Ver eventos disponibles →
-                </a>
+            <p class="text-gray-600">No estás inscrito en ningún evento actualmente.</p>
+            <a href="{% url 'lista_eventos' %}"
+               class="inline-block mt-4 text-secundario-DEFAULT hover:text-secundario-dark">
+                Ver eventos disponibles →
+            </a>
             {% endif %}
+
+        </div>
+
+        <!-- Sección de canales -->
+        <div class="bg-neutral-gris p-6 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Canales</h2>
+            <div class="space-y-4">
+                <a href="{% url 'lista_canales' %}"
+                   class="text-secundario-DEFAULT hover:text-secundario-dark text-sm">
+                    Ver Canales →
+                </a>
+            </div>
+            <div class="space-y-4">
+                <a href="{% url 'ver_noticias' %}"
+                   class="text-secundario-DEFAULT hover:text-secundario-dark text-sm">
+                    Ver Muro →
+                </a>
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}
