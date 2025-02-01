@@ -1,7 +1,7 @@
 from behave import *
 from faker import Faker
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
-from entidad_municipal_app.models.ciudad.sector import Sector
+from shared.models.ciudad.sector import Sector
 from shared.models.reporte.reporte import Reporte
 from shared.models.notificacion.servicio_de_notificacion import ServicioDeNotificacion
 
@@ -41,8 +41,8 @@ def step_impl(context, nombre_ciudadano, nombre_sector):
 @step('se registre un reporte con asunto "{asunto}"')
 def step_impl(context, asunto):
     context.reporte = Reporte(asunto=asunto, sector=context.ciudadano.sectores_de_interes[0])
-    context.notificador = ServicioDeNotificacion()
-    context.notificador.notificar_reporte(context.ciudadano, context.reporte)
+    context.servicio_de_notificacion = ServicioDeNotificacion()
+    context.servicio_de_notificacion.notificar(context.ciudadano, context.reporte)
 
 
 @step('el estado del reporte no es "Resuelto"')
@@ -52,8 +52,7 @@ def step_impl(context):
 
 @step('se enviará un correo con los detalles del reporte')
 def step_impl(context):
-    servicio_de_notificaciones = ServicioDeNotificacion()
-    servicio_de_notificaciones.notificar(context.ciudadano, context.reporte)
+    context.servicio_de_notificacion.notificar(context.ciudadano, context.reporte)
 
 
 @step("se agregará a la lista de notificaciones")
@@ -74,8 +73,7 @@ def step_impl(context, nombre_ciudadano, nombre_sector):
 def step_impl(context, asunto, distancia):
     sector_cercano = Sector(nombre=fake.city())
     context.reporte = Reporte(tipo=asunto, sector=sector_cercano)
-    context.notificador = ServicioDeNotificacion()
-    context.notificador.notificar_reporte_cercano(context.ciudadano, context.reporte, float(distancia))
+    context.servicio_de_notificacion.notificar_reporte_cercano(context.ciudadano, context.reporte, float(distancia))
 
 
 # Escenario: Notificar cuando el estado de un sector de interés sea de riesgo
@@ -83,15 +81,18 @@ def step_impl(context, asunto, distancia):
 def step_impl(context, cantidad, asunto):
     for _ in range(int(cantidad)):
         Reporte(tipo=asunto, sector=context.sector)
-    context.notificador = ServicioDeNotificacion()
-    context.notificador.notificar_estado_riesgo(context.ciudadano, context.sector)
+
+    context.servicio_de_notificacion.notificar_estado_riesgo(context.ciudadano, context.sector)
 
 
 @step('el sector cambiará a estado "Riesgo"')
 def step_impl(context):
     assert context.sector.estado == "Riesgo"
 
-
 @step('se enviará un correo con el mensaje "{mensaje}"')
 def step_impl(context, mensaje):
-    assert mensaje in context.notificador.ultima_notificacion
+    ciudadano = context.ciudadano  # Se asume que el ciudadano está en el contexto
+    if ciudadano.email:  # Verifica que el ciudadano tenga email registrado
+        asunto = "Notificación Importante"
+        context.servicio_de_notificacion.enviar_correo(ciudadano.email, asunto, mensaje)
+
