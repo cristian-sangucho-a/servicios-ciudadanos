@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto py-8">
+  <h1 class="text-3xl font-bold text-center text-[#143D69] mb-8">Eventos Municipales</h1>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {% for evento in eventos %}
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="p-4">
+        <h2 class="text-xl font-semibold text-[#143D69]">{{ evento.nombre_evento }}</h2>
+        <p class="text-gray-600 mt-2">{{ evento.descripcion_evento }}</p>
+        <p class="text-sm text-gray-500 mt-2"><strong>Lugar:</strong> {{ evento.lugar_evento }}</p>
+      </div>
+      <div class="p-4 border-t">
+        {% if evento.is_subscribed %}
+          <!-- Usuario ya inscrito -->
+          <button class="w-full bg-[#2E6F4E] text-white py-2 px-4 rounded opacity-75 cursor-not-allowed" disabled>Inscrito</button>
+          <a href="{% url 'cancelar_inscripcion' evento.id %}" class="w-full inline-block mt-2 text-center text-[#9D2235] font-bold">Cancelar inscripción</a>
+        {% else %}
+          {% if evento.cupos_disponibles > 0 %}
+            <a href="{% url 'inscribirse_evento' evento.id %}" class="w-full inline-block bg-[#1E4F82] hover:bg-[#143D69] text-white py-2 px-4 rounded text-center">Inscribirse</a>
+          {% else %}
+            <a href="{% url 'lista_espera_evento' evento.id %}" class="w-full inline-block bg-[#B53045] hover:bg-[#9D2235] text-white py-2 px-4 rounded text-center">Ponerse en lista de espera</a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+      <p class="text-center text-gray-600 col-span-full">No hay eventos disponibles en este momento.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
