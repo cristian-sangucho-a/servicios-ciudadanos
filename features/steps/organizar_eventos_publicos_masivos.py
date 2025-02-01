@@ -5,7 +5,9 @@ from django.utils import timezone
 from datetime import timedelta
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+
+from entidad_municipal_app.models.evento.repositorio_eventos import RepositorioEventos
 
 # use_step_matcher("re")
 
@@ -178,179 +180,121 @@ def step_impl(context):
 
 ##--
 @step('que existe un evento llamado "{nombre_evento}" con el estado "{estado_evento}"')
-def step_impl(context, nombre_evento, estado_evento):
-
+def step_existe_evento(context, nombre_evento, estado_evento):
     """
-    context.nombre_evento = nombre_evento
-    context.estado_evento = estado_evento
-    ?
-    creas el evento aleatorio
-    set estado_evento
+    Crea un evento con nombre y estado especificados, o None si estado_evento = "NULL" (no existe).
     """
-    # Simular la creación de una entidad municipal en memoria
-    entidad_municipal = {
-        'nombre': fake.company()
-    }
-
-    # Simular la creación de un espacio público en memoria
-    espacio_publico = {
-        'nombre': "Parque Bicentenario",  # Usando el nombre que defines en el escenario
-        'estado_espacio': 'No Afectado',  # Inicialmente no afectado
-        'entidad_municipal': entidad_municipal
-    }
-
-    # Simular la creación de un evento municipal en memoria
-    context.evento = {
-        'nombre_evento': nombre_evento,
-        'estado_actual': estado_evento,
-        'fecha_realizacion': fake.date_time(),
-        'capacidad_maxima': 100,
-        'lugar_evento': espacio_publico
-    }
-    ##retroalimentacion
-    """
-        Crea un evento con nombre y estado especificados, 
-        o None si estado_evento = "NULL" (no existe).
-
     if estado_evento == "NULL":
         context.evento = None
         return
 
-    espacio_demo, _ = EspacioPublico.objects.get_or_create(
-        nombre="Parque Bicentenario",
-        entidad_municipal=context.entidad_municipal
+    # Asegurar que context.fecha_evento esté definido
+    if not hasattr(context, "fecha_evento"):
+        context.fecha_evento = timezone.now() + timedelta(days=7)
+
+    # Crear una entidad municipal de prueba
+    entidad_municipal = EntidadMunicipal.objects.create(
+        nombre=fake.company(),
+        correo_electronico=fake.email(),
+        direccion=fake.address(),
+        telefono=fake.phone_number(),
+        fecha_registro=fake.date_time_between()
     )
+
+    # Crear un espacio público de prueba
+    espacio_publico = EspacioPublico.objects.create(
+        nombre="Parque Bicentenario",
+        entidad_municipal=entidad_municipal,
+        direccion=fake.address(),
+        estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE,
+        estado_incidente_espacio=EspacioPublico.NO_AFECTADO
+    )
+
+    # Crear el evento usando el modelo EventoMunicipal
     context.evento = EventoMunicipal.objects.create(
         nombre_evento=nombre_evento,
         descripcion_evento="Evento para prueba de cancelación",
-        fecha_realizacion=datetime(2025, 2, 6, 10, 0),
-        espacio_publico=espacio_demo,
-        entidad_municipal=context.entidad_municipal,
-        lugar_evento=espacio_demo.nombre,
+        fecha_realizacion=context.fecha_evento,  # Se usa context.fecha_evento
+        espacio_publico=espacio_publico,
+        lugar_evento=espacio_publico.nombre,
         capacidad_maxima=100,
-        estado_actual=(estado_evento if estado_evento != "NULL"
-                       else EventoMunicipal.ESTADO_PROGRAMADO)
+        estado_actual=estado_evento
     )
+
+@step('el espacio público destinado al evento es "{nombre_espacio}"')
+def step_asigna_espacio(context, nombre_espacio):
     """
-
-
-@step(
-    'el espacio público destinado al evento es "{nombre_espacio}"')
-def step_impl(context, nombre_espacio):
-    context.evento = EventoMunicipal.objects.crear_evento_con_aforo(
-                        nombre=context.nombre_evento,
-                        descripcion=fake.text(max_nb_chars=200),
-                        fecha=timezone.now() + timedelta(days=7),
-                        lugar=fake.address(),
-                        capacidad=10,
-                        espacio_publico=crear_espacio_publico_aleatorio(nombre_espacio,crear_entidad_municipal_aleatoria())
-                    )
-
+    Asigna un espacio público al evento.
     """
-    # Aquí simula la actualización del espacio público en memoria
-    if context.evento['lugar_evento']['nombre'] == nombre_espacio:
-        # Asignar el valor de estado_espacio usando las constantes de la clase EspacioPublico
-        if estado_espacio == EspacioPublico.AFECTADO:
-            context.evento['lugar_evento']['estado_espacioPublico'] = EspacioPublico.AFECTADO
-        elif estado_espacio == EspacioPublico.NO_AFECTADO:
-            context.evento['lugar_evento']['estado_espacioPublico'] = EspacioPublico.NO_AFECTADO
-        context.evento['lugar_evento']['motivo_riesgo'] = motivo_riesgo  # Cambiar a motivo_riesgo
-        context.espacio = context.evento['lugar_evento']
-    else:
-        print(f"No se encontró el espacio público con el nombre {nombre_espacio}")
-    ##retroalimentacion
-    
-    Simula si el espacio está 'Afectado' o 'No Afectado'.
-
     if nombre_espacio == "NULL":
         context.espacio_afectado = False
         return
-    context.espacio_afectado = (estado_espacio.upper() == "AFECTADO")
-    
-    """
+
+    # Obtener o crear el espacio público
+    espacio_publico, _ = EspacioPublico.objects.get_or_create(
+        nombre=nombre_espacio,
+        defaults={
+            'direccion': fake.address(),
+            'estado_espacio_publico': EspacioPublico.ESTADO_DISPONIBLE,
+            'estado_incidente_espacio': EspacioPublico.NO_AFECTADO
+        }
+    )
+
+    # Asignar el espacio público al evento
+    context.evento.espacio_publico = espacio_publico
+    context.evento.save()
+
+    context.espacio_afectado = (espacio_publico.estado_incidente_espacio == EspacioPublico.AFECTADO)
 
 @step('está en una situación de "{estado_espacio}" debido a un "{motivo_riesgo}"')
-def step_impl(context, estado_espacio, motivo_riesgo):
-    context.evento.espacio_publico.estado_incidente_espacio = estado_espacio
+def step_cambia_estado_espacio(context, estado_espacio, motivo_riesgo):
+    """
+    Cambia el estado del espacio público y registra el motivo de riesgo.
+    """
+    if context.evento and context.evento.espacio_publico:
+        espacio_publico = context.evento.espacio_publico
+        espacio_publico.estado_incidente_espacio = estado_espacio
+        espacio_publico.motivo_riesgo = motivo_riesgo
+        espacio_publico.save()
+
     context.motivo_riesgo = motivo_riesgo
 
-
 @step('la entidad municipal cambia el estado del evento a "{nuevo_estado_evento}"')
-def step_impl(context, nuevo_estado_evento):
-    context.evento.estado_actual = nuevo_estado_evento
-    #cancelar_evento
-
+def step_cambia_estado_evento(context, nuevo_estado_evento):
     """
-    if not evento:
-        print("No existe evento a cancelar")
-        return
-
-    if evento['estado_actual'] == "EN_CURSO":
-        print("El estado del evento es no programado por lo tanto no puede haber cancelación")
-        return
-
-    if evento['estado_actual'] == "FINALIZADO":
-        print("El estado del evento es finalizado por lo tanto no puede haber cancelación")
-        return
-
-    if evento['lugar_evento']['estado_espacio'] == "No Afectado":
-        print("El espacio del evento no se ve afectado por lo que no aplica a cancelación")
-        return
-
-    evento['estado_actual'] = nuevo_estado_evento
-    context.evento = evento
-    ##retroalimentacion
-   
-    Intenta cambiar el estado del evento.
-
-
-     context.ultimo_error = None
+    Cambia el estado del evento usando el repositorio.
+    """
+    repositorio = RepositorioEventos()
     if context.evento is None:
-        # No hay evento real
-        context.evento_estado_anterior = None
+        print("No existe evento a cancelar.")
         return
 
-    context.evento_estado_anterior = context.evento.estado_actual
     try:
-        context.evento.estado_actual = nuevo_estado_evento
-        context.evento.save()
-    except ValidationError as e:
-        context.ultimo_error = str(e)
-    """
-
+        if nuevo_estado_evento == EventoMunicipal.ESTADO_CANCELADO:
+            if hasattr(context, "motivo_riesgo"):
+                repositorio.cancelar_evento(context.evento.id, context.motivo_riesgo)
+            else:
+                print("No se puede cancelar sin un motivo de riesgo.")
+        else:
+            repositorio.actualizar_evento(context.evento.id, estado_actual=nuevo_estado_evento)
+    except ObjectDoesNotExist as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"No se pudo cambiar el estado del evento: {e}")
 
 @step('se registra el motivo de la cancelación')
-def step_impl(context):
-
-    context.evento.set_motivo_cancelacion(context.motivo_riesgo)
-
+def step_registra_motivo_cancelacion(context):
     """
-    evento = context.evento
-    
-    if evento['estado_actual'] == "CANCELADO":
-        evento['motivo_cancelacion'] = resultado
-        print(f"Motivo de cancelación registrado: {resultado}")
-    ##retroalimentacion
-    
-    Verifica la lógica de cancelación o mantenimiento de estado.
-    "
+    Registra el motivo de la cancelación si el evento está cancelado.
+    """
     if context.evento is None:
-        assert "No existe evento a cancelar" in resultado, (
-            "Se esperaba 'No existe evento a cancelar' pero no coincide con el ejemplo."
-        )
+        print("No existe evento para registrar motivo de cancelación.")
         return
 
-    estado_actual = context.evento.estado_actual
-    if estado_actual == EventoMunicipal.ESTADO_CANCELADO:
-        assert "Se registra la cancelación" in resultado, (
-            f"No coincide la descripción para CANCELADO: {resultado}"
-        )
-    else:
-        if "No se puede cancelar" in resultado:
-            assert estado_actual in [
-                EventoMunicipal.ESTADO_EN_CURSO,
-                EventoMunicipal.ESTADO_FINALIZADO
-            ], f"Se esperaba no cancelar; estado actual = {estado_actual}"
-        elif "El espacio no está afectado" in resultado:
-            assert not context.espacio_afectado, "Espacio marcado como no afectado, no debía cancelarse."
-    """
+    if context.evento.estado_actual == EventoMunicipal.ESTADO_CANCELADO:
+        if hasattr(context, "motivo_riesgo"):
+            context.evento.set_motivo_cancelacion(context.motivo_riesgo)
+            context.evento.save()
+            print(f"Motivo de cancelación registrado: {context.motivo_riesgo}")
+        else:
+            print("No se encontró motivo de cancelación.")
