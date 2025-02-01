@@ -4,7 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from ..models import Ciudadano
 from ..forms import CiudadanoLoginForm
+from ..decorators import no_session_required
 
+@no_session_required
 def login_ciudadano(request):
     if request.method == 'POST':
         form = CiudadanoLoginForm(request.POST)
