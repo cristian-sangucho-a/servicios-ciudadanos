@@ -1,6 +1,7 @@
 from ciudadano_app.models import Ciudadano, AreaComunal, Reserva
 from ciudadano_app.models.reserva.repositorio_reserva import RespositorioReserva
 from ciudadano_app.models.servicio_notificacion_correo import ServicioNotificacionPorCorreo
+from entidad_municipal_app.models import EspacioPublico
 
 
 class ServicioReserva(RespositorioReserva):
@@ -76,3 +77,11 @@ class ServicioReserva(RespositorioReserva):
         servicio_notificion_correo = ServicioNotificacionPorCorreo()
         servicio_notificion_correo.enviar_cancelacion(reserva)
         return True
+
+    ##PARA RECUPERAR DATOS DESDE LA VISTA
+
+    def obtener_espacios_publicos(self):
+        return EspacioPublico.objects.all()
+
+    def obtener_areas_comunales(self, espacio_publico_id):
+        return AreaComunal.objects.filter(espacio_publico_id=espacio_publico_id)

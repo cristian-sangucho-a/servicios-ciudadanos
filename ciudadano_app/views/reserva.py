@@ -1,7 +1,11 @@
+from datetime import datetime
+
 from django.shortcuts import render, redirect
 from pyexpat.errors import messages
 
 from ciudadano_app.forms import ReservaRegisterForm
+from ciudadano_app.models.reserva.servicio_reserva import ServicioReserva
+
 
 def reserva(request):
     if request.method == 'POST':

@@ -15,3 +15,12 @@ class EspacioPublico(models.Model):
         help_text="Entidad municipal a la que pertenece el espacio público",
         related_name = 'espacios_publicos'
     )
+
+    def __str__(self):
+        return self.nombre
+
+    def obtener_id(self):
+        return self.id
+
+    def obtener_nombre(self):
+        return self.nombre

@@ -10,5 +10,8 @@ urlpatterns = [
     path('registro/', views.registro_ciudadano, name='registro_ciudadano'),
     path('login/', views.login_ciudadano, name='login_ciudadano'),
     path('logout/', views.logout_ciudadano, name='logout_ciudadano'),
+    path('agenda/', views.agenda, name='agenda'),
     path('reserva/', views.reserva, name='reservar_area_comunal'),
+    path('areas_comunales/', views.cargar_areas, name='cargar_areas_comunales'),
+    path('calendario/', views.cargar_calendario, name='cargar_calendario'),
 ]
