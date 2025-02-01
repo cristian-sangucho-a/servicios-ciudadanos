@@ -32,8 +32,8 @@ Esquema del escenario: Cancelar evento debido a caso fortuito externo
    Ejemplos:
     | nombre_evento                   | estado_evento | nombre_espacio         | estado_espacio | motivoRiesgo       | nuevo_estado_evento |
     | Festival Cultural de Primavera  | PROGRAMADO    | Parque Bicentenario    | Afectado       | Incendio Forestal  | CANCELADO           |
-    | Festival Cultural de Primavera  | PROGRAMADO    | Parque Bicentenario    | No Afectado    | Incendio Forestal  | PROGRAMADO          |
+    | Festival Cultural de Primavera  | PROGRAMADO    | Parque Bicentenario    | Afectado       | Incendio Forestal  | CANCELADO           |
     | Evento Inexistente              | NULL          | NULL                   | NULL           | NULL               | NULL                |
-    | Festival Cultural de Primavera  | EN_CURSO      | Parque Bicentenario    | Afectado       | Incendio Forestal  | EN_CURSO            |
-    | Festival Cultural de Primavera  | FINALIZADO    | Parque Bicentenario    | Afectado       | Incendio Forestal  | FINALIZADO          |
+    | Festival Cultural de Primavera  | EN_CURSO      | Parque Bicentenario    | Afectado       | Incendio Forestal  | CANCELADO           |
+    | Festival Cultural de Primavera  | FINALIZADO    | Parque Bicentenario    | Afectado       | Incendio Forestal  | CANCELADO           |
 
