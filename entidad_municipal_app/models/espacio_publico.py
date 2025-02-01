@@ -1,5 +1,6 @@
 from django.db import models
 from entidad_municipal_app.models import EntidadMunicipal
+
 class EspacioPublico(models.Model):
     """
     Modelo para representar un espacio público.
@@ -13,7 +14,7 @@ class EspacioPublico(models.Model):
         EntidadMunicipal,
         on_delete=models.CASCADE,
         help_text="Entidad municipal a la que pertenece el espacio público",
-        related_name = 'espacios_publicos'
+        related_name='espacios_publicos'
     )
 
     direccion = models.CharField(
@@ -50,10 +51,20 @@ class EspacioPublico(models.Model):
         help_text="Estado del espacio público"
     )
 
-    def mostrar_espacios_disponibles(fecha):
-        """
-        Retorna los espacios públicos disponibles en la fecha especificada
-        """
-        return EspacioPublico.objects.filter(
-            estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE
-    )
+    @classmethod
+    def obtener_espacios_disponibles(cls, fecha):
+        # Importar EventoMunicipal aquí para evitar importaciones circulares
+        from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
+
+        # Filtrar espacios que están disponibles y que no tienen eventos programados en la fecha dada
+        eventos_misma_fecha = EventoMunicipal.objects.filter(
+            fecha_realizacion=fecha,
+            estado_actual__in=[EventoMunicipal.ESTADO_PROGRAMADO, EventoMunicipal.ESTADO_EN_CURSO]
+        ).values_list('espacio_publico_id', flat=True)
+
+        # Obtener espacios disponibles
+        espacios_disponibles = cls.objects.filter(
+            estado_espacio_publico=cls.ESTADO_DISPONIBLE
+        ).exclude(pk__in=eventos_misma_fecha)
+
+        return espacios_disponibles
