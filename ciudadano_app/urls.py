@@ -4,6 +4,7 @@ from .views.canales.noticia import reaccionar, comentar, conteo_reacciones
 from .views.canales.suscripcion import suscribirse_canal
 from .views.canales.suscripcion import desuscribirse_canal
 from .views.canales.canales import lista_canales, detalle_canal, ver_noticias
+from shared.views.logout import logout_usuario
 
 urlpatterns = [
     path('canal/<int:canal_id>/suscribirse/', suscribirse_canal, name='suscribirse_canal'),
@@ -21,5 +22,5 @@ urlpatterns = [
     path('bienvenida/', views.bienvenida_ciudadano, name='bienvenida_ciudadano'),
     path('registro/', views.registro_ciudadano, name='registro_ciudadano'),
     path('login/', views.login_ciudadano, name='login_ciudadano'),
-    path('logout/', views.logout_ciudadano, name='logout_ciudadano'),
+    path('logout/', logout_usuario, name='logout_ciudadano'),
 ]
