@@ -63,6 +63,13 @@ class Ciudadano(AbstractBaseUser):
         """Retorna el nombre completo del ciudadano"""
         return self.nombre_completo
 
+    def clean(self):
+        super().clean()
+        if EntidadMunicipal.objects.filter(correo_electronico=self.correo_electronico).exists():
+            raise ValidationError({
+                'correo_electronico': "Este correo ya está registrado como Entidad Municipal."
+            })
+
     def obtener_correo_electronico(self):
         """Retorna el correo electrónico del ciudadano"""
         return self.correo_electronico

@@ -38,15 +38,17 @@
     <header class="bg-primario-DEFAULT text-white shadow-md">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <a href="{% url 'landing_page' %}" class="text-2xl font-bold">Servicios Ciudadanos</a>
-            <nav>
+            <nav class="flex items-center">
                 {% if user.is_authenticated %}
                     {% if user.es_ciudadano %}
                         <a href="{% url 'dashboard_ciudadano' %}" class="px-4 py-2 hover:text-secundario-light">Dashboard</a>
-                        <a href="{% url 'logout_ciudadano' %}" class="bg-secundario-DEFAULT px-4 py-2 rounded hover:bg-secundario-dark">Cerrar Sesión</a>
                     {% else %}
                         <a href="{% url 'dashboard_entidad' %}" class="px-4 py-2 hover:text-secundario-light">Dashboard</a>
-                        <a href="{% url 'logout' %}" class="bg-secundario-DEFAULT px-4 py-2 rounded hover:bg-secundario-dark">Cerrar Sesión</a>
                     {% endif %}
+                    <form action="{% url 'logout_usuario' %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-secundario-DEFAULT px-4 py-2 rounded hover:bg-secundario-dark">Cerrar Sesión</button>
+                    </form>
                 {% else %}
                     <a href="{% url 'login_ciudadano' %}" class="px-4 py-2 hover:text-secundario-light">Ciudadano</a>
                     <a href="{% url 'login_entidad' %}" class="px-4 py-2 hover:text-secundario-light">Entidad Municipal</a>
