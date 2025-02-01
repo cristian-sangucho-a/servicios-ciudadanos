@@ -1,108 +1,171 @@
-"""
-Script para inicializar datos de prueba en la base de datos.
-"""
-import os
-import django
+from django.core.management.base import BaseCommand
 from django.utils import timezone
-from datetime import timedelta
+from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
+from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
+from entidad_municipal_app.models.evento.registro_asistencia import RegistroAsistencia
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'servicios_ciudadanos.settings')
-django.setup()
+class Command(BaseCommand):
+    help = 'Crea datos de prueba para ciudadanos y eventos'
 
-from ciudadano_app.models import Ciudadano
-from entidad_municipal_app.models import EntidadMunicipal, EventoMunicipal
+    def handle(self, *args, **options):
+        self.stdout.write('Iniciando creación de datos de prueba...')
 
-def crear_superusuario():
-    """Crea un superusuario para pruebas"""
-    try:
-        # Verificar si el usuario ya existe
-        if not Ciudadano.objects.filter(correo_electronico='admin@admin.com').exists():
-            superuser = Ciudadano.objects.create_superuser(
-                correo_electronico='admin@admin.com',
-                password='admin123',
-                nombre_completo='Administrador',
-                numero_identificacion='1234567890'
-            )
-            print(f'Superusuario creado: {superuser.correo_electronico}')
-        else:
-            # Si el usuario existe, actualizar su contraseña
-            superuser = Ciudadano.objects.get(correo_electronico='admin@admin.com')
-            superuser.set_password('admin123')
-            superuser.save()
-            print('Contraseña del superusuario actualizada')
-    except Exception as e:
-        print(f'Error al crear superusuario: {e}')
+        # Crear ciudadanos de prueba
+        ciudadanos_data = [
+            {
+                "correo_electronico": "juan@test.com",
+                "nombre_completo": "Juan Pérez",
+                "numero_identificacion": "1234567890",
+                "password": "test123"
+            },
+            {
+                "correo_electronico": "maria@test.com",
+                "nombre_completo": "María García",
+                "numero_identificacion": "2345678901",
+                "password": "test123"
+            },
+            {
+                "correo_electronico": "pedro@test.com",
+                "nombre_completo": "Pedro López",
+                "numero_identificacion": "3456789012",
+                "password": "test123"
+            },
+            {
+                "correo_electronico": "ana@test.com",
+                "nombre_completo": "Ana Martínez",
+                "numero_identificacion": "4567890123",
+                "password": "test123"
+            },
+            {
+                "correo_electronico": "luis@test.com",
+                "nombre_completo": "Luis Rodríguez",
+                "numero_identificacion": "5678901234",
+                "password": "test123"
+            },
+        ]
 
-def crear_entidad_municipal():
-    """Crea una entidad municipal de prueba"""
-    try:
-        # Verificar si la entidad ya existe
-        entidad, created = EntidadMunicipal.objects.get_or_create(
-            nombre='Municipio de Ejemplo',
-            defaults={
-                'direccion': 'Calle Principal 123',
-                'telefono': '(02) 123-4567',
-                'correo_electronico': 'contacto@municipio.gob.ec'
+        ciudadanos = []
+        for data in ciudadanos_data:
+            try:
+                ciudadano = Ciudadano.objects.get(
+                    correo_electronico=data["correo_electronico"]
+                )
+                self.stdout.write(f"El ciudadano {ciudadano.nombre_completo} ya existe")
+            except Ciudadano.DoesNotExist:
+                try:
+                    ciudadano = Ciudadano.objects.create_user(
+                        correo_electronico=data["correo_electronico"],
+                        password=data["password"],
+                        nombre_completo=data["nombre_completo"],
+                        numero_identificacion=data["numero_identificacion"]
+                    )
+                    self.stdout.write(self.style.SUCCESS(f"Creado ciudadano: {ciudadano.nombre_completo}"))
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(f"Error al crear ciudadano: {str(e)}"))
+                    continue
+            ciudadanos.append(ciudadano)
+
+        # Crear eventos de prueba
+        ahora = timezone.now()
+        eventos_data = [
+            {
+                "nombre_evento": "Concierto en el Parque",
+                "descripcion_evento": "Gran concierto al aire libre con múltiples artistas",
+                "fecha_realizacion": ahora + timezone.timedelta(days=7),
+                "lugar_evento": "Parque Central",
+                "capacidad_maxima": 100,  # Evento con muchos cupos
+            },
+            {
+                "nombre_evento": "Taller de Arte",
+                "descripcion_evento": "Taller exclusivo de pintura",
+                "fecha_realizacion": ahora + timezone.timedelta(days=5),
+                "lugar_evento": "Centro Cultural",
+                "capacidad_maxima": 1,  # Evento con 1 solo cupo
+            },
+            {
+                "nombre_evento": "Feria Gastronómica",
+                "descripcion_evento": "Degustación de platos típicos",
+                "fecha_realizacion": ahora + timezone.timedelta(days=3),
+                "lugar_evento": "Plaza Mayor",
+                "capacidad_maxima": 2,  # Evento con 2 cupos
             }
-        )
-        if created:
-            print(f'Entidad municipal creada: {entidad.nombre}')
-        else:
-            print('La entidad municipal ya existe')
-        return entidad
-    except Exception as e:
-        print(f'Error al crear entidad municipal: {e}')
-        return None
+        ]
 
-def crear_eventos():
-    """Crea eventos de prueba"""
-    eventos = [
-        {
-            'nombre_evento': 'Feria Artesanal',
-            'descripcion_evento': 'Gran exposición de artesanías locales',
-            'fecha_realizacion': timezone.now() + timedelta(days=7),
-            'lugar_evento': 'Plaza Central',
-            'capacidad_maxima': 100,
-            'estado_actual': EventoMunicipal.ESTADO_PROGRAMADO
-        },
-        {
-            'nombre_evento': 'Festival Cultural',
-            'descripcion_evento': 'Música, danza y gastronomía local',
-            'fecha_realizacion': timezone.now() + timedelta(days=14),
-            'lugar_evento': 'Parque Municipal',
-            'capacidad_maxima': 200,
-            'estado_actual': EventoMunicipal.ESTADO_PROGRAMADO
-        }
-    ]
-    
-    for evento_data in eventos:
-        try:
-            # Verificar si el evento ya existe
+        eventos = []
+        for data in eventos_data:
             evento, created = EventoMunicipal.objects.get_or_create(
-                nombre_evento=evento_data['nombre_evento'],
-                defaults=evento_data
+                nombre_evento=data["nombre_evento"],
+                defaults={
+                    "descripcion_evento": data["descripcion_evento"],
+                    "fecha_realizacion": data["fecha_realizacion"],
+                    "lugar_evento": data["lugar_evento"],
+                    "capacidad_maxima": data["capacidad_maxima"],
+                    "estado_actual": EventoMunicipal.ESTADO_PROGRAMADO
+                }
             )
             if created:
-                print(f'Evento creado: {evento.nombre_evento}')
+                self.stdout.write(self.style.SUCCESS(f"Creado evento: {evento.nombre_evento}"))
             else:
-                print(f'El evento {evento.nombre_evento} ya existe')
+                self.stdout.write(f"El evento {evento.nombre_evento} ya existe")
+            eventos.append(evento)
+
+        # Realizar inscripciones de prueba
+        self.stdout.write("\nRealizando inscripciones de prueba...")
+
+        # 1. Inscribir a Juan en el Taller de Arte (evento de 1 cupo)
+        taller = eventos[1]  # Taller de Arte
+        juan = ciudadanos[0]  # Juan
+        try:
+            registro = taller.inscribir_ciudadano(juan)
+            self.stdout.write(self.style.SUCCESS(
+                f"✓ {juan.nombre_completo} inscrito en {taller.nombre_evento}"
+            ))
         except Exception as e:
-            print(f'Error al crear evento: {e}')
+            self.stdout.write(self.style.ERROR(f"Error al inscribir: {str(e)}"))
 
-def main():
-    """Función principal que ejecuta todas las inicializaciones"""
-    print('Iniciando creación de datos de prueba...')
-    
-    # Crear superusuario
-    crear_superusuario()
-    
-    # Crear entidad municipal
-    crear_entidad_municipal()
-    
-    # Crear eventos
-    crear_eventos()
-    
-    print('Proceso de inicialización completado.')
+        # 2. Intentar inscribir a María en el Taller de Arte (debería ir a lista de espera)
+        maria = ciudadanos[1]  # María
+        try:
+            registro = taller.inscribir_ciudadano(maria)
+            self.stdout.write(self.style.SUCCESS(
+                f"✓ {maria.nombre_completo} en lista de espera para {taller.nombre_evento}"
+            ))
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f"Error al inscribir: {str(e)}"))
 
-if __name__ == '__main__':
-    main()
+        # 3. Inscribir a Pedro y Ana en la Feria Gastronómica (2 cupos)
+        feria = eventos[2]  # Feria Gastronómica
+        pedro = ciudadanos[2]  # Pedro
+        ana = ciudadanos[3]  # Ana
+        
+        for ciudadano in [pedro, ana]:
+            try:
+                registro = feria.inscribir_ciudadano(ciudadano)
+                self.stdout.write(self.style.SUCCESS(
+                    f"✓ {ciudadano.nombre_completo} inscrito en {feria.nombre_evento}"
+                ))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"Error al inscribir: {str(e)}"))
+
+        # 4. Intentar inscribir a Luis en la Feria (debería ir a lista de espera)
+        luis = ciudadanos[4]  # Luis
+        try:
+            registro = feria.inscribir_ciudadano(luis)
+            self.stdout.write(self.style.SUCCESS(
+                f"✓ {luis.nombre_completo} en lista de espera para {feria.nombre_evento}"
+            ))
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f"Error al inscribir: {str(e)}"))
+
+        # 5. Inscribir a todos en el Concierto (muchos cupos)
+        concierto = eventos[0]  # Concierto
+        for ciudadano in ciudadanos:
+            try:
+                registro = concierto.inscribir_ciudadano(ciudadano)
+                self.stdout.write(self.style.SUCCESS(
+                    f"✓ {ciudadano.nombre_completo} inscrito en {concierto.nombre_evento}"
+                ))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"Error al inscribir: {str(e)}"))
+
+        self.stdout.write(self.style.SUCCESS('\n¡Datos de prueba creados exitosamente!'))
