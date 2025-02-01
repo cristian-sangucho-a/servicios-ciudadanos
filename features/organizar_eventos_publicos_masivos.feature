@@ -9,8 +9,9 @@
 Escenario: Organizar un evento en un espacio público disponible
   Dado que una entidad municipal desea organizar un evento
   Y la fecha del evento es "06/02/2025"
-  Cuando el espacio público "Parque Central" que se encuentra disponible
+  Cuando el espacio público "Parque Central" se encuentre en estado "DISPONIBLE"
   Entonces se creara el evento
+  Y cambiara el estado del espacio público
 
 
 Escenario: Organizar un evento en un espacio público no disponible
