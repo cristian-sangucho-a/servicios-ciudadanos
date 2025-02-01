@@ -116,7 +116,6 @@ class EventoMunicipal(models.Model):
     motivo_cancelacion = models.TextField(
         max_length=200,
         blank=True,
-        null=True,
         default= "",
         verbose_name='Motivo de Cancelación',
         help_text='Razón por la que se canceló el evento'
