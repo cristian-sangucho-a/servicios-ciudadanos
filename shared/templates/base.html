@@ -42,10 +42,10 @@
                 {% if user.is_authenticated %}
                     {% if user.es_ciudadano %}
                         <a href="{% url 'dashboard_ciudadano' %}" class="px-4 py-2 hover:text-secundario-light">Dashboard</a>
-                        <a href="{% url 'logout_ciudadano' %}" class="bg-secundario-DEFAULT px-4 py-2 rounded hover:bg-secundario-dark">Cerrar Sesión</a>
+                        <a href="{% url 'logout_usuario' %}" class="bg-secundario-DEFAULT px-4 py-2 rounded hover:bg-secundario-dark">Cerrar Sesión</a>
                     {% else %}
                         <a href="{% url 'dashboard_entidad' %}" class="px-4 py-2 hover:text-secundario-light">Dashboard</a>
-                        <a href="{% url 'logout' %}" class="bg-secundario-DEFAULT px-4 py-2 rounded hover:bg-secundario-dark">Cerrar Sesión</a>
+                        <a href="{% url 'logout_usuario' %}" class="bg-secundario-DEFAULT px-4 py-2 rounded hover:bg-secundario-dark">Cerrar Sesión</a>
                     {% endif %}
                 {% else %}
                     <a href="{% url 'login_ciudadano' %}" class="px-4 py-2 hover:text-secundario-light">Ciudadano</a>
