@@ -48,8 +48,6 @@ class EntidadMunicipal(AbstractBaseUser):
     USERNAME_FIELD = 'correo_electronico'
     REQUIRED_FIELDS = ['nombre', 'direccion', 'telefono']
 
-    password = models.CharField(default='default_password', max_length=128, help_text="Password")
-
     def has_perm(self, perm, obj=None):
         return True
 
