@@ -37,39 +37,44 @@ def crear_espacio_publico_aleatorio(nombre_espacio,estado, entidad_municipal):
 
 @step("que una entidad municipal desea organizar un evento")
 def step_impl(context):
+    """Crea una entidad municipal aleatoria"""
     context.entidad_municipal = crear_entidad_municipal_aleatoria()
     context.evento = None
 
 @step('la fecha del evento es {fecha_evento}')
 def step_impl(context, fecha_evento):
+    """Guarda la fecha del evento en el contexto"""
     context.fecha_realizacion = fake.date_time().strftime("%Y-%m-%d %H:%M:%S")
 
 
 @step('el espacio público {nombre_espacio_publico} se encuentre en estado {estado_espacio_publico}')
 def step_impl(context, nombre_espacio_publico, estado_espacio_publico):
+    """Crea un espacio público aleatorio con el estado especificado"""
     context.estado_disponible = estado_espacio_publico
     context.espacio_publico = crear_espacio_publico_aleatorio(nombre_espacio_publico,context.estado_disponible,context.entidad_municipal)
 
 
 @step("se creara el evento")
 def step_impl(context):
-
-        if context.espacio_publico.estado_espacio_publico == EspacioPublico.ESTADO_DISPONIBLE:
-            context.evento = EventoMunicipal.objects.crear_evento_con_aforo(
-                nombre=fake.sentence(nb_words=4),
-                descripcion=fake.text(max_nb_chars=200),
-                fecha=context.fecha_realizacion,
-                lugar=fake.address(),
-                capacidad=18,
-                espacio_publico=context.espacio_publico,
-            )
+    """Crea un evento si el espacio público está disponible"""
+    if context.espacio_publico.estado_espacio_publico == EspacioPublico.ESTADO_DISPONIBLE:
+        context.evento = EventoMunicipal.objects.crear_evento_con_aforo(
+            nombre=fake.sentence(nb_words=4),
+            descripcion=fake.text(max_nb_chars=200),
+            fecha=context.fecha_realizacion,
+            lugar=fake.address(),
+            capacidad=18,
+            espacio_publico=context.espacio_publico,
+        )
 
 @step("cambiara el estado del espacio público")
 def step_impl(context):
+    """Cambia el estado del espacio público a NO DISPONIBLE"""
     context.espacio_publico.estado_espacio_publico = EspacioPublico.ESTADO_NO_DISPONIBLE
 
 @step('el espacio público "{nombre_espacio_publico}" se encuentra en estado {estado_espacio_publico}')
 def step_impl(context, nombre_espacio_publico, estado_espacio_publico):
+    """Crea un espacio público aleatorio con el estado especificado"""
     context.estado_no_disponible = estado_espacio_publico
     context.espacio_publico = crear_espacio_publico_aleatorio(nombre_espacio_publico,context.estado_no_disponible,context.entidad_municipal)
 
