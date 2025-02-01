@@ -16,14 +16,19 @@ class ErrorGestionEventos(Exception):
     pass
 
 class EventoMunicipalManager(models.Manager):
-    def crear_evento_con_aforo(self, nombre, descripcion, fecha, lugar, capacidad):
+    def crear_evento_con_aforo(self, nombre, descripcion, fecha, lugar, capacidad, espacio_publico=None):
+        if espacio_publico:
+            lugar = espacio_publico.direccion
+            espacio_publico.estado_espacio_publico = espacio_publico.ESTADO_NO_DISPONIBLE
+
         return self.create(
             nombre_evento=nombre,
             descripcion_evento=descripcion,
             fecha_realizacion=fecha,
             lugar_evento=lugar,
             capacidad_maxima=capacidad,
-            estado_actual=self.model.ESTADO_PROGRAMADO
+            estado_actual=self.model.ESTADO_PROGRAMADO,
+            espacio_publico=espacio_publico,  # Asignar el espacio público si se proporciona
         )
 
 class EventoMunicipal(models.Model):
@@ -97,6 +102,30 @@ class EventoMunicipal(models.Model):
         verbose_name='Última Actualización',
         help_text='Fecha y hora de la última modificación'
     )
+
+    espacio_publico = models.ForeignKey(
+        'entidad_municipal_app.EspacioPublico',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='eventos',
+        verbose_name='Espacio Público',
+        help_text='Espacio público donde se realizará el evento'
+    )
+
+    motivo_cancelacion = models.TextField(
+        max_length=200,
+        blank=True,
+        null=True,
+        default= "",
+        verbose_name='Motivo de Cancelación',
+        help_text='Razón por la que se canceló el evento'
+    )
+
+    def set_motivo_cancelacion(self, motivo):
+        self.motivo_cancelacion = motivo
+        self.save()
+
 
     objects = EventoMunicipalManager()
 
@@ -186,6 +215,12 @@ class EventoMunicipal(models.Model):
     def obtener_formato_fecha(self):
         """Retorna la fecha del evento en formato legible"""
         return self.fecha_realizacion.strftime("%d/%m/%Y %H:%M")
+
+    def save(self, *args, **kwargs):
+        # Si el evento tiene un espacio público asociado, actualiza el lugar_evento
+        if self.espacio_publico:
+            self.lugar_evento = self.espacio_publico.direccion
+        super().save(*args, **kwargs)
 
     @transaction.atomic
     def inscribir_ciudadano(self, ciudadano):
@@ -338,6 +373,11 @@ class EventoMunicipal(models.Model):
         except Exception as e:
             # Log the error but don't stop the process
             print(f"Error al enviar notificación: {str(e)}")
+
+    def validar_estado_actual(self,estado_actual):
+        if estado_actual == self.ESTADO_CANCELADO:
+            raise ValidationError("El evento ya ha sido cancelado")
+        return True
 
     def __str__(self):
         return f"{self.nombre_evento} ({self.obtener_formato_fecha()})"
