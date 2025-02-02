@@ -1,22 +1,40 @@
+from threading import Lock
+
 from faker import Faker
 from entidad_municipal_app.models.reporte.repositorio_de_reporte_municipal import RepositorioDeReporteMunicipal
 from entidad_municipal_app.models.reporte.reporte_municipal import ReporteMunicipal
 from shared.models import TipoReporte, Reporte
 from ciudadano_app.models import Ciudadano
 
+
 class RepositorioDeReporteMunicipalEnMemoria(RepositorioDeReporteMunicipal):
     """
-    Implementación de repositorio que almacena reportes municipales en memoria.
+    Implementación de repositorio que almacena reportes municipales en memoria como Singleton.
     """
+
+    _instance = None
+    _lock = Lock()  # Thread safety for Singleton
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Implementación Singleton: Garantiza que solo haya una instancia del repositorio.
+        """
+        with cls._lock:  # Evita problemas de concurrencia
+            if cls._instance is None:
+                cls._instance = super().__new__(cls)
+                cls._instance.__initialized = False  # Flag para evitar re-inicialización
+        return cls._instance
 
     def __init__(self):
         """
-        Inicializa el repositorio con reportes de prueba generados con Faker.
+        Inicializa el repositorio con reportes de prueba generados con Faker (solo una vez).
         """
-        self.reportes = {}
-        self.next_id = 1
-        self.fake = Faker('es_ES')
-        self._generar_reportes_prueba()
+        if not self.__initialized:
+            self.__initialized = True  # Marcar como inicializado
+            self.reportes = {}
+            self.next_id = 1
+            self.fake = Faker('es_ES')
+            self._generar_reportes_prueba()  # Generar datos de prueba
 
     def _generar_reportes_prueba(self):
         """
