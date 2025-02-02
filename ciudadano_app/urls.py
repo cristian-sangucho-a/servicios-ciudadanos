@@ -16,4 +16,5 @@ urlpatterns = [
     path('calendario/', views.cargar_calendario, name='cargar_calendario'),
     path('logout/', logout_usuario, name='logout_ciudadano'),
     path('obtener-reservas/', views.obtener_reservas_por_fecha, name='obtener_reservas_por_fecha'),
+    path('mis_reservas/', views.mis_reservas, name='mis_reservas'),
 ]
