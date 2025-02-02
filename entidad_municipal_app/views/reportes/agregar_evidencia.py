@@ -9,7 +9,7 @@ def agregar_evidencia(request, reporte_id):
     repositorio = RepositorioDeReporteMunicipalEnMemoria()
     servicio_reporte = ServicioReporteMunicipal(repositorio)
 
-    reporte = repositorio.obtener_por_id(reporte_id)
+    reporte = servicio_reporte.obtener_reporte_municipal_por_id(reporte_id)
 
     if not reporte:
         messages.error(request, "Reporte no encontrado.")
@@ -22,8 +22,11 @@ def agregar_evidencia(request, reporte_id):
             messages.error(request, "El comentario es obligatorio para resolver el reporte.")
         else:
             # Registrar la evidencia y cambiar el estado a 'resuelto'
-            servicio_reporte.registrar_evidencia(reporte, comentario)
-            messages.success(request, "El reporte ha sido resuelto exitosamente.")
+            try:
+                servicio_reporte.registrar_evidencia(reporte, comentario)
+                messages.success(request, "El reporte ha sido resuelto exitosamente.")
+            except:
+                messages.error(request, "La evidencia no pudo ser registrada.")
             return redirect('lista_todos_reportes')
 
     return render(request, 'entidad/reportes/resolver_reporte.html', {'reporte': reporte})
