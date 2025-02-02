@@ -52,20 +52,25 @@ def step_impl(context, nombre_espacio_publico, estado_espacio_publico):
     """Crea un espacio público aleatorio con el estado especificado"""
     context.estado_disponible = estado_espacio_publico
     context.espacio_publico = crear_espacio_publico_aleatorio(nombre_espacio_publico,context.estado_disponible,context.entidad_municipal)
+    # mostrar espacios diponibles obtener_espacios_disponibles
+
 
 
 @step("se creara el evento")
 def step_impl(context):
     """Crea un evento si el espacio público está disponible"""
+
     if context.espacio_publico.estado_espacio_publico == EspacioPublico.ESTADO_DISPONIBLE:
         context.evento = EventoMunicipal.objects.crear_evento_con_aforo(
-            nombre=fake.sentence(nb_words=4),
-            descripcion=fake.text(max_nb_chars=200),
-            fecha=context.fecha_realizacion,
-            lugar=fake.address(),
-            capacidad=18,
-            espacio_publico=context.espacio_publico,
+            nombre="Concierto de Música",
+            descripcion="Un concierto al aire libre con artistas locales.",
+            fecha=timezone.now() + timezone.timedelta(days=7),
+            lugar="Parque Central",
+            capacidad=500,
+            entidad_municipal=context.entidad_municipal,
+            espacio_publico=context.espacio_publico
         )
+
 
 @step("cambiara el estado del espacio público")
 def step_impl(context):
