@@ -77,10 +77,10 @@ class ReservaRegisterForm(forms.ModelForm):
             'fecha_reserva': forms.DateInput(attrs={'class': 'w-full p-2 border rounded', 'type': 'date', 'readonly': 'readonly'}),
             'hora_inicio': forms.TimeInput(attrs={'class': 'w-full p-2 border rounded', 'type': 'time', 'readonly': 'readonly'}),
             'hora_fin': forms.TimeInput(attrs={'class': 'w-full p-2 border rounded', 'type': 'time', 'readonly': 'readonly'}),
-            'correos_invitados': forms.TextInput(attrs={'class': 'w-full p-2 border rounded', 'style': 'display:none;', 'id': 'correos_invitados'}),
+            'correos_invitados': forms.TextInput(attrs={'class': 'w-full p-2 border rounded', 'id': 'correos_invitados'}),
             'estado_reserva': forms.TextInput(attrs={'class': 'w-full p-2 border rounded', 'style': 'display:none;'}),
-            'ciudadano': forms.Select(attrs={'class': 'w-full p-2 border rounded'}),
-            'area_comunal': forms.Select(attrs={'class': 'w-full p-2 border rounded'}),
+            'ciudadano': forms.Select(attrs={'class': 'w-full p-2 border rounded', 'style': 'display:none;'}),
+            'area_comunal': forms.Select(attrs={'class': 'w-full p-2 border rounded', 'style': 'display:none;'}),
         }
 
 
