@@ -17,4 +17,5 @@ urlpatterns = [
     path('logout/', logout_usuario, name='logout_ciudadano'),
     path('obtener-reservas/', views.obtener_reservas_por_fecha, name='obtener_reservas_por_fecha'),
     path('mis_reservas/', views.mis_reservas, name='mis_reservas'),
+    path('cancelar_reserva/', views.cancelar_reserva, name='cancelar_reserva'),
 ]

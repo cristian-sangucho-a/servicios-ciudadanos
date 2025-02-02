@@ -36,3 +36,17 @@ def reserva(request):
         })
 
     return render(request, 'reseva.html', {'form': form})
+
+
+@ciudadano_required
+def cancelar_reserva(request):
+    ciudadano = request.user
+
+    if request.method == 'POST':
+        id_reserva =  request.POST.get('id_reserva')
+
+        servicio_reserva = ServicioReserva()
+
+        servicio_reserva.cancelar_reserva(id_reserva, ciudadano)
+
+    return render(request, 'agenda.html')
