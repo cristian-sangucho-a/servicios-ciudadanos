@@ -22,7 +22,8 @@ def resolver_reporte(request, reporte_id):
         try:
             servicio_reporte.atender_reporte_municipal(reporte_id)
             messages.success(request, f'El reporte #{reporte_id} se está atendiendo.')
-        except:
+        except Exception as e:
+            print(f"Error {e}")
             messages.error(request , f'No se pudo atender el reporte #{reporte_id}.')
 
         return redirect('lista_todos_reportes')

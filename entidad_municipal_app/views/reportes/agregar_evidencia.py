@@ -26,7 +26,8 @@ def agregar_evidencia(request, reporte_id):
             try:
                 servicio_reporte.registrar_evidencia(reporte, comentario)
                 messages.success(request, "El reporte ha sido resuelto exitosamente.")
-            except:
+            except Exception as e:
+                print(f"Error {e}")
                 messages.error(request, "La evidencia no pudo ser registrada.")
             return redirect('lista_todos_reportes')
 
