@@ -10,13 +10,15 @@ def login_ciudadano(request):
         correo = request.POST.get('correo_electronico')
         password = request.POST.get('password')
             
-        user = authenticate(request, correo_electronico=correo, password=password)
-        
-        if user is not None:
-            login(request, user)
-            messages.success(request, 'Has iniciado sesión exitosamente.')
-            return redirect('dashboard_ciudadano')
-        else:
-            messages.error(request, 'Credenciales inválidas. Por favor intenta de nuevo.')
-    
-    return render(request, 'login_ciudadano.html')
+            user = authenticate(request, correo_electronico=correo, password=password)
+
+            if user is None:
+                form.add_error(None, "Credenciales inválidas")
+            elif not isinstance(user, Ciudadano):
+                form.add_error(None, "Este usuario no es un ciudadano.")
+            else:
+                login(request, user)
+                return redirect('bienvenida_ciudadano')
+    else:
+        form = CiudadanoLoginForm()
+    return render(request, 'login_ciudadano.html', {'form': form})
