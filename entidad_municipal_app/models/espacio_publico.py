@@ -1,6 +1,5 @@
 from django.db import models
 from entidad_municipal_app.models import EntidadMunicipal
-
 class EspacioPublico(models.Model):
     """
     Modelo para representar un espacio público.
@@ -14,7 +13,7 @@ class EspacioPublico(models.Model):
         EntidadMunicipal,
         on_delete=models.CASCADE,
         help_text="Entidad municipal a la que pertenece el espacio público",
-        related_name='espacios_publicos'
+        related_name = 'espacios_publicos'
     )
 
     direccion = models.CharField(
