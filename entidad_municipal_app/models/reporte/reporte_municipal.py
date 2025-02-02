@@ -58,10 +58,22 @@ class ReporteMunicipal(models.Model):
             ValidationError: Si el estado no es válido
         """
         if nuevo_estado not in self.ESTADOS_VALIDOS:
-            raise ValidationError(
+            raise ValueError(
                 f"Estado '{nuevo_estado}' no válido. Estados permitidos: {self.ESTADOS_VALIDOS}"
             )
-        self.estado = nuevo_estado
+
+        if self.estado == "no_asignado" and nuevo_estado == "asignado":
+            self.estado = nuevo_estado
+        elif self.estado == "asignado" and nuevo_estado in ["atendiendo", "postergado"]:
+            self.estado = nuevo_estado
+        elif self.estado == "atendiendo" and nuevo_estado == "resuelto":
+            self.estado = nuevo_estado
+        elif self.estado == "postergado" and nuevo_estado == "atendiendo":
+            self.estado = nuevo_estado
+        else:
+            raise ValueError(
+                f"No se puede cambiar de '{self.estado}' a '{nuevo_estado}'."
+            )
 
     def registrar_evidencia(self, descripcion_evidencia: str):
         """
@@ -71,7 +83,8 @@ class ReporteMunicipal(models.Model):
             descripcion_evidencia (str): Descripción de la evidencia
         """
         self.evidencia = descripcion_evidencia
-        self.estado = "resuelto"
+        self.cambiar_estado("resuelto")
+
 
     def obtener_departamento(self):
         return self.reporte_ciudadano.tipo_reporte.departamento

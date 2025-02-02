@@ -16,4 +16,5 @@ urlpatterns = [
     path('reportes/<int:reporte_id>/postergar/', views.postergar_reporte, name='postergar_reporte'),
     # path('reportes/<str:departamento>/', views.reportes_por_departamento, name='reportes_por_departamento'),
     path('reportes/<int:reporte_id>/resolver/', views.resolver_reporte, name='resolver_reporte'),
+path('reporte/<int:reporte_id>/agregar_evidencia/', views.agregar_evidencia, name='agregar_evidencia'),
 ]
