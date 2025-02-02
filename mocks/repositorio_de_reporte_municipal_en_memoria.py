@@ -62,7 +62,8 @@ class RepositorioDeReporteMunicipalEnMemoria(RepositorioDeReporteMunicipal):
             tipo_reporte = TipoReporte(
                 asunto=self.fake.sentence(nb_words=4),
                 descripcion=self.fake.text(max_nb_chars=200),
-                departamento = repositorio_departamentos.obtener_departamento_por_nombre(self.fake.random_element(elements=nombres_departamentos))
+                departamento = repositorio_departamentos.obtener_departamento_por_nombre(self.fake.random_element(elements=nombres_departamentos)),
+                prioridad_de_atencion = self.fake.random_int(min=1, max=3)
             )
 
             reporte_ciudadano = Reporte(
