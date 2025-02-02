@@ -42,8 +42,6 @@ INSTALLED_APPS = [
     'ciudadano_app.apps.CiudadanoAppConfig',
     'entidad_municipal_app.apps.EntidadMunicipalAppConfig',
     'shared',
-    'tailwind',
-    'theme',
     'django_browser_reload'
 ]
 
