@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
+from entidad_municipal_app.decorators import entidad_required
 from entidad_municipal_app.models.reporte.servicio_de_reporte_municipal import ServicioReporteMunicipal
 from mocks.repositorio_de_reporte_municipal_en_memoria import RepositorioDeReporteMunicipalEnMemoria
 
-
+@entidad_required
 def agregar_evidencia(request, reporte_id):
     repositorio = RepositorioDeReporteMunicipalEnMemoria()
     servicio_reporte = ServicioReporteMunicipal(repositorio)

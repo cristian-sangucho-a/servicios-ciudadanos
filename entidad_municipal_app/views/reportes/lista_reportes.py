@@ -8,7 +8,7 @@ from mocks.repositorio_de_departamento_en_memoria import RepositorioDeDepartamen
 from mocks.repositorio_de_reporte_municipal_en_memoria import RepositorioDeReporteMunicipalEnMemoria
 from entidad_municipal_app.models.departamento.servicio_departamento import ServicioDepartamento
 
-
+@entidad_required
 def lista_todos_reportes(request):
     """Vista para listar todos los reportes municipales."""
     repositorio_reportes = RepositorioDeReporteMunicipalEnMemoria()

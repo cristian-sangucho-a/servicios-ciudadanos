@@ -1,8 +1,11 @@
 from django.shortcuts import redirect
 from django.contrib import messages
+
+from entidad_municipal_app.decorators import entidad_required
 from mocks.repositorio_de_reporte_municipal_en_memoria import RepositorioDeReporteMunicipalEnMemoria
 from entidad_municipal_app.models.reporte.servicio_de_reporte_municipal import ServicioReporteMunicipal
 
+@entidad_required
 def postergar_reporte(request, reporte_id):
     if request.method == "POST":
         # Inicializar el repositorio y el servicio de reporte municipal
