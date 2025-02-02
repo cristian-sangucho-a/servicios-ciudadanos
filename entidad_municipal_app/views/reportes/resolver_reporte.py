@@ -18,7 +18,7 @@ def resolver_reporte(request, reporte_id):
 
         # Cambiamos el estado del reporte a "atendiendo"
         try:
-            servicio_reporte.atender_reporte_municipal(reporte_id)
+            servicio_reporte.atender_reporte_municipal()
             messages.success(request, f'El reporte #{reporte_id} se está atendiendo.')
         except:
             messages.error(request , f'No se pudo atender el reporte #{reporte_id}.')
