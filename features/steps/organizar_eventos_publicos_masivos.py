@@ -7,7 +7,7 @@ from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
-from entidad_municipal_app.models.evento.repositorio_eventos import RepositorioEventos
+from entidad_municipal_app.models.evento.gestor_eventos import RepositorioEventos
 
 # use_step_matcher("re")
 
