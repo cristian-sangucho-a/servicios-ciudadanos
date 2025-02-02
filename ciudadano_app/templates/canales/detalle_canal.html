@@ -25,16 +25,16 @@
     <div>
         <h2 class="text-2xl font-semibold text-primario-DEFAULT mb-4">Noticias</h2>
 
-        <ul class="space-y-6">
+        <ul class="space-y-4">
             {% for noticia in noticias %}
-            <li class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
+            <li class="bg-white p-4 rounded-lg shadow max-w-lg mx-auto">
                 {% include 'canales/partials/noticia_detalle.html' %}
                 {% if esta_suscrito %}
                 {% include 'canales/partials/comentario_form.html' %}
                 {% endif %}
             </li>
             {% empty %}
-            <p class="text-gray-600">No hay noticias disponibles en este canal.</p>
+            <p class="text-gray-600 text-center">No hay noticias disponibles en este canal.</p>
             {% endfor %}
         </ul>
     </div>
