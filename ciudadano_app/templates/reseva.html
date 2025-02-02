@@ -9,6 +9,10 @@
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
+            <div id="correos_invitados_field" style="display: none;">
+                <label for="correos_invitados">Correos de Invitados</label>
+                <input type="text" name="correos_invitados" class="w-full p-2 border rounded" id="correos_invitados">
+            </div>
             <button type="submit"
                     class="w-full bg-primario-DEFAULT text-white py-2 px-4 rounded hover:bg-primario-light transition duration-200">
                 Reservar
