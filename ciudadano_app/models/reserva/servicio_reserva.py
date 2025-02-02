@@ -38,6 +38,11 @@ class ServicioReserva(RespositorioReserva):
         reserva = self.obtener_reserva_por_id(id_reserva)
         if reserva.ciudadano != ciudadano:
             return False
+
+        if reserva.tipo_reserva == "privada":
+            servicio_notificion_correo = ServicioNotificacionPorCorreo()
+            servicio_notificion_correo.enviar_cancelacion(reserva)
+
         reserva.estado_reserva = 'Cancelada'
         reserva.save()
         return True
