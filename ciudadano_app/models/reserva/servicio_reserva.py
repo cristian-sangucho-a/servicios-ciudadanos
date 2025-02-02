@@ -51,8 +51,8 @@ class ServicioReserva(RespositorioReserva):
     def obtener_reservas_activas_ciudadano(self, ciudadano):
         return ciudadano.reservas.filter(estado_reserva='Activa')
 
-    def obtener_reservas_area_comunal(self, area_comunal):
-        return area_comunal.reservas.all()
+    def obtener_reservas_area_comunal(self, area_comunal, fecha):
+        return area_comunal.reservas.filter(fecha_reserva=fecha)
 
     def reservar_area_comunal_para_actividad_privada(self, area_comunal: AreaComunal, fecha_reserva, hora_inicio,
                                                      hora_fin, tipo_reserva,
@@ -83,5 +83,5 @@ class ServicioReserva(RespositorioReserva):
     def obtener_espacios_publicos(self):
         return EspacioPublico.objects.all()
 
-    def obtener_areas_comunales(self, espacio_publico_id):
+    def obtener_areas_comunales_por_espacio(self, espacio_publico_id):
         return AreaComunal.objects.filter(espacio_publico_id=espacio_publico_id)

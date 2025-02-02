@@ -6,6 +6,7 @@ from .agenda import agenda
 from .reserva import reserva
 from .areas_comunales import cargar_areas
 from .calendario_area import cargar_calendario
+from .obtener_reservas_por_fecha import obtener_reservas_por_fecha
 
 __all__ = [
     'dashboard_ciudadano',
@@ -16,4 +17,5 @@ __all__ = [
     'reserva',
     'areas_comunales',
     'calendario_area',
+    'obtener_reservas_por_fecha'
 ]

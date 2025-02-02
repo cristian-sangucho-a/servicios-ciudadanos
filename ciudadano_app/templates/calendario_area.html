@@ -1,6 +1,10 @@
 {% load static %}
 
 {% block content %}
+    <div class="w-full justify-items-center font-semibold text-3xl p-7">
+        <h1>Revisa los horarios y areas comunales disponibles en nuestro
+            calendario</h1>
+    </div>
     <div>
         <!-- component -->
         <div class="bg-gray-100 flex justify-center">
@@ -25,7 +29,10 @@
                                         ✕
                                     </button>
                                 </div>
-                                <div id="modalDate" class="text-xl font-semibold"></div>
+                                <div id="modalDate" class="text-xl font-semibold mb-4"></div>
+                                <div id="reservasList" class="space-y-2">
+                                    <!-- Aquí se mostrarán las reservas -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -38,6 +45,11 @@
 
 {% block scripts %}
     <script>
+        // Al inicio del script
+        document.addEventListener('DOMContentLoaded', function () {
+            inicializarCalendario();
+        });
+
         // Función para generar el calendario
         function generateCalendar(year, month) {
             const calendarElement = document.getElementById('calendar');
@@ -90,12 +102,18 @@
                     dayElement.classList.add('bg-blue-500', 'text-white');
                 }
 
-                // Event listener para cada día
+                // Event listener para cada día OJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
                 dayElement.addEventListener('click', () => {
                     const selectedDate = new Date(currentYear, currentMonth, day);
-                    const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-                    const formattedDate = selectedDate.toLocaleDateString('es-ES', options);
-                    showModal(formattedDate);
+
+                    // Formato para mostrar al usuario (en español)
+                    const optionsDisplay = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+                    const formattedDisplayDate = selectedDate.toLocaleDateString('es-ES', optionsDisplay);
+
+                    // Formato para el backend (YYYY-MM-DD)
+                    const formattedAPIDate = selectedDate.toISOString().split('T')[0];
+
+                    showModal(formattedDisplayDate, formattedAPIDate);
                 });
 
                 calendarElement.appendChild(dayElement);
@@ -129,16 +147,64 @@
             generateCalendar(currentYear, currentMonth);
         });
 
-        // Funciones del modal
-        function showModal(selectedDate) {
+        const obtenerReservasUrl = "{% url 'obtener_reservas_por_fecha' %}";
+
+        async function obtenerReservas(fecha) {
+            const area_comunal_id = document.querySelector('select[name="area_id"]').value;
+            try {
+                const response = await fetch(`${obtenerReservasUrl}?fecha=${fecha}&area_comunal_id=${area_comunal_id}`);
+                const data = await response.json();
+                return data.reservas;
+            } catch (error) {
+                console.error('Error al obtener reservas:', error);
+                return [];
+            }
+        }
+
+        // Función para mostrar las reservas en el modal
+        function mostrarReservas(reservas) {
+            const reservasList = document.getElementById('reservasList');
+            reservasList.innerHTML = '';
+
+            if (reservas.length === 0) {
+                reservasList.innerHTML = '<p class="text-gray-500">No hay reservas para este día</p>';
+                return;
+            }
+
+            reservas.forEach(reserva => {
+                const reservaElement = document.createElement('div');
+                reservaElement.className = 'p-3 bg-gray-50 rounded-lg';
+                reservaElement.innerHTML = `
+            <p class="font-medium">Hora: ${reserva.hora_inicio} - ${reserva.hora_fin}</p>
+            <p class="text-gray-600">Reservado por: ${reserva.ciudadano}</p>
+        `;
+                reservasList.appendChild(reservaElement);
+            });
+        }
+
+        // Modificar la función showModal
+        async function showModal(displayDate, apiDate) {
             const modal = document.getElementById('myModal');
             const modalDateElement = document.getElementById('modalDate');
-            modalDateElement.textContent = selectedDate;
+            modalDateElement.textContent = displayDate;
+
+            // Obtener y mostrar las reservas usando la fecha formateada para la API
+            const reservas = await obtenerReservas(apiDate);
+            mostrarReservas(reservas);
+
             modal.classList.remove('hidden');
         }
 
         function hideModal() {
             document.getElementById('myModal').classList.add('hidden');
+        }
+
+        // Función para inicializar el calendario
+        function inicializarCalendario() {
+            const currentDate = new Date();
+            currentYear = currentDate.getFullYear();
+            currentMonth = currentDate.getMonth();
+            generateCalendar(currentYear, currentMonth);
         }
 
         // Cerrar modal
