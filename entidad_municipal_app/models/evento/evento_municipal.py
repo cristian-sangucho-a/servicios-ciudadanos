@@ -16,7 +16,7 @@ class ErrorGestionEventos(Exception):
     pass
 
 class EventoMunicipalManager(models.Manager):
-    def crear_evento_con_aforo(self, nombre, descripcion, fecha, lugar, capacidad, espacio_publico=None):
+    def crear_evento_con_aforo(self, nombre, descripcion, fecha, lugar, capacidad, entidad_municipal, espacio_publico=None):
         if espacio_publico:
             lugar = espacio_publico.direccion
             espacio_publico.estado_espacio_publico = espacio_publico.ESTADO_NO_DISPONIBLE
@@ -29,6 +29,7 @@ class EventoMunicipalManager(models.Manager):
             capacidad_maxima=capacidad,
             estado_actual=self.model.ESTADO_PROGRAMADO,
             espacio_publico=espacio_publico,  # Asignar el espacio público si se proporciona
+            entidad_municipal=entidad_municipal  # Asignar la entidad municipal
         )
 
 class EventoMunicipal(models.Model):
@@ -36,12 +37,12 @@ class EventoMunicipal(models.Model):
     Modelo que representa un evento organizado por la entidad municipal.
     Gestiona el aforo y estado del evento.
     """
-    
+
     ESTADO_PROGRAMADO = 'PROGRAMADO'
     ESTADO_EN_CURSO = 'EN_CURSO'
     ESTADO_FINALIZADO = 'FINALIZADO'
     ESTADO_CANCELADO = 'CANCELADO'
-    
+
     ESTADOS_EVENTO = [
         (ESTADO_PROGRAMADO, 'Programado'),
         (ESTADO_EN_CURSO, 'En Curso'),
@@ -61,28 +62,28 @@ class EventoMunicipal(models.Model):
         verbose_name='Nombre del Evento',
         help_text='Nombre descriptivo del evento municipal'
     )
-    
+
     descripcion_evento = models.TextField(
         verbose_name='Descripción',
         help_text='Descripción detallada del evento'
     )
-    
+
     fecha_realizacion = models.DateTimeField(
         verbose_name='Fecha de Realización',
         help_text='Fecha y hora en que se realizará el evento'
     )
-    
+
     lugar_evento = models.CharField(
         max_length=200,
         verbose_name='Lugar',
         help_text='Ubicación donde se realizará el evento'
     )
-    
+
     capacidad_maxima = models.PositiveIntegerField(
         verbose_name='Capacidad Máxima',
         help_text='Número máximo de personas que pueden asistir'
     )
-    
+
     estado_actual = models.CharField(
         max_length=20,
         choices=ESTADOS_EVENTO,
@@ -96,7 +97,7 @@ class EventoMunicipal(models.Model):
         verbose_name='Fecha de Creación',
         help_text='Fecha y hora en que se creó el registro del evento'
     )
-    
+
     fecha_actualizacion = models.DateTimeField(
         auto_now=True,
         verbose_name='Última Actualización',
@@ -111,6 +112,16 @@ class EventoMunicipal(models.Model):
         related_name='eventos',
         verbose_name='Espacio Público',
         help_text='Espacio público donde se realizará el evento'
+    )
+
+    entidad_municipal = models.ForeignKey(
+        'entidad_municipal_app.EntidadMunicipal',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='entidad',
+        verbose_name='Entidad Municipal',
+        help_text='Entidad municipal que organiza el evento'
     )
 
     motivo_cancelacion = models.TextField(
@@ -151,7 +162,7 @@ class EventoMunicipal(models.Model):
     def reducir_cupo_disponible(self):
         """
         Reduce el cupo disponible de forma segura con manejo de concurrencia
-        
+
         Returns:
             bool: True si se pudo reducir el cupo, False si no hay cupos disponibles
         """
@@ -165,7 +176,7 @@ class EventoMunicipal(models.Model):
     def aumentar_cupo_disponible(self):
         """
         Aumenta el cupo disponible de forma segura con manejo de concurrencia
-        
+
         Returns:
             bool: True si se pudo aumentar el cupo, False si no se pudo aumentar
         """
@@ -179,7 +190,7 @@ class EventoMunicipal(models.Model):
     def esta_disponible_para_inscripcion(self):
         """
         Verifica si el evento está disponible para inscripciones
-        
+
         Returns:
             bool: True si el evento está disponible para inscripciones
         """
@@ -192,7 +203,7 @@ class EventoMunicipal(models.Model):
     def obtener_inscritos(self):
         """
         Obtiene la lista de ciudadanos inscritos al evento
-        
+
         Returns:
             QuerySet: QuerySet de RegistroAsistencia con estado INSCRITO
         """
@@ -203,7 +214,7 @@ class EventoMunicipal(models.Model):
     def obtener_lista_espera(self):
         """
         Obtiene la lista de espera ordenada por fecha de inscripción
-        
+
         Returns:
             QuerySet: QuerySet de RegistroAsistencia con estado EN_ESPERA
         """
@@ -225,89 +236,89 @@ class EventoMunicipal(models.Model):
     def inscribir_ciudadano(self, ciudadano):
         """
         Inscribe a un ciudadano en el evento
-        
+
         Args:
             ciudadano: Instancia del ciudadano a inscribir
-            
+
         Returns:
             RegistroAsistencia: Registro creado
-            
+
         Raises:
             ErrorGestionEventos: Si hay problemas con la inscripción
         """
         # Obtener y bloquear el evento para operaciones concurrentes
         evento = EventoMunicipal.objects.select_for_update().get(pk=self.pk)
-        
+
         # Validar que el ciudadano no tenga una inscripción activa
         if RegistroAsistencia.objects.tiene_inscripcion_activa(evento, ciudadano):
             raise ErrorGestionEventos("Ya tienes una inscripción activa para este evento")
-        
+
         # Determinar el estado del registro
         if evento.esta_disponible_para_inscripcion() and evento.cupos_disponibles > 0:
             estado = RegistroAsistencia.ESTADO_INSCRITO
         else:
             estado = RegistroAsistencia.ESTADO_EN_ESPERA
-        
+
         # Crear el registro
         registro = RegistroAsistencia.objects.create(
             ciudadano=ciudadano,
             evento=evento,
             estado_registro=estado
         )
-        
+
         # Enviar notificación
         self._enviar_notificacion_inscripcion(registro)
-        
+
         return registro
 
     @transaction.atomic
     def cancelar_inscripcion(self, registro_id):
         """
         Cancela una inscripción y maneja la lista de espera
-        
+
         Args:
             registro_id: ID del registro a cancelar
-            
+
         Returns:
             tuple: (registro_cancelado, registro_promovido)
-            
+
         Raises:
             ErrorGestionEventos: Si hay problemas con la cancelación
         """
         try:
             registro = RegistroAsistencia.objects.select_related('evento').get(pk=registro_id)
-            
+
             if registro.evento_id != self.pk:
                 raise ErrorGestionEventos("El registro no pertenece a este evento")
-                
+
             if registro.estado_registro == RegistroAsistencia.ESTADO_CANCELADO:
                 raise ErrorGestionEventos("El registro ya está cancelado")
-            
+
             estado_original = registro.estado_registro
-            
+
             # Cancelar el registro
             registro.actualizar_estado(RegistroAsistencia.ESTADO_CANCELADO)
-            
+
             # Si estaba inscrito, liberar cupo y promover siguiente
             registro_promovido = None
             if estado_original == RegistroAsistencia.ESTADO_INSCRITO:
                 self.aumentar_cupo_disponible()
                 registro_promovido = self._promover_siguiente_en_espera()
-            
+
             # Enviar notificaciones
             self._enviar_notificacion_inscripcion(registro)
             if registro_promovido:
                 self._enviar_notificacion_inscripcion(registro_promovido)
-            
+
             return registro, registro_promovido
-            
+
         except RegistroAsistencia.DoesNotExist:
             raise ErrorGestionEventos("El registro especificado no existe")
 
     def _promover_siguiente_en_espera(self):
         """
         Promueve al siguiente ciudadano en lista de espera
-        
+
         Returns:
             Optional[RegistroAsistencia]: Registro promovido si existe
         """
@@ -320,7 +331,7 @@ class EventoMunicipal(models.Model):
     def _enviar_notificacion_inscripcion(self, registro):
         """
         Envía una notificación por correo sobre el estado de la inscripción
-        
+
         Args:
             registro: Instancia de RegistroAsistencia con la información
         """
