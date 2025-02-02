@@ -3,6 +3,7 @@ from threading import Lock
 from faker import Faker
 from entidad_municipal_app.models.reporte.repositorio_de_reporte_municipal import RepositorioDeReporteMunicipal
 from entidad_municipal_app.models.reporte.reporte_municipal import ReporteMunicipal
+from mocks.repositorio_de_departamento_en_memoria import RepositorioDeDepartamentoEnMemoria
 from shared.models import TipoReporte, Reporte
 from ciudadano_app.models import Ciudadano
 
@@ -41,6 +42,16 @@ class RepositorioDeReporteMunicipalEnMemoria(RepositorioDeReporteMunicipal):
         Genera reportes municipales de prueba con datos ficticios.
         """
         estados_validos = ["no_asignado", "asignado", "atendiendo", "resuelto", "postergado"]
+        repositorio_departamentos = RepositorioDeDepartamentoEnMemoria()
+        nombres_departamentos = [
+            "EPMMOP",  # Empresa Pública Metropolitana de Movilidad y Obras Públicas
+            "Obras Públicas",
+            "Seguridad Ciudadana",
+            "Medio Ambiente",
+            "Desarrollo Urbano",
+            "Servicios Públicos",
+            "Gestión de Riesgos"
+        ]
         for _ in range(5):  # Generamos 5 reportes ficticios
             ciudadano = Ciudadano(
                 nombre_completo=self.fake.name(),
@@ -50,7 +61,8 @@ class RepositorioDeReporteMunicipalEnMemoria(RepositorioDeReporteMunicipal):
 
             tipo_reporte = TipoReporte(
                 asunto=self.fake.sentence(nb_words=4),
-                descripcion=self.fake.text(max_nb_chars=200)
+                descripcion=self.fake.text(max_nb_chars=200),
+                departamento = repositorio_departamentos.obtener_departamento_por_nombre(self.fake.random_element(elements=nombres_departamentos))
             )
 
             reporte_ciudadano = Reporte(
