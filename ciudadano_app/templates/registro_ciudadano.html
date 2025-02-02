@@ -6,6 +6,17 @@
 <div class="flex items-center justify-center">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 class="text-2xl font-bold mb-6 text-center text-primario-DEFAULT">Registro de Ciudadano</h1>
+        
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-4 {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %} rounded">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
         <form method="POST">
             {% csrf_token %}
             <div class="mb-4">
@@ -33,8 +44,8 @@
                        required>
             </div>
             <div class="mb-6">
-                <label for="password2" class="block text-gray-700 font-semibold mb-2">Confirmar Contraseña</label>
-                <input type="password" name="password2" id="password2"
+                <label for="password_confirm" class="block text-gray-700 font-semibold mb-2">Confirmar Contraseña</label>
+                <input type="password" name="password_confirm" id="password_confirm"
                        class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-primario-DEFAULT"
                        required>
             </div>

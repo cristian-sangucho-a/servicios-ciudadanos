@@ -4,6 +4,7 @@ Modelo principal de Ciudadano.
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
+from django.core.exceptions import ValidationError
 from ciudadano_app.models.ciudadano.gestor_ciudadano import GestorCiudadano
 
 
@@ -65,6 +66,8 @@ class Ciudadano(AbstractBaseUser):
 
     def clean(self):
         super().clean()
+        # Import here to avoid circular import
+        from entidad_municipal_app.models.EntidadMunicipal import EntidadMunicipal
         if EntidadMunicipal.objects.filter(correo_electronico=self.correo_electronico).exists():
             raise ValidationError({
                 'correo_electronico': "Este correo ya está registrado como Entidad Municipal."
@@ -78,7 +81,7 @@ class Ciudadano(AbstractBaseUser):
         """Retorna el número de identificación del ciudadano"""
         return self.numero_identificacion
 
-    def __str__(self):
+    def _str_(self):
         """Retorna una representación en cadena del ciudadano"""
         return f"Ciudadano: {self.nombre_completo} ({self.correo_electronico})"
     
