@@ -6,31 +6,18 @@ Implementa los pasos definidos en el archivo control_asistencia.feature
 from behave import given, when, then
 from django.utils import timezone
 from datetime import timedelta
-from faker import Faker
+from datetime import datetime
 from django.core import mail
 from ciudadano_app.models import Ciudadano
-from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal, ErrorGestionEventos
+from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal, ErrorGestionEventos  
 from entidad_municipal_app.models.evento.registro_asistencia import RegistroAsistencia
-
-fake = Faker('es_ES')  # Usamos el locale español
-
-def crear_ciudadano_aleatorio():
-    """Crea un ciudadano con datos aleatorios"""
-    return Ciudadano.objects.create(
-        correo_electronico=fake.email(),
-        nombre_completo=f"{fake.first_name()} {fake.last_name()}",
-        numero_identificacion=str(fake.random_number(digits=10, fix_len=True))
-    )
-
-def crear_evento_aleatorio(capacidad=10):
-    """Crea un evento con datos aleatorios y capacidad específica"""
-    return EventoMunicipal.objects.crear_evento_con_aforo(
-        nombre=fake.sentence(nb_words=4),
-        descripcion=fake.text(max_nb_chars=200),
-        fecha=timezone.now() + timedelta(days=7),
-        lugar=fake.address(),
-        capacidad=capacidad
-    )
+from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
+from mocks.repositorio_eventos_memoria import (
+    crear_ciudadano_aleatorio,
+    crear_entidad_municipal_aleatoria,
+    crear_espacio_publico_aleatorio,
+    crear_evento_aleatorio
+)
 
 # Escenario: Registro exitoso dentro del límite de aforo
 @given("que existe un evento con aforo disponible")
@@ -94,6 +81,7 @@ def step_verificar_registro_rechazado(context):
     """Verifica que el registro fue rechazado y agregado a la lista de espera"""
     assert context.error is None, f"Error inesperado: {context.error}"
     assert context.registro is not None, "No se creó el registro"
+
     assert context.registro.estado_registro == RegistroAsistencia.ESTADO_EN_ESPERA, "Estado incorrecto"
 
 @then("agregar al ciudadano a una lista de espera")
