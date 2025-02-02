@@ -11,18 +11,12 @@ def postergar_reporte(request, reporte_id):
 
         # Obtener el reporte a través del servicio
         reporte = servicio_reporte.obtener_reporte_municipal_por_id(reporte_id)
-        print("este es el estado que llega " , reporte.obtener_estado())
 
-        # Verificar si el estado del reporte es 'postergado'
-        if reporte.estado == "postergado":
-            # Si ya está postergado, mostrar un mensaje de error
-            messages.error(request, "Este reporte ya ha sido postergado.")
-        else:
-            # Intentar postergar el reporte
-            if servicio_reporte.postergar_reporte(reporte_id):
-                messages.success(request, "El reporte ha sido postergado exitosamente.")
-            else:
-                messages.error(request, "No se pudo postergar el reporte.")
+        try:
+            servicio_reporte.postergar_reporte(reporte_id)
+        except:
+            estado = reporte.obtener_estado()
+            messages.error(request, f"No se pudo postergar el reporte ya que está {estado}")
 
     # Redirigir a la vista de ver reportes
     return redirect('lista_todos_reportes')
