@@ -29,16 +29,16 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            {% for registro in inscritos %}
+            {% for inscrito in inscritos %}
             <tr>
-              <td class="px-6 py-4 whitespace-nowrap">{{ registro.ciudadano.nombre_completo }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ registro.ciudadano.correo_electronico }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ registro.ciudadano.numero_identificacion }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ registro.fecha_inscripcion|date:"d/m/Y H:i" }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ inscrito.ciudadano.nombre_completo }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ inscrito.ciudadano.correo_electronico }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ inscrito.ciudadano.numero_identificacion }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ inscrito.fecha_inscripcion|date:"d/m/Y H:i" }}</td>
             </tr>
             {% empty %}
             <tr>
-              <td class="px-6 py-4 whitespace-nowrap" colspan="4">No hay ciudadanos inscritos.</td>
+              <td class="px-6 py-4 whitespace-nowrap text-center" colspan="4">No hay ciudadanos inscritos.</td>
             </tr>
             {% endfor %}
           </tbody>

@@ -10,5 +10,6 @@ __all__ = [
     'login_entidad',
     'bienvenida_entidad',
     'gestor_eventos',
-    'evento'
+    'evento',
+    'crear_evento'
 ]

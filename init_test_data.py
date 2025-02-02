@@ -10,10 +10,27 @@ django.setup()
 
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
+from entidad_municipal_app.models.EntidadMunicipal import EntidadMunicipal
 
 
 def crear_datos_prueba():
     print('Iniciando creación de datos de prueba...')
+
+    # Crear entidad municipal de prueba
+    entidad_municipal, created = EntidadMunicipal.objects.get_or_create(
+        correo_electronico="entidad@test.com",
+        defaults={
+            "nombre": "Entidad Municipal de Prueba",
+            "direccion": "Calle Falsa 123",
+            "telefono": "123456789"
+        }
+    )
+    if created:
+        entidad_municipal.set_password("test123")
+        entidad_municipal.save()
+        print(f"✓ Creada entidad municipal: {entidad_municipal.nombre}")
+    else:
+        print(f"La entidad municipal {entidad_municipal.nombre} ya existe")
 
     # Crear ciudadanos de prueba
     ciudadanos_data = [
@@ -56,7 +73,8 @@ def crear_datos_prueba():
                 "fecha_realizacion": data["fecha_realizacion"],
                 "lugar_evento": data["lugar_evento"],
                 "capacidad_maxima": data["capacidad_maxima"],
-                "estado_actual": EventoMunicipal.ESTADO_PROGRAMADO
+                "estado_actual": EventoMunicipal.ESTADO_PROGRAMADO,
+                "entidad_municipal": entidad_municipal  # Asociar a la entidad municipal
             }
         )
         if created:

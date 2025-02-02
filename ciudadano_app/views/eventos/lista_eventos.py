@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from entidad_municipal_app.models import EventoMunicipal
+from entidad_municipal_app.models.evento.evento_municipal import ErrorGestionEventos
 from entidad_municipal_app.models.evento.registro_asistencia import RegistroAsistencia
 
 
