@@ -3,17 +3,36 @@
 {% block title %}Realiza tu reserva{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center">
-    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+<div class="flex flex-col lg:flex-row items-center justify-center">
+    <div class="w-full lg:w-1/3 mt-8 lg:mt-0 lg:mr-8 p-4 bg-gray-100 rounded shadow-md">
+        <h2 class="text-xl font-bold mb-4">Reserva de </h2>
+        <p><strong>Nombre:</strong> {{ request.user.nombre_completo }}</p>
+        <p><strong>Correo electrónico:</strong> {{ request.user.correo_electronico }}</p>
+        <h2 class="text-xl font-bold mt-6 mb-4">Reserva en </h2>
+        <p><strong>Nombre del área:</strong> {{ form.initial.area_comunal }}</p>
+    </div>
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md lg:max-w-2xl">
         <h1 class="text-2xl font-bold mb-6 text-center text-primario-DEFAULT">Realiza tu reserva</h1>
         <form method="POST">
             {% csrf_token %}
-            {{ form.fecha_reserva }}
-            {{ form.hora_inicio }}
-            {{ form.hora_fin }}
-            {{ form.tipo_reserva }}
+            <div>
+                <label for="{{ form.fecha_reserva.id_for_label }}">Fecha reserva</label>
+                {{ form.fecha_reserva }}
+            </div>
+            <div>
+                <label for="{{ form.hora_inicio.id_for_label }}">Hora inicio</label>
+                {{ form.hora_inicio }}
+            </div>
+            <div>
+                <label for="{{ form.hora_fin.id_for_label }}">Hora fin</label>
+                {{ form.hora_fin }}
+            </div>
+            <div>
+                <label for="{{ form.tipo_reserva.id_for_label }}">Tipo reserva</label>
+                {{ form.tipo_reserva }}
+            </div>
             <div id="correos_invitados_field" style="display: none;">
-                <label for="correos_invitados">Correos de Invitados</label>
+                <label for="{{ form.correos_invitados.id_for_label }}">Correos de invitados</label>
                 {{ form.correos_invitados }}
             </div>
             {{ form.estado_reserva.as_hidden }}
@@ -24,13 +43,6 @@
                 Reservar
             </button>
         </form>
-    </div>
-    <div class="w-1/3 ml-8 p-4 bg-gray-100 rounded shadow-md">
-        <h2 class="text-xl font-bold mb-4">Información del Usuario</h2>
-        <p><strong>Nombre:</strong> {{ request.user.nombre_completo }}</p>
-        <p><strong>Correo Electrónico:</strong> {{ request.user.correo_electronico }}</p>
-        <h2 class="text-xl font-bold mt-6 mb-4">Área Comunal</h2>
-        <p><strong>Nombre del Área:</strong> {{ form.initial.area_comunal }}</p>
     </div>
 </div>
 
