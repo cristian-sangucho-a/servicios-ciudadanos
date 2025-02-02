@@ -25,8 +25,8 @@ def lista_reportes_por_departamento(request,departamento=None):
     else:
         reportes_filtrados = todos_reportes
 
-    return render(request, 'entidad/reportes/lista_reportes_por_departamento.html', {
-        'reportes': reportes_filtrados,
-        'departamentos': departamentos,
-        'departamento_seleccionado': departamento
-    })
+    # return render(request, 'entidad/reportes/lista_reportes_por_departamento.html', {
+    #     'reportes': reportes_filtrados,
+    #     'departamentos': departamentos,
+    #     'departamento_seleccionado': departamento
+    # })
