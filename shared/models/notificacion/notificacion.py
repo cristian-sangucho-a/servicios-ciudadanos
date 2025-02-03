@@ -4,7 +4,7 @@ from ciudadano_app.models import Ciudadano
 
 class Notificacion(models.Model):
     ciudadano = models.ForeignKey(
-        'ciudadano_app.Ciudadano',
+        Ciudadano,
         on_delete=models.CASCADE,
         related_name='notificaciones'
     )
@@ -15,5 +15,5 @@ class Notificacion(models.Model):
     class Meta:
         ordering = ['-fecha']
 
-    def _str_(self):
+    def __str__(self):
         return f"Notificación para {self.ciudadano.nombre_completo}: {self.mensaje[:50]}..."

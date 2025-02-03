@@ -1,7 +1,13 @@
-# entidad_municipal_app/services/servicio_de_estado_sector.py
+# services/servicio_de_estado_sector.py
 from datetime import timedelta
 from django.utils.timezone import now
-from shared.models.ciudad.sector import ESTADOS_SECTOR
+
+# Palabras clave asociadas a cada estado
+PALABRAS_CLAVE_ESTADOS = {
+    "RIESGO": ["peligro", "robo", "asalto", "violencia", "crimen"],
+    "PRECAUCIÓN": ["cuidado", "precaución", "alerta", "riesgo moderado"],
+    "SEGURO": ["seguro", "tranquilo", "sin incidentes"],
+}
 
 class ServicioDeEstadoSector:
     def __init__(self, sector):
@@ -13,20 +19,21 @@ class ServicioDeEstadoSector:
         total_reportes = reportes.count()
 
         # Contadores de reportes según gravedad
-        conteo = {"Seguro": 0, "Precaución": 0, "Riesgo": 0}
+        conteo = {"RIESGO": 0, "PRECAUCIÓN": 0, "SEGURO": 0}
 
         for reporte in reportes:
-            for estado, palabras_clave in ESTADOS_SECTOR.items():
-                if any(palabra in reporte.asunto.lower() for palabra in palabras_clave):
+            asunto_lower = reporte.asunto.lower()
+            for estado, palabras_clave in PALABRAS_CLAVE_ESTADOS.items():
+                if any(palabra in asunto_lower for palabra in palabras_clave):
                     conteo[estado] += 1
                     break  # Solo contar en una categoría
 
         # Lógica para determinar el estado del sector
-        if conteo["Riesgo"] >= 3 or total_reportes >= 20:
-            self.sector.estado = "Riesgo"
-        elif conteo["Precaución"] >= 3 or total_reportes >= 10:
-            self.sector.estado = "Precaución"
+        if conteo["RIESGO"] >= 3 or total_reportes >= 20:
+            self.sector.estado = "RIESGO"
+        elif conteo["PRECAUCIÓN"] >= 3 or total_reportes >= 10:
+            self.sector.estado = "PRECAUCIÓN"
         else:
-            self.sector.estado = "Seguro"
+            self.sector.estado = "SEGURO"
 
         self.sector.save()

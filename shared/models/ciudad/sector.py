@@ -1,5 +1,5 @@
+# models.py
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 # Lista de sectores disponibles
 SECTORES = [
@@ -39,22 +39,22 @@ SECTORES = [
 
 # Definición de los estados posibles del sector
 ESTADOS_SECTOR = [
-    ('Seguro', 'Seguro'),
-    ('En Riesgo', 'En Riesgo'),
-    ('Peligroso', 'Peligroso'),
+    ('SEGURO', 'Seguro'),
+    ('PRECAUCIÓN', 'Precaución'),
+    ('RIESGO', 'Riesgo'),
 ]
 
 class Sector(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
+    nombre = models.CharField(
+        max_length=100,
+        choices=SECTORES,
+        unique=True
+    )
     estado = models.CharField(
         max_length=20,
-        choices=[
-            ('Seguro', 'Seguro'),
-            ('Riesgo', 'Riesgo'),
-            ('Peligroso', 'Peligroso')
-        ],
-        default='Seguro'
+        choices=ESTADOS_SECTOR,
+        default='SEGURO'
     )
 
-    def _str_(self):
-        return self.nombre  # Simplificado para evitar confusión
+    def __str__(self):
+        return self.nombre
