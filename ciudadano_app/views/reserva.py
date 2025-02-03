@@ -52,3 +52,12 @@ def cancelar_reserva(request):
         servicio_reserva.cancelar_reserva(id_reserva, ciudadano)
 
     return render(request, 'agenda.html')
+
+
+@ciudadano_required
+def mis_reservas(request):
+    ciudadano = request.user
+    servicio_reserva = ServicioReserva()
+    reservas = servicio_reserva.obtener_reservas_activas_ciudadano(ciudadano)
+    return render(request, 'mis_reservas.html', {'reservas': reservas})
+
