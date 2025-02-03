@@ -43,7 +43,7 @@
   <div class="flex flex-col sm:flex-row gap-4 mb-8">
     <!-- Filtro por Fecha (Flatpickr en modo wrap) -->
     <div class="relative">
-      <div id="datePickerWrapper" class="flatpickr" data-wrap="true">
+      <div id="fecha" class="flatpickr" data-wrap="true">
         <button type="button" data-input class="flex items-center gap-2 px-6 py-3 rounded-lg shadow border border-light bg-white hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary">
           <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -66,14 +66,21 @@
   <!-- Menú de Categorías -->
   <div class="mb-8">
     <nav class="flex gap-4">
-      <a href="{% url 'lista_eventos' %}?categoria=todos" class="flex items-center gap-2 px-4 py-2 rounded-full border border-light bg-white hover:bg-primary hover:text-white transition-colors duration-200 focus:outline-none">
+      <a href="{% url 'lista_eventos' %}?categoria=todos" 
+         class="flex items-center gap-2 px-4 py-2 rounded-full border {% if categoria_actual == 'todos' %}bg-primary text-white{% else %}border-light bg-white hover:bg-primary hover:text-white{% endif %} transition-colors duration-200 focus:outline-none">
         <span class="font-semibold">Todos los eventos</span>
-        <span class="bg-gold text-black px-2 py-0.5 rounded-full text-xs">{{ total_eventos }}</span>
+        <span class="{% if categoria_actual == 'todos' %}bg-white text-primary{% else %}bg-gold text-black{% endif %} px-2 py-0.5 rounded-full text-xs">{{ total_eventos }}</span>
       </a>
       {% if user.is_authenticated %}
-        <a href="{% url 'lista_eventos' %}?categoria=mis" class="flex items-center gap-2 px-4 py-2 rounded-full border border-light bg-white hover:bg-primary hover:text-white transition-colors duration-200 focus:outline-none">
+        <a href="{% url 'lista_eventos' %}?categoria=mis" 
+           class="flex items-center gap-2 px-4 py-2 rounded-full border {% if categoria_actual == 'mis' %}bg-primary text-white{% else %}border-light bg-white hover:bg-primary hover:text-white{% endif %} transition-colors duration-200 focus:outline-none">
           <span class="font-semibold">Mis eventos</span>
-          <span class="bg-gold text-black px-2 py-0.5 rounded-full text-xs">{{ mis_eventos }}</span>
+          <span class="{% if categoria_actual == 'mis' %}bg-white text-primary{% else %}bg-gold text-black{% endif %} px-2 py-0.5 rounded-full text-xs">{{ mis_eventos }}</span>
+        </a>
+        <a href="{% url 'lista_eventos' %}?categoria=disponibles" 
+           class="flex items-center gap-2 px-4 py-2 rounded-full border {% if categoria_actual == 'disponibles' %}bg-primary text-white{% else %}border-light bg-white hover:bg-primary hover:text-white{% endif %} transition-colors duration-200 focus:outline-none">
+          <span class="font-semibold">Disponibles</span>
+          <span class="{% if categoria_actual == 'disponibles' %}bg-white text-primary{% else %}bg-gold text-black{% endif %} px-2 py-0.5 rounded-full text-xs">{{ total_eventos }}</span>
         </a>
       {% endif %}
     </nav>
@@ -82,7 +89,7 @@
   <!-- Título de Sección y Conteo -->
   <div class="flex items-center gap-3 mb-8">
     <h2 class="text-2xl font-bold text-primary">Eventos</h2>
-    <span class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+    <span id="contador-eventos" class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
       {{ eventos|length }} eventos disponibles
     </span>
   </div>
@@ -90,7 +97,13 @@
   <!-- Grid de Tarjetas de Evento -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for evento in eventos %}
-      <div class="bg-white rounded-xl shadow border border-light hover:shadow-lg transition-shadow duration-200">
+      <div class="bg-white rounded-xl shadow border border-light hover:shadow-lg transition-shadow duration-200 evento-card" 
+           data-fecha="{{ evento.fecha_realizacion|date:'Y-m-d' }}" 
+           data-fecha-hora="{{ evento.obtener_formato_fecha }}"
+           data-inscrito="{{ evento.is_subscribed|yesno:'true,false' }}"
+           data-estado="{{ evento.estado_actual }}"
+           data-disponible="{{ evento.esta_disponible_para_inscripcion|yesno:'true,false' }}"
+           data-cupos="{{ evento.cupos_disponibles }}">
         <div class="p-6 flex flex-col h-full">
           <!-- Encabezado: Nombre y Fecha del Evento -->
           <div class="flex justify-between items-center mb-4">
@@ -104,6 +117,10 @@
           <!-- Ubicación del Evento -->
           <p class="text-gray-600 mb-4">
             <strong>Lugar:</strong> {{ evento.lugar_evento }}
+          </p>
+          <!-- Cupos Disponibles -->
+          <p class="text-gray-600 mb-4">
+            <strong>Cupos Disponibles:</strong> {{ evento.cupos_disponibles }}
           </p>
           <!-- Botón de Acción (funciones directas en el botón) -->
           <div class="mt-auto">
@@ -142,14 +159,106 @@
 <!-- Flatpickr JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 <script>
-  // Inicialización de Flatpickr para el filtro de fecha
-  flatpickr("#datePickerWrapper", {
-    wrap: true,
-    dateFormat: "Y-m-d",
-    onChange: function(selectedDates, dateStr) {
-      console.log('Fecha seleccionada:', dateStr);
-     
+  document.addEventListener('DOMContentLoaded', function() {
+    let fechaInicio = null;
+    let fechaFin = null;
+
+    function actualizarContadorEventos(cantidad) {
+      const contadorElement = document.getElementById('contador-eventos');
+      if (contadorElement) {
+        contadorElement.textContent = cantidad + ' eventos disponibles';
+      }
     }
+
+    function filtrarEventos() {
+      const eventos = document.querySelectorAll('.evento-card');
+      let eventosVisibles = 0;
+      let eventosDisponibles = 0;
+      
+      // Obtener la categoría actual de la URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoria = urlParams.get('categoria') || 'todos';
+      
+      eventos.forEach(evento => {
+        let mostrar = true;
+        const fechaHoraCompleta = evento.dataset.fechaHora;
+        const [fecha, hora] = fechaHoraCompleta.split(' ');
+        const [dia, mes, anio] = fecha.split('/');
+        const fechaEvento = `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+        const inscrito = evento.dataset.inscrito === 'true';
+        const estaDisponible = evento.dataset.disponible === 'true';
+        const cuposDisponibles = parseInt(evento.dataset.cupos) || 0;
+        
+        // Filtrar por fecha si hay un rango seleccionado
+        if (fechaInicio && fechaFin) {
+          const inicio = fechaInicio.toISOString().split('T')[0];
+          const fin = fechaFin.toISOString().split('T')[0];
+          
+          if (!(fechaEvento >= inicio && fechaEvento <= fin)) {
+            mostrar = false;
+          }
+        }
+        
+        // Aplicar filtros según la categoría
+        switch(categoria) {
+          case 'mis':
+            mostrar = mostrar && inscrito;
+            break;
+          case 'disponibles':
+            mostrar = mostrar && !inscrito && estaDisponible && cuposDisponibles > 0;
+            break;
+        }
+        
+        // Contar eventos disponibles para inscripción
+        if (!inscrito && estaDisponible && cuposDisponibles > 0) {
+          eventosDisponibles++;
+        }
+        
+        // Mostrar u ocultar el evento
+        if (mostrar) {
+          evento.style.display = 'block';
+          eventosVisibles++;
+        } else {
+          evento.style.display = 'none';
+        }
+      });
+      
+      // Actualizar contadores
+      actualizarContadorEventos(eventosVisibles);
+      
+      // Actualizar contador en el botón de disponibles
+      const disponiblesCountSpan = document.querySelector('a[href*="categoria=disponibles"] span:last-child');
+      if (disponiblesCountSpan) {
+        disponiblesCountSpan.textContent = eventosDisponibles;
+      }
+    }
+
+    // Inicializar Flatpickr
+    const fpicker = flatpickr("#fecha", {
+      mode: "range",
+      dateFormat: "Y-m-d",
+      locale: {
+        firstDayOfWeek: 1,
+        weekdays: {
+          shorthand: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+          longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+        },
+        months: {
+          shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+          longhand: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+        }
+      },
+      onChange: function(selectedDates) {
+        if (selectedDates.length === 2) {
+          fechaInicio = selectedDates[0];
+          fechaFin = selectedDates[1];
+          filtrarEventos();
+        }
+      }
+    });
+
+    // Ejecutar filtrado inicial
+    filtrarEventos();
   });
 </script>
 {% endblock %}
