@@ -25,4 +25,7 @@ class AreaComunal(models.Model):
         related_name = 'areas_comunales'
     )
 
+    def __str__(self):
+        return self.nombre_area
+
 

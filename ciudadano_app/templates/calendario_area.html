@@ -9,8 +9,8 @@
         <!-- component -->
         <div class="bg-gray-100 flex justify-center">
             <div class="lg:w-7/12 md:w-9/12 sm:w-10/12 mx-auto p-4">
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                    <div class="flex items-center justify-between px-6 py-3 bg-primario">
+                <div class="bg-default shadow-lg rounded-lg overflow-hidden">
+                    <div class="flex items-center justify-between px-6 py-3 bg-primario-default">
                         <button id="prevMonth" class="text-white">Anterior</button>
                         <h2 id="currentMonth" class="text-white"></h2>
                         <button id="nextMonth" class="text-white">Siguiente</button>
@@ -162,37 +162,91 @@
         }
 
         // Función para mostrar las reservas en el modal
-        function mostrarReservas(reservas) {
+        function mostrarReservas(reservas, fecha) {
             const reservasList = document.getElementById('reservasList');
             reservasList.innerHTML = '';
 
-            if (reservas.length === 0) {
-                reservasList.innerHTML = '<p class="text-gray-500">No hay reservas para este día</p>';
-                return;
-            }
+            const bloques = generarBloquesHorarios();
 
-            reservas.forEach(reserva => {
-                const reservaElement = document.createElement('div');
-                reservaElement.className = 'p-3 bg-gray-50 rounded-lg';
-                reservaElement.innerHTML = `
-            <p class="font-medium">Hora: ${reserva.hora_inicio} - ${reserva.hora_fin}</p>
-            <p class="text-gray-600">Reservado por: ${reserva.ciudadano}</p>
-        `;
-                reservasList.appendChild(reservaElement);
+            bloques.forEach(bloque => {
+                const bloqueElement = document.createElement('div');
+                bloqueElement.className = 'p-3 rounded-lg mb-2 border';
+
+                const reservasEnBloque = reservas.filter(reserva => {
+                    const [horaReserva] = reserva.hora_inicio.split(':').map(Number);
+                    const horaInicioBloque = parseInt(bloque.inicio.split(':')[0], 10);
+                    return horaReserva >= horaInicioBloque && horaReserva < (horaInicioBloque + 2);
+                });
+
+                bloqueElement.innerHTML = `<p class="font-medium">${bloque.inicio} - ${bloque.fin}</p>`;
+
+                if (reservasEnBloque.length > 0) {
+                    reservasEnBloque.forEach(reserva => {
+                        const reservaDiv = document.createElement('div');
+                        reservaDiv.className = 'mt-2 p-2 bg-red-50 rounded';
+                        reservaDiv.innerHTML = `
+                    <p class="text-sm text-red-600">Reservado por: ${reserva.ciudadano}</p>
+                    <p class="text-xs text-gray-500">${reserva.hora_inicio} - ${reserva.hora_fin}</p>
+                `;
+                        bloqueElement.appendChild(reservaDiv);
+                    });
+                    bloqueElement.classList.add('bg-red-100');
+                } else {
+                    const disponibleDiv = document.createElement('div');
+                    const textoDisponible = document.createElement('p');
+                    const agregarReserva = document.createElement('a');
+                    disponibleDiv.className = 'mt-2 p-2 bg-green-50 rounded flex justify-between items-center';
+                    textoDisponible.className = 'text-sm text-green-600';
+                    textoDisponible.textContent = 'Disponible';
+
+                    // Construir la URL con los parámetros necesarios
+                    const area_comunal_id = document.querySelector('select[name="area_id"]').value;
+                    const params = new URLSearchParams({
+                        fecha_reserva: fecha,
+                        hora_inicio: bloque.inicio,
+                        hora_fin: bloque.fin,
+                        area_comunal: area_comunal_id
+                    });
+
+                    agregarReserva.className = 'flex items-center text-green-600 hover:text-green-800';
+                    agregarReserva.href = `{% url 'reservar_area_comunal' %}?${params.toString()}`;
+                    agregarReserva.innerHTML = `
+                <svg class="mr-1" width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2Zm0 5a.75.75 0 0 0-.743.648l-.007.102v3.5h-3.5a.75.75 0 0 0-.102 1.493l.102.007h3.5v3.5a.75.75 0 0 0 1.493.102l.007-.102v-3.5h3.5a.75.75 0 0 0 .102-1.493l-.102-.007h-3.5v-3.5A.75.75 0 0 0 12 7Z" fill="currentColor"/>
+                </svg>
+                Reservar`;
+                    disponibleDiv.appendChild(textoDisponible);
+                    disponibleDiv.appendChild(agregarReserva);
+                    bloqueElement.appendChild(disponibleDiv);
+                    bloqueElement.classList.add('bg-green-100');
+                }
+
+                reservasList.appendChild(bloqueElement);
             });
         }
 
-        // Modificar la función showModal
+        // Modificar la función showModal para pasar la fecha a mostrarReservas
         async function showModal(displayDate, apiDate) {
             const modal = document.getElementById('myModal');
             const modalDateElement = document.getElementById('modalDate');
             modalDateElement.textContent = displayDate;
 
-            // Obtener y mostrar las reservas usando la fecha formateada para la API
             const reservas = await obtenerReservas(apiDate);
-            mostrarReservas(reservas);
+            mostrarReservas(reservas, apiDate);
 
             modal.classList.remove('hidden');
+        }
+
+        function generarBloquesHorarios() {
+            const bloques = [];
+            let hora = 7;
+            while (hora < 19) {
+                const inicio = `${hora.toString().padStart(2, '0')}:00`;
+                const fin = `${(hora + 2).toString().padStart(2, '0')}:00`;
+                bloques.push({inicio, fin});
+                hora += 2;
+            }
+            return bloques;
         }
 
         function hideModal() {

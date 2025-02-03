@@ -26,7 +26,9 @@ def reserva(request):
         fecha_reserva = request.GET.get('fecha_reserva')
         hora_inicio = request.GET.get('hora_inicio')
         hora_fin = request.GET.get('hora_fin')
-        area_comunal = request.GET.get('area_comunal')
+        area_comunal_id = request.GET.get('area_comunal')
+        servicio_reserva = ServicioReserva()
+        area_comunal = servicio_reserva.obtener_area_comunal(area_comunal_id)
         form = ReservaRegisterForm(initial={
             'fecha_reserva': fecha_reserva,
             'hora_inicio': hora_inicio,
