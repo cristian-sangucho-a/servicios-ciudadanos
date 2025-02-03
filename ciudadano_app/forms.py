@@ -1,4 +1,8 @@
+from datetime import datetime
+
 from django import forms
+
+from ciudadano_app.models import AreaComunal
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from django.core.exceptions import ValidationError
 
@@ -56,10 +60,9 @@ class CiudadanoRegisterForm(forms.ModelForm):
         return ciudadano
 
 
+# forms.py
+# forms.py
 class ReservaRegisterForm(forms.ModelForm):
-    """
-    Formulario para crear una nueva reserva.
-    """
     TIPO_RESERVA_CHOICES = [
         ('publico', 'Público'),
         ('privado', 'Privado'),
@@ -70,50 +73,48 @@ class ReservaRegisterForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'w-full p-2 border rounded'})
     )
 
+    correos_invitados = forms.CharField(
+        required=False,  # Hacemos el campo no requerido por defecto
+        widget=forms.TextInput()
+    )
+
     class Meta:
         model = Reserva
-        fields = ['fecha_reserva', 'hora_inicio', 'hora_fin', 'tipo_reserva', 'correos_invitados', 'estado_reserva', 'ciudadano', 'area_comunal']
+        fields = '__all__'
         widgets = {
-            'fecha_reserva': forms.DateInput(attrs={'class': 'w-full p-2 border rounded', 'type': 'date', 'readonly': 'readonly'}),
-            'hora_inicio': forms.TimeInput(attrs={'class': 'w-full p-2 border rounded', 'type': 'time', 'readonly': 'readonly'}),
-            'hora_fin': forms.TimeInput(attrs={'class': 'w-full p-2 border rounded', 'type': 'time', 'readonly': 'readonly'}),
-            'correos_invitados': forms.TextInput(attrs={'class': 'w-full p-2 border rounded', 'id': 'correos_invitados'}),
-            'estado_reserva': forms.TextInput(attrs={'class': 'w-full p-2 border rounded', 'style': 'display:none;'}),
-            'ciudadano': forms.Select(attrs={'class': 'w-full p-2 border rounded', 'style': 'display:none;'}),
-            'area_comunal': forms.Select(attrs={'class': 'w-full p-2 border rounded', 'style': 'display:none;'}),
+            'fecha_reserva': forms.DateInput(attrs={'type': 'date', 'readonly': True}),
+            'hora_inicio': forms.TimeInput(attrs={'type': 'time', 'readonly': True}),
+            'hora_fin': forms.TimeInput(attrs={'type': 'time', 'readonly': True}),
+            'estado_reserva': forms.HiddenInput(),
+            'ciudadano': forms.HiddenInput(),
+            'area_comunal': forms.HiddenInput(),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.help_text = ''
+        fecha = cleaned_data.get('fecha_reserva')
+        if fecha and fecha < datetime.now().date():
+            self.add_error('fecha_reserva', 'No puedes reservar en fechas pasadas')
 
-    def save(self, commit=True):
+        hora_inicio = cleaned_data.get('hora_inicio')
+        hora_fin = cleaned_data.get('hora_fin')
+        if hora_inicio and hora_fin and hora_inicio >= hora_fin:
+            self.add_error('hora_fin', 'La hora final debe ser posterior a la inicial')
+
+        tipo_reserva = cleaned_data.get('tipo_reserva')
+        correos_invitados = cleaned_data.get('correos_invitados')
+
+        if tipo_reserva == 'privado' and not correos_invitados:
+            self.add_error('correos_invitados', 'Los correos son obligatorios para reservas privadas')
+        elif tipo_reserva == 'publico':
+            cleaned_data['correos_invitados'] = ''
+
+        return cleaned_data
+
+    def save(self, commit = ...):
         reserva = super().save(commit=False)
-        servicio_reserva = ServicioReserva()
-        id_reserva = None
-        fue_reservado = False
-        if reserva.tipo_reserva == 'privado':
-            id_reserva, fue_reservado = servicio_reserva.reservar_area_comunal_para_actividad_privada(
-                reserva.area_comunal,
-                reserva.fecha_reserva,
-                reserva.hora_inicio,
-                reserva.hora_fin,
-                reserva.tipo_reserva,
-                reserva.ciudadano,
-                reserva.correos_invitados
-            )
-        id_reserva, fue_reservado = servicio_reserva.reservar_area_comunal(
-            reserva.area_comunal,
-            reserva.fecha_reserva,
-            reserva.hora_inicio,
-            reserva.hora_fin,
-            reserva.tipo_reserva,
-            reserva.ciudadano
-        )
-        if not fue_reservado:
-            raise ValidationError("No se pudo realizar la reserva.")
+        reserva.estado_reserva = 'Activa'
         if commit:
             reserva.save()
         return reserva
