@@ -59,7 +59,7 @@ class ServicioReserva(RespositorioReserva):
         return ciudadano.reservas.filter(estado_reserva='Activa')
 
     def obtener_reservas_area_comunal(self, area_comunal, fecha):
-        return area_comunal.reservas.filter(fecha_reserva=fecha)
+        return area_comunal.reservas.filter(fecha_reserva=fecha, estado_reserva='Activa')
 
     def reservar(self, area_comunal: AreaComunal, fecha_reserva, hora_inicio,
                                                      hora_fin, tipo_reserva,
