@@ -95,7 +95,7 @@ class ReservaRegisterForm(forms.ModelForm):
 
         fecha = cleaned_data.get('fecha_reserva')
         if fecha and fecha < datetime.now().date():
-            self.add_error('fecha_reserva', 'No puedes reservar en fechas pasadas')
+            self.add_error('fecha_reserva', 'No puedes reservar_area_comunal en fechas pasadas')
 
         hora_inicio = cleaned_data.get('hora_inicio')
         hora_fin = cleaned_data.get('hora_fin')
