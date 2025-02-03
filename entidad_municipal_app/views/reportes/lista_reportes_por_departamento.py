@@ -2,14 +2,15 @@ from django.shortcuts import render
 
 from entidad_municipal_app.decorators import entidad_required
 from entidad_municipal_app.models.departamento.servicio_departamento import ServicioDepartamento
+from entidad_municipal_app.models.reporte.repositorio_de_reporte_municipal_django import \
+    RepositorioDeReporteMunicipalDjango
 from entidad_municipal_app.models.reporte.servicio_de_reporte_municipal import ServicioReporteMunicipal
 from mocks.repositorio_de_departamento_en_memoria import RepositorioDeDepartamentoEnMemoria
-from mocks.repositorio_de_reporte_municipal_en_memoria import RepositorioDeReporteMunicipalEnMemoria
 
 @entidad_required
 def lista_reportes_por_departamento(request,departamento=None):
     """Vista para listar reportes municipales filtrados por departamento."""
-    repositorio_reportes = RepositorioDeReporteMunicipalEnMemoria()
+    repositorio_reportes = RepositorioDeReporteMunicipalDjango()
     repositorio_departamentos = RepositorioDeDepartamentoEnMemoria()
     servicio_de_reporte = ServicioReporteMunicipal(repositorio_reportes)
     servicio_de_departamento = ServicioDepartamento(repositorio_departamentos)
