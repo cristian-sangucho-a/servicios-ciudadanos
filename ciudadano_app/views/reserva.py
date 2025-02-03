@@ -51,8 +51,7 @@ def cancelar_reserva(request):
 
         servicio_reserva.cancelar_reserva(id_reserva, ciudadano)
 
-    return render(request, 'agenda.html')
-
+    return redirect('mis_reservas')
 
 @ciudadano_required
 def mis_reservas(request):
