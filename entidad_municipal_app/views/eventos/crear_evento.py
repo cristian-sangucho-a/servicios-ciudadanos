@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
 from django.contrib.auth.decorators import login_required
 from entidad_municipal_app.decorators import entidad_required
-
+from django.contrib import messages  # Para mostrar mensajes
 
 @entidad_required
 @login_required
@@ -20,7 +20,7 @@ def crear_evento(request):
 
         # Crear el evento usando el manager
         try:
-            EventoMunicipal.objects.create_evento_con_aforo(
+            EventoMunicipal.objects.crear_evento_con_aforo(
                 nombre=nombre_evento,
                 descripcion=descripcion_evento,
                 fecha=fecha_realizacion,
@@ -28,10 +28,9 @@ def crear_evento(request):
                 capacidad=capacidad_maxima,
                 entidad_municipal=entidad_municipal
             )
-            # Redirigir a la página de gestión de eventos
-            return redirect('gestor_eventos')
+            messages.success(request, 'El evento se ha creado exitosamente.')
+            return redirect('gestor_eventos')  # Redirigir a la lista de eventos
         except Exception as e:
-            # Manejo de errores, puedes agregar un mensaje de error aquí
-            print(f"Error al crear el evento: {e}")
+            messages.error(request, f'Error al crear el evento: {str(e)}')
 
     return render(request, 'entidad/eventos/crear_evento.html')

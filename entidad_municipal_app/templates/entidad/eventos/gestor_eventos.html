@@ -4,6 +4,9 @@
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-[#143D69]">Gestor de Eventos</h1>
   </div>
+ <div class="flex justify-end space-x-4 mb-4"> <!-- Agregamos mb-4 aquí -->
+      <a href="{% url 'crear_evento'%}" class="bg-[#1E4F82] text-white py-2 px-4 rounded hover:bg-[#143D69]">Crear Evento</a>
+    </div>
   <div class="overflow-x-auto">
     <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
       <thead class="bg-[#143D69]">
@@ -74,9 +77,6 @@
     </table>
   </div>
 <div class="container mx-auto mt-6 px-6">
-    <div class="flex justify-end space-x-4 mb-4"> <!-- Agregamos mb-4 aquí -->
-      <a href="{% url 'crear_evento'%}" class="bg-[#1E4F82] text-white py-2 px-4 rounded hover:bg-[#143D69]">Crear Evento</a>
-    </div>
   </div>
 </div>
 {% endblock %}
