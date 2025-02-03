@@ -4,74 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resolver Reporte</title>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            margin-top: 50px;
-        }
-        .card {
-            background-color: #ffffff;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #004085;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <!-- Card para el reporte -->
-            <div class="card">
-                <div class="card-header text-center">
-                    <h4>Resolver Reporte #{{ reporte.id }}</h4>
-                </div>
-                <div class="card-body">
-                    <!-- Mensajes de éxito o error -->
-                    {% if messages %}
-                        <div class="alert alert-info" role="alert">
-                            {% for message in messages %}
-                                <p>{{ message }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+<div class="w-full max-w-lg bg-white shadow-lg rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-gray-900 text-center mb-4">
+        Resolver Reporte #{{ reporte.id }}
+    </h2>
 
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="comentario" class="form-label">Comentario o Resolución:</label>
-                            <textarea class="form-control" id="comentario" name="comentario" rows="6" placeholder="Escribe una descripción o solución para este reporte..."></textarea>
-                        </div>
-
-                        <!-- Información adicional del reporte -->
-                        <div class="mb-3">
-                            <label for="estado" class="form-label">Estado Actual:</label>
-                            <input type="text" class="form-control" id="estado" value="{{ reporte.estado }}" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="evidencia" class="form-label">Evidencia Registrada:</label>
-                            <textarea class="form-control" id="evidencia" rows="4" readonly>{{ reporte.evidencia }}</textarea>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Resolver Reporte</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <!-- Mensajes de éxito o error -->
+    {% if messages %}
+        <div class="mb-4 p-3 rounded-lg {% if messages.success %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
         </div>
-    </div>
-</div>
+    {% endif %}
 
+    <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        
+        <div>
+            <label for="comentario" class="block text-sm font-medium text-gray-700">Comentario o Resolución:</label>
+            <textarea id="comentario" name="comentario" rows="4"
+                      class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Describe cómo resolviste este reporte..."></textarea>
+        </div>
+
+        <div>
+            <label for="estado" class="block text-sm font-medium text-gray-700">Estado Actual:</label>
+            <input type="text" id="estado" value="{{ reporte.estado }}" readonly
+                   class="mt-1 block w-full rounded-lg bg-gray-100 border border-gray-300 p-2">
+        </div>
+
+        <div>
+            <label for="evidencia" class="block text-sm font-medium text-gray-700">Evidencia Registrada:</label>
+            <textarea id="evidencia" rows="3" readonly
+                      class="mt-1 block w-full rounded-lg bg-gray-100 border border-gray-300 p-2">{{ reporte.evidencia }}</textarea>
+        </div>
+
+        <div class="flex justify-center">
+            <button type="submit"
+                    class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">
+                Resolver Reporte
+            </button>
+        </div>
+    </form>
+</div>
 
 </body>
 </html>
