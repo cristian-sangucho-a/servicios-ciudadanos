@@ -45,24 +45,18 @@
 
 {% block scripts %}
     <script>
-        // Al inicio del script
         document.addEventListener('DOMContentLoaded', function () {
             inicializarCalendario();
         });
 
-        // Función para generar el calendario
         function generateCalendar(year, month) {
             const calendarElement = document.getElementById('calendar');
             const currentMonthElement = document.getElementById('currentMonth');
-
             const firstDayOfMonth = new Date(year, month, 1);
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-
             const today = new Date();
-
-            // Evitar meses anteriores al actual
+            const prevButton = document.getElementById('prevMonth');
             if (year === today.getFullYear() && month === today.getMonth()) {
-                prevButton = document.getElementById('prevMonth');
                 prevButton.disabled = true;
                 prevButton.classList.add('opacity-50', 'cursor-not-allowed');
             } else {
@@ -71,11 +65,9 @@
             }
 
             calendarElement.innerHTML = '';
-
             const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
             currentMonthElement.textContent = `${monthNames[month]} ${year}`;
-
             const firstDayOfWeek = firstDayOfMonth.getDay();
             const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
 
@@ -92,43 +84,34 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayElement = document.createElement('div');
-                dayElement.className = 'text-center py-2 border cursor-pointer';
-                dayElement.textContent = day;
-
+                dayElement.className = 'text-center py-2 border';
                 const currentDate = new Date();
+                const selectedDate = new Date(year, month, day);
+                if (selectedDate < new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())) {
+                    dayElement.classList.add('opacity-50', 'cursor-not-allowed', 'text-gray-400');
+                } else {
+                    dayElement.classList.add('cursor-pointer');
+                    dayElement.addEventListener('click', () => {
+                        const optionsDisplay = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+                        const formattedDisplayDate = selectedDate.toLocaleDateString('es-ES', optionsDisplay);
+                        const formattedAPIDate = selectedDate.toISOString().split('T')[0];
+                        showModal(formattedDisplayDate, formattedAPIDate);
+                    });
+                }
+                dayElement.textContent = day;
                 if (year === currentDate.getFullYear() &&
                     month === currentDate.getMonth() &&
                     day === currentDate.getDate()) {
                     dayElement.classList.add('bg-blue-500', 'text-white');
                 }
 
-                // Event listener para cada día OJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-                dayElement.addEventListener('click', () => {
-                    const selectedDate = new Date(currentYear, currentMonth, day);
-
-                    // Formato para mostrar al usuario (en español)
-                    const optionsDisplay = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-                    const formattedDisplayDate = selectedDate.toLocaleDateString('es-ES', optionsDisplay);
-
-                    // Formato para el backend (YYYY-MM-DD)
-                    const formattedAPIDate = selectedDate.toISOString().split('T')[0];
-
-                    showModal(formattedDisplayDate, formattedAPIDate);
-                });
-
                 calendarElement.appendChild(dayElement);
             }
         }
-
-        // Variables de estado
         const currentDate = new Date();
         let currentYear = currentDate.getFullYear();
         let currentMonth = currentDate.getMonth();
-
-        // Inicializar calendario
         generateCalendar(currentYear, currentMonth);
-
-        // Controladores de eventos
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentMonth--;
             if (currentMonth < 0) {
@@ -137,7 +120,6 @@
             }
             generateCalendar(currentYear, currentMonth);
         });
-
         document.getElementById('nextMonth').addEventListener('click', () => {
             currentMonth++;
             if (currentMonth > 11) {
@@ -146,9 +128,7 @@
             }
             generateCalendar(currentYear, currentMonth);
         });
-
         const obtenerReservasUrl = "{% url 'obtener_reservas_por_fecha' %}";
-
         async function obtenerReservas(fecha) {
             const area_comunal_id = document.querySelector('select[name="area_id"]').value;
             try {
@@ -160,8 +140,6 @@
                 return [];
             }
         }
-
-        // Función para mostrar las reservas en el modal
         function mostrarReservas(reservas, fecha) {
             const reservasList = document.getElementById('reservasList');
             reservasList.innerHTML = '';
@@ -171,7 +149,6 @@
             bloques.forEach(bloque => {
                 const bloqueElement = document.createElement('div');
                 bloqueElement.className = 'p-3 rounded-lg mb-2 border';
-
                 const reservasEnBloque = reservas.filter(reserva => {
                     const [horaReserva] = reserva.hora_inicio.split(':').map(Number);
                     const horaInicioBloque = parseInt(bloque.inicio.split(':')[0], 10);
@@ -198,8 +175,6 @@
                     disponibleDiv.className = 'mt-2 p-2 bg-green-50 rounded flex justify-between items-center';
                     textoDisponible.className = 'text-sm text-green-600';
                     textoDisponible.textContent = 'Disponible';
-
-                    // Construir la URL con los parámetros necesarios
                     const area_comunal_id = document.querySelector('select[name="area_id"]').value;
                     const params = new URLSearchParams({
                         fecha_reserva: fecha,
@@ -207,7 +182,6 @@
                         hora_fin: bloque.fin,
                         area_comunal: area_comunal_id
                     });
-
                     agregarReserva.className = 'flex items-center text-green-600 hover:text-green-800';
                     agregarReserva.href = `{% url 'reservar_area_comunal' %}?${params.toString()}`;
                     agregarReserva.innerHTML = `
@@ -225,15 +199,12 @@
             });
         }
 
-        // Modificar la función showModal para pasar la fecha a mostrarReservas
         async function showModal(displayDate, apiDate) {
             const modal = document.getElementById('myModal');
             const modalDateElement = document.getElementById('modalDate');
             modalDateElement.textContent = displayDate;
-
             const reservas = await obtenerReservas(apiDate);
             mostrarReservas(reservas, apiDate);
-
             modal.classList.remove('hidden');
         }
 
@@ -253,7 +224,6 @@
             document.getElementById('myModal').classList.add('hidden');
         }
 
-        // Función para inicializar el calendario
         function inicializarCalendario() {
             const currentDate = new Date();
             currentYear = currentDate.getFullYear();
@@ -261,7 +231,6 @@
             generateCalendar(currentYear, currentMonth);
         }
 
-        // Cerrar modal
         document.getElementById('closeModal').addEventListener('click', hideModal);
         document.querySelector('.modal-overlay').addEventListener('click', hideModal);
     </script>
