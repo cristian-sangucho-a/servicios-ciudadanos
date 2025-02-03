@@ -7,7 +7,6 @@ from .eventos.editar_evento import editar_evento
 from .eventos.crear_evento import crear_evento
 from .eventos.actualizar_estado_incidente_evento import actualizar_estado_incidente_evento
 from .eventos.cancelar_evento import cancelar_evento
-
 from .eventos.espacios_disponibles import espacios_publicos_disponibles
 
 __all__ = [
