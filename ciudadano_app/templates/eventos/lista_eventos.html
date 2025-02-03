@@ -1,32 +1,155 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %}Municipio de Quito - Eventos{% endblock %}
+
+{% block extra_css %}
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" />
+<style>
+  /* Paleta de colores y estilos personalizados */
+  .text-primary { color: #002F5F; }
+  .bg-primary { background-color: #002F5F; }
+  .hover\:bg-primary:hover { background-color: #002F5F; }
+  .text-accent { color: #A6192E; }
+  .bg-accent { background-color: #A6192E; }
+  .bg-yellow-500 { background-color: #FBBF24; }
+  .hover\:bg-yellow-600:hover { background-color: #F59E0B; }
+  .border-light { border-color: #D1D3D4; }
+  /* Para limitar la cantidad de líneas en la descripción */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mx-auto py-8">
-  <h1 class="text-3xl font-bold text-center text-[#143D69] mb-8">Eventos Municipales</h1>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    {% for evento in eventos %}
-    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-      <div class="p-4">
-        <h2 class="text-xl font-semibold text-[#143D69]">{{ evento.nombre_evento }}</h2>
-        <p class="text-gray-600 mt-2">{{ evento.descripcion_evento }}</p>
-        <p class="text-sm text-gray-500 mt-2"><strong>Lugar:</strong> {{ evento.lugar_evento }}</p>
-      </div>
-      <div class="p-4 border-t">
-        {% if evento.is_subscribed %}
-          <!-- Usuario ya inscrito -->
-          <button class="w-full bg-[#2E6F4E] text-white py-2 px-4 rounded opacity-75 cursor-not-allowed" disabled>Inscrito</button>
-          <a href="{% url 'cancelar_inscripcion' evento.id %}" class="w-full inline-block mt-2 text-center text-[#9D2235] font-bold">Cancelar inscripción</a>
-        {% else %}
-          {% if evento.cupos_disponibles > 0 %}
-            <a href="{% url 'inscribirse_evento' evento.id %}" class="w-full inline-block bg-[#1E4F82] hover:bg-[#143D69] text-white py-2 px-4 rounded text-center">Inscribirse</a>
-          {% else %}
-            <a href="{% url 'lista_espera_evento' evento.id %}" class="w-full inline-block bg-[#B53045] hover:bg-[#9D2235] text-white py-2 px-4 rounded text-center">Ponerse en lista de espera</a>
-          {% endif %}
-        {% endif %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Sección de Cabecera -->
+  <div class="mb-8">
+    {% if user.is_authenticated %}
+      <h1 class="text-4xl font-extrabold text-primary">¡Hola, {{ user.nombre_completo }}!</h1>
+    {% else %}
+      <h1 class="text-4xl font-extrabold text-primary">Bienvenido al sistema de eventos municipales</h1>
+    {% endif %}
+    <p class="mt-2 text-lg text-gray-600">
+      Descubre y participa en los eventos organizados por tu entidad municipal.
+    </p>
+  </div>
+
+  <!-- Filtro por Fecha y Barra de Búsqueda -->
+  <div class="flex flex-col sm:flex-row gap-4 mb-8">
+    <!-- Filtro por Fecha (Flatpickr en modo wrap) -->
+    <div class="relative">
+      <div id="datePickerWrapper" class="flatpickr" data-wrap="true">
+        <button type="button" data-input class="flex items-center gap-2 px-6 py-3 rounded-lg shadow border border-light bg-white hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary">
+          <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span class="font-medium text-primary">Filtrar por fecha</span>
+        </button>
+        <!-- Input oculto requerido por flatpickr -->
+        <input type="text" class="hidden" />
       </div>
     </div>
+    <!-- Barra de Búsqueda -->
+    <div class="flex-1 relative">
+      <input type="search" placeholder="Buscar eventos..." class="w-full px-6 py-3 rounded-lg border border-light focus:outline-none focus:ring-2 focus:ring-primary" />
+      <svg class="w-5 h-5 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Menú de Categorías -->
+  <div class="mb-8">
+    <nav class="flex gap-4">
+      <a href="{% url 'lista_eventos' %}?categoria=todos" class="flex items-center gap-2 px-4 py-2 rounded-full border border-light bg-white hover:bg-primary hover:text-white transition-colors duration-200 focus:outline-none">
+        <span class="font-semibold">Todos los eventos</span>
+        <span class="bg-gold text-black px-2 py-0.5 rounded-full text-xs">{{ total_eventos }}</span>
+      </a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'lista_eventos' %}?categoria=mis" class="flex items-center gap-2 px-4 py-2 rounded-full border border-light bg-white hover:bg-primary hover:text-white transition-colors duration-200 focus:outline-none">
+          <span class="font-semibold">Mis eventos</span>
+          <span class="bg-gold text-black px-2 py-0.5 rounded-full text-xs">{{ mis_eventos }}</span>
+        </a>
+      {% endif %}
+    </nav>
+  </div>
+
+  <!-- Título de Sección y Conteo -->
+  <div class="flex items-center gap-3 mb-8">
+    <h2 class="text-2xl font-bold text-primary">Eventos</h2>
+    <span class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+      {{ eventos|length }} eventos disponibles
+    </span>
+  </div>
+
+  <!-- Grid de Tarjetas de Evento -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for evento in eventos %}
+      <div class="bg-white rounded-xl shadow border border-light hover:shadow-lg transition-shadow duration-200">
+        <div class="p-6 flex flex-col h-full">
+          <!-- Encabezado: Nombre y Fecha del Evento -->
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-xl text-primary">{{ evento.nombre_evento }}</h3>
+            <span class="text-sm text-gray-500">{{ evento.obtener_formato_fecha }}</span>
+          </div>
+          <!-- Descripción resumida -->
+          <p class="text-gray-600 mb-4 line-clamp-3">
+            {{ evento.descripcion_evento }}
+          </p>
+          <!-- Ubicación del Evento -->
+          <p class="text-gray-600 mb-4">
+            <strong>Lugar:</strong> {{ evento.lugar_evento }}
+          </p>
+          <!-- Botón de Acción (funciones directas en el botón) -->
+          <div class="mt-auto">
+            {% if user.is_authenticated %}
+              {% if evento.is_subscribed %}
+                <a href="{% url 'cancelar_inscripcion' evento.id %}" class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                  Cancelar Inscripción
+                </a>
+              {% else %}
+                {% if evento.cupos_disponibles > 0 %}
+                  <a href="{% url 'inscribirse_evento' evento.id %}" class="block text-center bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    Inscribirse
+                  </a>
+                {% else %}
+                  <a href="{% url 'lista_espera_evento' evento.id %}" class="block text-center bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    Lista de Espera
+                  </a>
+                {% endif %}
+              {% endif %}
+            {% else %}
+              <a href="{% url 'login' %}" class="block text-center bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                Iniciar Sesión
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     {% empty %}
-      <p class="text-center text-gray-600 col-span-full">No hay eventos disponibles en este momento.</p>
+      <p class="text-gray-600">No se encontraron eventos.</p>
     {% endfor %}
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Flatpickr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script>
+  // Inicialización de Flatpickr para el filtro de fecha
+  flatpickr("#datePickerWrapper", {
+    wrap: true,
+    dateFormat: "Y-m-d",
+    onChange: function(selectedDates, dateStr) {
+      console.log('Fecha seleccionada:', dateStr);
+     
+    }
+  });
+</script>
 {% endblock %}
