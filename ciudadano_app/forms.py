@@ -75,7 +75,7 @@ class ReservaRegisterForm(forms.ModelForm):
 
     correos_invitados = forms.CharField(
         required=False,  # Hacemos el campo no requerido por defecto
-        widget=forms.TextInput()
+        widget=forms.Textarea(attrs={'class': 'w-full p-2 border rounded', 'rows': 2})
     )
 
     class Meta:
