@@ -8,6 +8,20 @@ from django.http import HttpResponse
 
 
 def reaccionar(request, noticia_id):
+    """
+        Registra una reacción de un ciudadano a una noticia específica.
+
+        Args:
+            request (HttpRequest): La solicitud HTTP realizada por el usuario.
+            noticia_id (int): El identificador de la noticia a la que se reacciona.
+
+        Returns:
+            HttpResponseRedirect: Redirige a la página anterior o al dashboard del ciudadano.
+
+        Raises:
+            Noticia.DoesNotExist: Si la noticia con el ID proporcionado no existe.
+            Ciudadano.DoesNotExist: Si el ciudadano con el ID del usuario autenticado no existe.
+    """
     if request.method == 'POST':
         noticia = Noticia.objects.get(id=noticia_id)
         ciudadano = Ciudadano.objects.get(id=request.user.id)
@@ -21,6 +35,20 @@ def reaccionar(request, noticia_id):
     return redirect(request.META.get('HTTP_REFERER', 'dashboard_ciudadano'))
 
 def comentar(request, noticia_id):
+    """
+        Permite a un ciudadano comentar en una noticia específica.
+
+        Args:
+            request (HttpRequest): La solicitud HTTP realizada por el usuario.
+            noticia_id (int): El identificador de la noticia en la que se realizará el comentario.
+
+        Returns:
+            HttpResponseRedirect: Redirige a la página anterior o al dashboard del ciudadano.
+
+        Raises:
+            Noticia.DoesNotExist: Si la noticia con el ID proporcionado no existe.
+            Ciudadano.DoesNotExist: Si el ciudadano con el ID del usuario autenticado no existe.
+    """
     if request.method == 'POST':
         noticia = Noticia.objects.get(id=noticia_id)
         ciudadano = Ciudadano.objects.get(id=request.user.id)
@@ -34,10 +62,22 @@ def comentar(request, noticia_id):
 
 
 def conteo_reacciones(request, noticia_id):
+    """
+        Obtiene el conteo de reacciones de una noticia específica.
+
+        Args:
+            request (HttpRequest): La solicitud HTTP realizada por el usuario.
+            noticia_id (int): El identificador de la noticia cuyos conteos de reacciones se desean obtener.
+
+        Returns:
+            JsonResponse: Un diccionario JSON con el conteo de cada tipo de reacción.
+
+        Raises:
+            Noticia.DoesNotExist: Si la noticia con el ID proporcionado no existe.
+    """
     noticia = Noticia.objects.get(id=noticia_id)
     conteos_reacciones = noticia.reacciones.values('tipo').annotate(conteo=Count('tipo'))
 
-    # Crear un diccionario con los conteos de reacciones
     reacciones_dict = {tipo: 0 for tipo, _ in Reaccion.TIPOS_REACCION}
     for conteo in conteos_reacciones:
         reacciones_dict[conteo['tipo']] = conteo['conteo']

@@ -69,7 +69,7 @@ class CanalInformativo(models.Model):
         except Suscripcion.DoesNotExist:
             raise ValueError(f"El ciudadano {ciudadano.nombre_completo} no está suscrito al canal {self.nombre}")
 
-    def notificar_noticia(self,noticia):
+    def notificar_noticia(self, noticia):
         """
         Notifica una noticia a todos los ciudadanos suscritos al canal informativo.
 
@@ -92,55 +92,56 @@ class CanalInformativo(models.Model):
             )
 
     def notificar_alerta_emergencia(self, tipo_incidente, localidad):
-            """
-            Envía una alerta de emergencia solo a los ciudadanos de una localidad específica.
+        """
+    Envía una alerta de emergencia solo a los ciudadanos de una localidad específica.
 
-            Este método solo puede ser utilizado en canales de emergencia.
+    Este método solo puede ser utilizado en canales de emergencia.
 
-            Args:
-                tipo_incidente (str): El tipo de incidente (ej. "Incendio", "Accidente").
-                localidad (str): La localidad donde ocurrió el incidente.
+    Args:
+        tipo_incidente (str): El tipo de incidente (ej. "Incendio", "Accidente").
+        localidad (str): La localidad donde ocurrió el incidente.
 
-            Raises:
-                ValueError: Si el canal no es de emergencia.
-            """
-            if not self.es_emergencia:
-                raise ValueError("Este método solo es válido para canales de emergencia.")
+    Raises:
+        ValueError: Si el canal no es de emergencia.
+    """
+        if not self.es_emergencia:
+            raise ValueError("Este método solo es válido para canales de emergencia.")
 
-            suscripciones = Suscripcion.objects.filter(canal = self)
-            for suscripcion in suscripciones:
-                Notificacion.objects.create(
-                    ciudadano=suscripcion.ciudadano,
-                    titulo="Alerta de emergencia",
-                    mensaje=f"Ha ocurrido un {tipo_incidente} en {localidad}"
-                )
+        suscripciones = Suscripcion.objects.filter(canal=self)
+        for suscripcion in suscripciones:
+            Notificacion.objects.create(
+                ciudadano=suscripcion.ciudadano,
+                titulo="Alerta de emergencia",
+                mensaje=f"Ha ocurrido un {tipo_incidente} en {localidad}"
+            )
+
 
 class Suscripcion(models.Model):
+    """
+    Relación entre ciudadanos y canales informativos (no de emergencia).
+
+    Este modelo gestiona la suscripción de los ciudadanos a los canales informativos, permitiendo la
+    asociación entre un ciudadano y un canal.
+
+    Attributes:
+        ciudadano (ForeignKey): El ciudadano suscrito al canal.
+        canal (ForeignKey): El canal al que está suscrito el ciudadano.
+        fecha_suscripcion (DateTimeField): La fecha y hora en que el ciudadano se suscribe.
+    """
+    ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE, related_name="suscripciones")
+    canal = models.ForeignKey(CanalInformativo, on_delete=models.CASCADE, related_name="suscripciones")
+    fecha_suscripcion = models.DateTimeField(default=now)
+
+    class Meta:
+        unique_together = ('ciudadano', 'canal')
+        verbose_name = "Suscripción"
+        verbose_name_plural = "Suscripciones"
+
+    def __str__(self):
         """
-        Relación entre ciudadanos y canales informativos (no de emergencia).
+        Retorna un string representando la suscripción.
 
-        Este modelo gestiona la suscripción de los ciudadanos a los canales informativos, permitiendo la
-        asociación entre un ciudadano y un canal.
-
-        Attributes:
-            ciudadano (ForeignKey): El ciudadano suscrito al canal.
-            canal (ForeignKey): El canal al que está suscrito el ciudadano.
-            fecha_suscripcion (DateTimeField): La fecha y hora en que el ciudadano se suscribe.
+        Returns:
+            str: Representación de la suscripción, indicando el nombre del ciudadano y el canal.
         """
-        ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE, related_name="suscripciones")
-        canal = models.ForeignKey(CanalInformativo, on_delete=models.CASCADE, related_name="suscripciones")
-        fecha_suscripcion = models.DateTimeField(default=now)
-
-        class Meta:
-            unique_together = ('ciudadano', 'canal')
-            verbose_name = "Suscripción"
-            verbose_name_plural = "Suscripciones"
-
-        def __str__(self):
-            """
-            Retorna un string representando la suscripción.
-
-            Returns:
-                str: Representación de la suscripción, indicando el nombre del ciudadano y el canal.
-            """
-            return f"{self.ciudadano.nombre_completo} suscrito a {self.canal.nombre}"
+        return f"{self.ciudadano.nombre_completo} suscrito a {self.canal.nombre}"

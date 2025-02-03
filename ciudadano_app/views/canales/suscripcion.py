@@ -6,6 +6,20 @@ from entidad_municipal_app.models.canales.canal_informativo import CanalInformat
 
 @login_required
 def suscribirse_canal(request, canal_id):
+    """
+        Permite que un ciudadano se suscriba a un canal informativo.
+
+        Args:
+            request (HttpRequest): La solicitud HTTP realizada por el usuario.
+            canal_id (int): El identificador del canal informativo al que el usuario desea suscribirse.
+
+        Returns:
+            HttpResponseRedirect: Redirige a la página previa o al dashboard del ciudadano.
+
+        Raises:
+            CanalInformativo.DoesNotExist: Si el canal con el ID proporcionado no existe.
+            Ciudadano.DoesNotExist: Si no se encuentra un ciudadano con el ID del usuario autenticado.
+    """
     canal = CanalInformativo.objects.get(id=canal_id)
     ciudadano = Ciudadano.objects.get(id=request.user.id)
     canal.suscribir_ciudadano(ciudadano)
@@ -13,6 +27,21 @@ def suscribirse_canal(request, canal_id):
 
 @login_required
 def desuscribirse_canal(request, canal_id):
+    """
+        Permite que un ciudadano se desuscriba de un canal informativo.
+
+        Args:
+            request (HttpRequest): La solicitud HTTP realizada por el usuario.
+            canal_id (int): El identificador del canal informativo del que el usuario desea desuscribirse.
+
+        Returns:
+            HttpResponseRedirect: Redirige a la página previa o al dashboard del ciudadano.
+
+        Raises:
+            CanalInformativo.DoesNotExist: Si el canal con el ID proporcionado no existe.
+            Ciudadano.DoesNotExist: Si no se encuentra un ciudadano con el ID del usuario autenticado.
+            ValueError: Si la desuscripción no es posible.
+    """
     canal = CanalInformativo.objects.get(id=canal_id)
     ciudadano = Ciudadano.objects.get(id=request.user.id)
     try:
