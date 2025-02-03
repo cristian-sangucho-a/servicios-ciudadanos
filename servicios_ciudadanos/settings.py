@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-g)_$(%gf0x-1g3(6#249tsu6p6)h#qk9ikp50u01!o!%*bnp#v'
+GOOGLE_MAPS_API_KEY = 'AIzaSyCQoQSKQ21nZOzInEdKIhrUAqLyfm3kLOE'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,9 +43,9 @@ INSTALLED_APPS = [
     'ciudadano_app.apps.CiudadanoAppConfig',
     'entidad_municipal_app.apps.EntidadMunicipalAppConfig',
     'shared',
+    'django_browser_reload',
     'tailwind',
     'theme',
-    'django_browser_reload'
 ]
 
 TAILWIND_APP_NAME = 'theme'
