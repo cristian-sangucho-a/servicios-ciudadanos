@@ -5,6 +5,7 @@ from .eventos.gestor_eventos import gestor_eventos
 from .eventos.evento import evento
 from .eventos.editar_evento import editar_evento
 from .eventos.crear_evento import crear_evento
+from .eventos.cancelar_evento import cancelar_evento
 
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     'evento',
     'editar_evento',
     'crear_evento',
+    'cancelar_evento'
 ]
