@@ -1,3 +1,5 @@
+from pyexpat.errors import messages
+
 from ciudadano_app.models import Ciudadano, AreaComunal, Reserva
 from ciudadano_app.models.reserva.repositorio_reserva import RespositorioReserva
 from ciudadano_app.models.servicio_notificacion_correo import ServicioNotificacionPorCorreo
@@ -65,6 +67,7 @@ class ServicioReserva(RespositorioReserva):
                                                      hora_fin, tipo_reserva,
                                                      ciudadano: Ciudadano, correos_invitados):
         print(self.ciudadano_supera_maximo_reservas(ciudadano))
+
         if self.ciudadano_supera_maximo_reservas(ciudadano):
             print(self.ciudadano_supera_maximo_reservas(ciudadano))
             return 0, False
@@ -80,12 +83,19 @@ class ServicioReserva(RespositorioReserva):
             ciudadano=ciudadano,
             correos_invitados=correos_invitados
         )
-        reserva.save()
+
+        if not self.existe_reserva(reserva):
+            reserva.save()
+        else:
+            return 0, False
+
         if tipo_reserva == 'privado':
             servicio_notificion_correo = ServicioNotificacionPorCorreo()
             servicio_notificion_correo.enviar_invitacion(reserva)
         return reserva.obtener_id(), True
 
+    def existe_reserva(self, reserva):
+        return Reserva.objects.filter(area_comunal=reserva.area_comunal,fecha_reserva=reserva.fecha_reserva, hora_inicio=reserva.hora_inicio, hora_fin=reserva.hora_fin, estado_reserva='Activa').exists()
 
     def cancelar_reserva_privada(self, id_reserva, ciudadano):
         reserva = self.obtener_reserva_por_id(id_reserva)
@@ -96,8 +106,6 @@ class ServicioReserva(RespositorioReserva):
         servicio_notificion_correo = ServicioNotificacionPorCorreo()
         servicio_notificion_correo.enviar_cancelacion(reserva)
         return True
-
-    ##PARA RECUPERAR DATOS DESDE LA VISTA
 
     def obtener_espacios_publicos(self):
         return EspacioPublico.objects.all()
