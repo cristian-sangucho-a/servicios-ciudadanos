@@ -1,10 +1,7 @@
-from datetime import datetime
-
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from ciudadano_app.decorators import ciudadano_required
 from ciudadano_app.forms import ReservaRegisterForm
-from ciudadano_app.models import AreaComunal
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from ciudadano_app.models.reserva.servicio_reserva import ServicioReserva
 
@@ -12,49 +9,26 @@ from ciudadano_app.models.reserva.servicio_reserva import ServicioReserva
 @ciudadano_required
 def reservar(request):
     ciudadano: Ciudadano = request.user
+    servicio_reserva = ServicioReserva()
 
-    try:
-        fecha_reserva = request.GET.get('fecha_reserva', '')
-        hora_inicio = request.GET.get('hora_inicio', '')
-        hora_fin = request.GET.get('hora_fin', '')
-        area_comunal_id = request.GET.get('area_comunal', '')
-
-        if not all([fecha_reserva, hora_inicio, hora_fin, area_comunal_id]):
-            raise ValueError("Parámetros incompletos en la URL")
-
-    except ValueError as e:
-        messages.error(request, str(e))
-        return redirect('pagina_error')
-
-    try:
-        area_comunal = AreaComunal.objects.get(pk=area_comunal_id)
-    except (AreaComunal.DoesNotExist, ValueError):
-        messages.error(request, "Área comunal no válida")
-        return redirect('cargar_calendario')
+    fecha_reserva = request.GET.get('fecha_reserva', '')
+    hora_inicio = request.GET.get('hora_inicio', '')
+    hora_fin = request.GET.get('hora_fin', '')
+    area_comunal_id = request.GET.get('area_comunal', '')
+    area_comunal = servicio_reserva.obtener_area_comunal(area_comunal_id)
 
     if request.method == 'POST':
         form = ReservaRegisterForm(request.POST)
-        print(form.is_valid())  # Debe mostrar False/True
-        print(form.errors)  # Mostrar errores en consola
-
         if form.is_valid():
-            try:
-                servicio_reserva = ServicioReserva()
-                id_reserva, exito = servicio_reserva.reservar_area_comunal(area_comunal, fecha_reserva, hora_inicio, hora_fin, form.cleaned_data['tipo_reserva'], ciudadano, form.cleaned_data['correos_invitados'])
-                print(exito)
-                if exito:
-                    messages.success(request, '¡Reserva creada exitosamente!')
-                    return redirect('mis_reservas')
-                return redirect('cargar_calendario')
-
-            except Exception as e:
-                messages.error(request, f"Error crítico: {str(e)}")
-                return redirect('cargar_calendario')
+            id_reserva, exito = servicio_reserva.reservar(area_comunal, fecha_reserva, hora_inicio, hora_fin, form.cleaned_data['tipo_reserva'], ciudadano, form.cleaned_data['correos_invitados'])
+            if exito:
+                messages.success(request, '¡Reserva creada exitosamente!')
+                return redirect('mis_reservas')
+            else:
+                messages.error(request, 'No se pudo crear la reserva')
+                return redirect('dashboard_ciudadano')
         else:
-            # Agregar todos los errores a messages
-            for campo, errores in form.errors.items():
-                for error in errores:
-                    messages.error(request, f"Error en {campo}: {error}")
+            messages.error(request, 'No se lleno correctamente el formulario.')
 
     else:
         initial_data = {
