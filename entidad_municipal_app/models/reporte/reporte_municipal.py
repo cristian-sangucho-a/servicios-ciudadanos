@@ -73,6 +73,7 @@ class ReporteMunicipal(models.Model):
             self.estado = nuevo_estado
         else:
             raise ValidationError(f"No se puede cambiar de '{self.estado}' a '{nuevo_estado}'.")
+        self.save()
 
     def registrar_evidencia(self, descripcion_evidencia: str):
         """
@@ -83,6 +84,7 @@ class ReporteMunicipal(models.Model):
         """
         self.evidencia = descripcion_evidencia
         self.cambiar_estado("resuelto")
+        self.save()
 
 
     def obtener_departamento(self):
