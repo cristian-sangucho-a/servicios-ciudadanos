@@ -70,13 +70,9 @@ def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, h
 @step("se guarda la reserva en la Agenda Pública")
 def step_impl(context):
     context.id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
-        area_comunal=servicio_reserva_en_memoria.obtener_area_comunal(1),
-        fecha_reserva=context.fecha_reserva,
-        hora_inicio=context.hora_inicio,
-        hora_fin=context.hora_fin,
-        tipo_reserva=context.tipo_reserva,
-        ciudadano=context.ciudadano
-    )
+        area_comunal=servicio_reserva_en_memoria.obtener_area_comunal(1), fecha_reserva=context.fecha_reserva,
+        hora_inicio=context.hora_inicio, hora_fin=context.hora_fin, tipo_reserva=context.tipo_reserva,
+        ciudadano=context.ciudadano, correos_invitados="")
 
     if context.correos_invitados is not None:
         servicio_reserva_en_memoria.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,
@@ -101,13 +97,8 @@ def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_in
     crear_contexto_para_la_reserva(context, nombre_espacio)
 
     context.id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
-        area_comunal=servicio_reserva_en_memoria.obtener_area_comunal(1),
-        fecha_reserva=fecha,
-        hora_inicio=hora_inicio,
-        hora_fin=hora_fin,
-        tipo_reserva=tipo_reserva,
-        ciudadano=context.ciudadano
-    )
+        area_comunal=servicio_reserva_en_memoria.obtener_area_comunal(1), fecha_reserva=fecha, hora_inicio=hora_inicio,
+        hora_fin=hora_fin, tipo_reserva=tipo_reserva, ciudadano=context.ciudadano, correos_invitados="")
 
     context.correos_invitados = "jean.cotera@epn.edu.ec, jorman.chuquer@epn.edu.ec"
 

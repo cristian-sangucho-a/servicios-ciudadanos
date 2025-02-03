@@ -40,7 +40,7 @@ def reservar(request):
         if form.is_valid():
             try:
                 servicio_reserva = ServicioReserva()
-                id_reserva, exito = servicio_reserva.reservar(area_comunal, fecha_reserva, hora_inicio, hora_fin, form.cleaned_data['tipo_reserva'], ciudadano, form.cleaned_data['correos_invitados'])
+                id_reserva, exito = servicio_reserva.reservar_area_comunal(area_comunal, fecha_reserva, hora_inicio, hora_fin, form.cleaned_data['tipo_reserva'], ciudadano, form.cleaned_data['correos_invitados'])
                 print(exito)
                 if exito:
                     messages.success(request, '¡Reserva creada exitosamente!')

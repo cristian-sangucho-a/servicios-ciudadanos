@@ -11,18 +11,25 @@ class ServicioReserva(RespositorioReserva):
         return ciudadano.reservas.filter(estado_reserva='Activa').count() > self.MAXIMO_RESERVAS
 
     def reservar_area_comunal(self, area_comunal: AreaComunal, fecha_reserva, hora_inicio, hora_fin, tipo_reserva,
-                              ciudadano: Ciudadano):
+                              ciudadano: Ciudadano, correos_invitados):
         if self.ciudadano_supera_maximo_reservas(ciudadano):
             return 0, False
-        #TODO: verificar que el espacio publico al que pertenece el area comunal este libre para reservar
-        reserva = Reserva.objects.create(
+        reserva = Reserva(
             area_comunal=area_comunal,
             fecha_reserva=fecha_reserva,
             hora_inicio=hora_inicio,
             hora_fin=hora_fin,
+            estado_reserva='Activa',
             tipo_reserva=tipo_reserva,
-            ciudadano=ciudadano
+            ciudadano=ciudadano,
+            correos_invitados=correos_invitados
         )
+        reserva.save()
+        if tipo_reserva == 'privado':
+            print('Enviando correos')
+            servicio_notificion_correo = ServicioNotificacionPorCorreo()
+            servicio_notificion_correo.enviar_invitacion(reserva)
+            print('Correos enviados')
         return reserva.obtener_id(), True
 
     def hay_areas_comunales_disponibles(self, espacio_publico):
@@ -59,29 +66,7 @@ class ServicioReserva(RespositorioReserva):
     def obtener_reservas_area_comunal(self, area_comunal, fecha):
         return area_comunal.reservas.filter(fecha_reserva=fecha)
 
-    def reservar(self, area_comunal: AreaComunal, fecha_reserva, hora_inicio,
-                                                     hora_fin, tipo_reserva,
-                                                     ciudadano: Ciudadano, correos_invitados):
-        # if self.ciudadano_supera_maximo_reservas(ciudadano):
-        #     return 0, False
-        #TODO: verificar que el espacio publico al que pertenece el area comunal este libre para reservar
-        reserva = Reserva(
-            area_comunal=area_comunal,
-            fecha_reserva=fecha_reserva,
-            hora_inicio=hora_inicio,
-            hora_fin=hora_fin,
-            estado_reserva='Activa',
-            tipo_reserva=tipo_reserva,
-            ciudadano=ciudadano,
-            correos_invitados=correos_invitados
-        )
-        reserva.save()
-        if tipo_reserva == 'privado':
-            print('Enviando correos')
-            servicio_notificion_correo = ServicioNotificacionPorCorreo()
-            servicio_notificion_correo.enviar_invitacion(reserva)
-            print('Correos enviados')
-        return reserva.obtener_id(), True
+
 
 
     def cancelar_reserva_privada(self, id_reserva, ciudadano):
