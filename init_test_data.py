@@ -26,7 +26,7 @@ def crear_datos_prueba():
         }
     )
     if created:
-        entidad_municipal.set_password("test123")
+        entidad_municipal.set_password("grupo5eventos")
         entidad_municipal.save()
         print(f"✓ Creada entidad municipal: {entidad_municipal.nombre}")
     else:
@@ -34,11 +34,11 @@ def crear_datos_prueba():
 
     # Crear ciudadanos de prueba
     ciudadanos_data = [
-        {"correo_electronico": "juan@test.com", "nombre_completo": "Juan Pérez", "numero_identificacion": "1234567890", "password": "test123"},
-        {"correo_electronico": "maria@test.com", "nombre_completo": "María García", "numero_identificacion": "2345678901", "password": "test123"},
-        {"correo_electronico": "pedro@test.com", "nombre_completo": "Pedro López", "numero_identificacion": "3456789012", "password": "test123"},
-        {"correo_electronico": "ana@test.com", "nombre_completo": "Ana Martínez", "numero_identificacion": "4567890123", "password": "test123"},
-        {"correo_electronico": "luis@test.com", "nombre_completo": "Luis Rodríguez", "numero_identificacion": "5678901234", "password": "test123"},
+        {"correo_electronico": "juan@test.com", "nombre_completo": "Juan Pérez", "numero_identificacion": "1234567890", "password": "grupo5eventos"},
+        {"correo_electronico": "maria@test.com", "nombre_completo": "María García", "numero_identificacion": "2345678901", "password": "grupo5eventos"},
+        {"correo_electronico": "pedro@test.com", "nombre_completo": "Pedro López", "numero_identificacion": "3456789012", "password": "grupo5eventos"},
+        {"correo_electronico": "ana@test.com", "nombre_completo": "Ana Martínez", "numero_identificacion": "4567890123", "password": "grupo5eventos"},
+        {"correo_electronico": "luis@test.com", "nombre_completo": "Luis Rodríguez", "numero_identificacion": "5678901234", "password": "grupo5eventos"},
     ]
 
     for data in ciudadanos_data:
