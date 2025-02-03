@@ -21,7 +21,7 @@ def resolver_reporte(request, reporte_id):
 
         # Cambiamos el estado del reporte a "atendiendo"
         try:
-            reporte = servicio_reporte.atender_reporte_municipal(reporte_id)
+            servicio_reporte.atender_reporte_municipal(reporte_id)
             messages.success(request, f'El reporte #{reporte_id} se está atendiendo.')
         except Exception as e:
             print(f"Error {e}")

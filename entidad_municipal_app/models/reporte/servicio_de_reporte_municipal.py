@@ -35,7 +35,9 @@ class ServicioReporteMunicipal():
         reporte = self.repositorio_reporte.obtener_por_id(id_reporte)
         if reporte:
             reporte.cambiar_estado("atendiendo")
-        return reporte
+            self.guardar_reporte(reporte)
+            return True
+        return False
 
     def postergar_reporte(self, id_reporte):
         """
@@ -45,10 +47,16 @@ class ServicioReporteMunicipal():
         reporte = self.repositorio_reporte.obtener_por_id(id_reporte)
         if reporte:
             reporte.cambiar_estado("postergado")
-        return reporte
+            self.guardar_reporte(reporte)
+            return True
+        return False
 
     def registrar_evidencia(self, reporte, descripcion_evidencia):
         if reporte:
             reporte.registrar_evidencia(descripcion_evidencia)
+            self.guardar_reporte(reporte)
         return reporte
+
+    def guardar_reporte(self, reporte):
+        return self.repositorio_reporte.actualizar(reporte)
 

@@ -17,7 +17,7 @@ def postergar_reporte(request, reporte_id):
         reporte = servicio_reporte.obtener_reporte_municipal_por_id(reporte_id)
 
         try:
-            reporte = servicio_reporte.postergar_reporte(reporte_id)
+            servicio_reporte.postergar_reporte(reporte_id)
             messages.success(request, f'El reporte #{reporte_id} se ha sido postergado.')
         except Exception as e:
             print(f"Error {e}")
