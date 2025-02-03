@@ -60,14 +60,9 @@ def crear_datos_prueba():
     # Crear eventos de prueba
     ahora = timezone.now()
     eventos_data = [
-        {"nombre_evento": "Concierto en el Parque", "descripcion_evento": "Gran concierto al aire libre con múltiples artistas locales. Disfruta de una noche mágica con lo mejor de la música en vivo.", "fecha_realizacion": ahora + timezone.timedelta(days=7), "lugar_evento": "Parque Central", "capacidad_maxima": 100},
-        {"nombre_evento": "Taller de Arte", "descripcion_evento": "Taller exclusivo de pintura donde aprenderás técnicas de acuarela y óleo con artistas profesionales.", "fecha_realizacion": ahora + timezone.timedelta(days=5), "lugar_evento": "Centro Cultural", "capacidad_maxima": 1},
-        {"nombre_evento": "Feria Gastronómica", "descripcion_evento": "Degustación de platos típicos de la región. Más de 30 expositores presentarán sus mejores creaciones culinarias.", "fecha_realizacion": ahora + timezone.timedelta(days=3), "lugar_evento": "Plaza Mayor", "capacidad_maxima": 1},
-        {"nombre_evento": "Maratón Municipal", "descripcion_evento": "Carrera anual de 42km por las principales calles de la ciudad. Incluye categorías para principiantes y profesionales.", "fecha_realizacion": ahora + timezone.timedelta(days=14), "lugar_evento": "Avenida Principal", "capacidad_maxima": 500},
-        {"nombre_evento": "Festival de Cine al Aire Libre", "descripcion_evento": "Proyección de películas nacionales e internacionales bajo las estrellas. Trae tu manta y disfruta del séptimo arte.", "fecha_realizacion": ahora + timezone.timedelta(days=10), "lugar_evento": "Parque Metropolitano", "capacidad_maxima": 200},
-        {"nombre_evento": "Taller de Reciclaje", "descripcion_evento": "Aprende a crear arte y objetos útiles con materiales reciclados. Contribuye al cuidado del medio ambiente.", "fecha_realizacion": ahora + timezone.timedelta(days=4), "lugar_evento": "Centro Comunitario", "capacidad_maxima": 30},
-        {"nombre_evento": "Exposición de Fotografía", "descripcion_evento": "Muestra fotográfica 'Nuestra Ciudad en Imágenes' con obras de fotógrafos locales que capturan la esencia de nuestra comunidad.", "fecha_realizacion": ahora + timezone.timedelta(days=6), "lugar_evento": "Galería Municipal", "capacidad_maxima": 80},
-        {"nombre_evento": "Feria de Emprendedores", "descripcion_evento": "Espacio para que emprendedores locales muestren sus productos y servicios. Networking y oportunidades de negocio.", "fecha_realizacion": ahora + timezone.timedelta(days=8), "lugar_evento": "Centro de Convenciones", "capacidad_maxima": 120},
+        {"nombre_evento": "Concierto en el Parque", "descripcion_evento": "Gran concierto al aire libre con múltiples artistas", "fecha_realizacion": ahora + timezone.timedelta(days=7), "capacidad_maxima": 100, "espacio_publico": espacios_publicos[0]},
+        {"nombre_evento": "Taller de Arte", "descripcion_evento": "Taller exclusivo de pintura", "fecha_realizacion": ahora + timezone.timedelta(days=5), "capacidad_maxima": 1, "espacio_publico": espacios_publicos[1]},
+        {"nombre_evento": "Feria Gastronómica","descripcion_evento": "Degustación de platos típicos de la región. Más de 30 expositores presentarán sus mejores creaciones culinarias.","fecha_realizacion": ahora + timezone.timedelta(days=3), "lugar_evento": "Plaza Mayor", "capacidad_maxima": 1,"espacio_publico": espacios_publicos[2]},
     ]
 
     for data in eventos_data:
