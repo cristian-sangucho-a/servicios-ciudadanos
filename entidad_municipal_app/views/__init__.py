@@ -3,6 +3,7 @@ from .login import login_entidad
 from .bienvenida import bienvenida_entidad
 from .eventos.gestor_eventos import gestor_eventos
 from .eventos.evento import evento
+from .eventos.editar_evento import editar_evento
 
 
 __all__ = [
@@ -11,5 +12,5 @@ __all__ = [
     'bienvenida_entidad',
     'gestor_eventos',
     'evento',
-    'crear_evento'
+    'editar_evento',
 ]
