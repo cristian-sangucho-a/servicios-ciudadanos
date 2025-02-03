@@ -5,6 +5,8 @@ from django.contrib import messages
 from entidad_municipal_app.models import EventoMunicipal
 from entidad_municipal_app.models.evento.evento_municipal import ErrorGestionEventos
 from entidad_municipal_app.models.evento.registro_asistencia import RegistroAsistencia
+from ciudadano_app.decorators import ciudadano_required
+
 
 
 def lista_eventos(request):
@@ -43,7 +45,7 @@ def lista_eventos(request):
     
     return render(request, 'eventos/lista_eventos.html', context)
 
-@login_required
+@ciudadano_required
 def inscribirse_evento(request, evento_id):
     evento = get_object_or_404(EventoMunicipal, pk=evento_id)
     try:
@@ -56,7 +58,7 @@ def inscribirse_evento(request, evento_id):
         messages.error(request, str(e))
     return redirect('lista_eventos')
 
-@login_required
+@ciudadano_required
 def cancelar_inscripcion(request, evento_id):
     evento = get_object_or_404(EventoMunicipal, pk=evento_id)
     try:
@@ -67,7 +69,7 @@ def cancelar_inscripcion(request, evento_id):
         messages.error(request, str(e))
     return redirect('lista_eventos')
 
-@login_required
+@ciudadano_required
 def lista_espera_evento(request, evento_id):
     evento = get_object_or_404(EventoMunicipal, pk=evento_id)
     try:
