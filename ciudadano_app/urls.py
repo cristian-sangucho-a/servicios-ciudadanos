@@ -17,9 +17,22 @@ urlpatterns = [
     path('registro/', views.registro_ciudadano, name='registro_ciudadano'),
     path('login/', views.login_ciudadano, name='login_ciudadano'),
     path('logout/', logout_usuario, name='logout_ciudadano'),
+
+    # URLs para eventos
     path('eventos/', lista_eventos, name='lista_eventos'),
     path('eventos/<int:evento_id>/inscribirse/', inscribirse_evento, name='inscribirse_evento'),
     path('eventos/<int:evento_id>/cancelar/', cancelar_inscripcion, name='cancelar_inscripcion'),
     path('eventos/<int:evento_id>/lista-espera/', lista_espera_evento, name='lista_espera_evento'),
+
+    # URLs para reportes
     path('reporte/', views.envio_reporte, name='envio_reporte'),
+
+    # Nuevas URLs para sectores y notificaciones
+    path('agregar-sectores/', views.agregar_sectores_ciudadano, name='agregar_sectores'),
+
+    path('notificacion_de_estado/', views.listar_notificaciones_ciudadano, name='ver_estado_reportes'),
+    path('notificacion_de_estado/', views.notificar_reporte_alta_prioridad_ciudadano, name='ver_estado_reportes'),
+    path('notificacion_de_estado/', views.notificar_estado_riesgo_ciudadano, name='ver_estado_reportes'),
+
+
 ]
