@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'shared',
     'tailwind',
     'theme',
+    'django_htmx',
 ]
 
 TAILWIND_APP_NAME = 'theme'
@@ -71,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'servicios_ciudadanos.urls'
