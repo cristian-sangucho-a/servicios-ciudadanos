@@ -3,7 +3,7 @@ from .registro import registro_ciudadano
 from .login import login_ciudadano
 from .bienvenida import bienvenida_ciudadano
 from .agenda import agenda
-from .reserva import reserva
+from .reserva import reservar
 from .areas_comunales import cargar_areas
 from .calendario_area import cargar_calendario
 from .obtener_reservas_por_fecha import obtener_reservas_por_fecha
@@ -16,7 +16,7 @@ __all__ = [
     'login_ciudadano',
     'bienvenida_ciudadano',
     'agenda',
-    'reserva',
+    'reservar',
     'areas_comunales',
     'calendario_area',
     'obtener_reservas_por_fecha',
