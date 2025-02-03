@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Evento</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <!-- Header -->
-    <header class="bg-[#143D69] text-white py-4">
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto pt-0 pb-0">
+  <div class="mb-6">
+    <a href="{% url 'gestor_eventos' %}" class="text-[#1E4F82] hover:underline">&larr; Volver al Gestor de Eventos</a>
+  </div>
+</div>
+    <header class="bg-[#143D69] text-white py-1">
         <div class="container mx-auto flex justify-between items-center px-6">
             <h1 class="text-2xl font-bold">Editar Evento</h1>
         </div>
@@ -17,7 +14,6 @@
     <!-- Formulario de Editar Evento -->
     <div class="container mx-auto mt-6 px-6">
         <div class="bg-white shadow-lg rounded-lg p-6">
-            <h2 class="text-3xl font-semibold text-[#143D69]">Editar Evento</h2>
             <form action="/eventos/editar/{{ evento.id }}/" method="POST" class="mt-4 space-y-4">
                 <!-- CSRF Token -->
                 {% csrf_token %}
@@ -59,10 +55,5 @@
             </form>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="bg-[#0F2D4E] text-white text-center py-4 mt-10">
-        <p>© 2025 Entidad Municipal. Todos los derechos reservados.</p>
-    </footer>
-</body>
-</html>
+    
+{% endblock %}
