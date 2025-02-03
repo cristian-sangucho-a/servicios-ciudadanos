@@ -59,19 +59,30 @@ class ServicioReserva(RespositorioReserva):
     def obtener_reservas_area_comunal(self, area_comunal, fecha):
         return area_comunal.reservas.filter(fecha_reserva=fecha)
 
-    def reservar_area_comunal_para_actividad_privada(self, area_comunal: AreaComunal, fecha_reserva, hora_inicio,
+    def reservar(self, area_comunal: AreaComunal, fecha_reserva, hora_inicio,
                                                      hora_fin, tipo_reserva,
                                                      ciudadano: Ciudadano, correos_invitados):
-        try:
-            id_reserva, fue_reservado = self.reservar_area_comunal(area_comunal, fecha_reserva, hora_inicio, hora_fin,
-                                                                   tipo_reserva, ciudadano)
-        except Exception:
-            return None, False
-        reserva_realizada = self.obtener_reserva_por_id(id_reserva)
-        reserva_realizada.agregar_correos_invitados(correos_invitados)
-        servicio_notificion_correo = ServicioNotificacionPorCorreo()
-        servicio_notificion_correo.enviar_invitacion(reserva_realizada)
-        return id_reserva, fue_reservado
+        # if self.ciudadano_supera_maximo_reservas(ciudadano):
+        #     return 0, False
+        #TODO: verificar que el espacio publico al que pertenece el area comunal este libre para reservar
+        reserva = Reserva(
+            area_comunal=area_comunal,
+            fecha_reserva=fecha_reserva,
+            hora_inicio=hora_inicio,
+            hora_fin=hora_fin,
+            estado_reserva='Activa',
+            tipo_reserva=tipo_reserva,
+            ciudadano=ciudadano,
+            correos_invitados=correos_invitados
+        )
+        reserva.save()
+        if tipo_reserva == 'privado':
+            print('Enviando correos')
+            servicio_notificion_correo = ServicioNotificacionPorCorreo()
+            servicio_notificion_correo.enviar_invitacion(reserva)
+            print('Correos enviados')
+        return reserva.obtener_id(), True
+
 
     def cancelar_reserva_privada(self, id_reserva, ciudadano):
         reserva = self.obtener_reserva_por_id(id_reserva)
