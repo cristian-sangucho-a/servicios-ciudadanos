@@ -22,6 +22,11 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  /* Ocultar la X del input search */
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+  }
 </style>
 {% endblock %}
 
@@ -103,6 +108,7 @@
            data-inscrito="{{ evento.is_subscribed|yesno:'true,false' }}"
            data-estado="{{ evento.estado_actual }}"
            data-disponible="{{ evento.esta_disponible_para_inscripcion|yesno:'true,false' }}"
+           data-titulo="{{ evento.nombre_evento }}"
            data-cupos="{{ evento.cupos_disponibles }}">
         <div class="p-6 flex flex-col h-full">
           <!-- Encabezado: Nombre y Fecha del Evento -->
@@ -162,12 +168,27 @@
   document.addEventListener('DOMContentLoaded', function() {
     let fechaInicio = null;
     let fechaFin = null;
+    let searchQuery = '';
 
     function actualizarContadorEventos(cantidad) {
       const contadorElement = document.getElementById('contador-eventos');
       if (contadorElement) {
         contadorElement.textContent = cantidad + ' eventos disponibles';
       }
+    }
+
+    function normalizarTexto(texto) {
+      return texto.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+    }
+
+    function coincideConBusqueda(titulo, busqueda) {
+      if (!busqueda) return true;
+      const tituloNormalizado = normalizarTexto(titulo);
+      const busquedaNormalizada = normalizarTexto(busqueda);
+      return tituloNormalizado.includes(busquedaNormalizada);
     }
 
     function filtrarEventos() {
@@ -188,9 +209,15 @@
         const inscrito = evento.dataset.inscrito === 'true';
         const estaDisponible = evento.dataset.disponible === 'true';
         const cuposDisponibles = parseInt(evento.dataset.cupos) || 0;
+        const titulo = evento.dataset.titulo || '';
+        
+        // Filtrar por texto de búsqueda
+        if (!coincideConBusqueda(titulo, searchQuery)) {
+          mostrar = false;
+        }
         
         // Filtrar por fecha si hay un rango seleccionado
-        if (fechaInicio && fechaFin) {
+        if (mostrar && fechaInicio && fechaFin) {
           const inicio = fechaInicio.toISOString().split('T')[0];
           const fin = fechaFin.toISOString().split('T')[0];
           
@@ -200,13 +227,15 @@
         }
         
         // Aplicar filtros según la categoría
-        switch(categoria) {
-          case 'mis':
-            mostrar = mostrar && inscrito;
-            break;
-          case 'disponibles':
-            mostrar = mostrar && !inscrito && estaDisponible && cuposDisponibles > 0;
-            break;
+        if (mostrar) {
+          switch(categoria) {
+            case 'mis':
+              mostrar = mostrar && inscrito;
+              break;
+            case 'disponibles':
+              mostrar = mostrar && !inscrito && estaDisponible && cuposDisponibles > 0;
+              break;
+          }
         }
         
         // Contar eventos disponibles para inscripción
@@ -215,12 +244,8 @@
         }
         
         // Mostrar u ocultar el evento
-        if (mostrar) {
-          evento.style.display = 'block';
-          eventosVisibles++;
-        } else {
-          evento.style.display = 'none';
-        }
+        evento.style.display = mostrar ? 'block' : 'none';
+        if (mostrar) eventosVisibles++;
       });
       
       // Actualizar contadores
@@ -256,6 +281,15 @@
         }
       }
     });
+
+    // Agregar evento de búsqueda
+    const searchInput = document.querySelector('input[type="search"]');
+    if (searchInput) {
+      searchInput.addEventListener('input', function(e) {
+        searchQuery = e.target.value;
+        filtrarEventos();
+      });
+    }
 
     // Ejecutar filtrado inicial
     filtrarEventos();
