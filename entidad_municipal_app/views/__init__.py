@@ -16,7 +16,6 @@ __all__ = [
     'bienvenida_entidad',
     'gestor_eventos',
     'evento',
-    'crear_evento',
     'lista_todos_reportes',
     'lista_reportes_por_departamento',
     'postergar_reporte',
