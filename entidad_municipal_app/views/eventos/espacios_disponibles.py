@@ -7,26 +7,19 @@ from django.contrib import messages  # Para mostrar mensajes
 @entidad_required
 @login_required
 def espacios_publicos_disponibles(request):
-    espacios = None  # Cambiar el nombre de la variable
+    espacios = None  # Inicializa espacios como None
 
     if request.method == 'POST':
-        fecha = request.POST.get('fecha')
+        fecha = request.POST.get('fecha_realizacion')
+        espacio_publico = EspacioPublico.objects.get(pk=request.POST.get('espacio_publico'))
+        espacios = EspacioPublico.obtener_espacios_disponibles(fecha)
 
-        espacios = EspacioPublico.obtener_espacios_disponibles(fecha)  # Cambiar aquí también
+        # Imprimir los espacios obtenidos para depuración
+        print(f"Espacios disponibles para la fecha {fecha}: {espacios}")
 
-        espacio_publico_id = request.POST.get('espacio_publico')
+        if not espacios.exists():
+            messages.warning(request, 'No hay espacios disponibles para la fecha seleccionada.')
 
-        if espacio_publico_id:
-            espacio_publico = get_object_or_404(EspacioPublico, pk=espacio_publico_id)
-
-            if espacio_publico.estado_espacio_publico != EspacioPublico.ESTADO_DISPONIBLE:
-                messages.error(request, 'El espacio público seleccionado no está disponible en la fecha especificada.')
-            else:
-                messages.success(request, 'El espacio público está disponible.')
-
-
-    espacios = EspacioPublico.obtener_espacios_disponibles(None)  # Cambiar aquí también
-
-    return render(request, 'entidad/eventos/.html', {
+    return render(request, 'entidad/eventos/espacios_disponibles.html', {
         'espacios': espacios
     })

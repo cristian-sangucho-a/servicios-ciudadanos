@@ -6,7 +6,7 @@ from .eventos.evento import evento
 from .eventos.editar_evento import editar_evento
 from .eventos.crear_evento import crear_evento
 from .eventos.cancelar_evento import cancelar_evento
-
+from .eventos.espacios_disponibles import espacios_publicos_disponibles
 
 __all__ = [
     'dashboard_entidad',
@@ -16,5 +16,6 @@ __all__ = [
     'evento',
     'editar_evento',
     'crear_evento',
-    'cancelar_evento'
+    'cancelar_evento',
+    'espacios_publicos_disponibles'
 ]
