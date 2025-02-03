@@ -23,7 +23,7 @@ class Notificacion(models.Model):
         on_delete=models.CASCADE,
         related_name='notificaciones'
     )
-    titulo = models.CharField(max_length=255)
+    titulo = models.CharField(max_length=255, default=None)
     mensaje = models.TextField()
     fecha = models.DateTimeField(default=timezone.now)
     leida = models.BooleanField(default=False)
