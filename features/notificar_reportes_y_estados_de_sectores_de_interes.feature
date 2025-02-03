@@ -23,12 +23,6 @@ Característica: Notificar reportes de alta prioridad o el estado de un sector d
     Entonces se enviará un correo con los detalles del reporte
     Y se agregará a la lista de notificaciones
 
-  Escenario: Notificar un reporte de alta prioridad en un sector cercano a mi ubicación actual
-    Dado que el ciudadano "Andrés Cantuña" se encuentra en el sector "Solanda"
-    Cuando se registre un reporte con asunto "Accidente" a menos de 5 kilómetros de su ubicación actual
-    Y el estado del reporte no es "Resuelto"
-    Entonces se enviará un correo con los detalles del reporte
-    Y se agregará a la lista de notificaciones
 
   Escenario: Notificar cuando el estado de un sector de interés sea de riesgo
     Dado que el ciudadano "Andrés Cantuña" tiene registrado "Solanda" como sector de interés
