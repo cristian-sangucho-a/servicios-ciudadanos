@@ -26,7 +26,7 @@ def reservar(request):
                 return redirect('mis_reservas')
             else:
                 messages.error(request, 'No se pudo crear la reserva')
-                return redirect('dashboard_ciudadano')
+                return redirect('agenda')
         else:
             messages.error(request, 'No se lleno correctamente el formulario.')
 
@@ -53,9 +53,7 @@ def cancelar_reserva(request):
 
     if request.method == 'POST':
         id_reserva =  request.POST.get('id_reserva')
-
         servicio_reserva = ServicioReserva()
-
         servicio_reserva.cancelar_reserva(id_reserva, ciudadano)
 
     return redirect('mis_reservas')
