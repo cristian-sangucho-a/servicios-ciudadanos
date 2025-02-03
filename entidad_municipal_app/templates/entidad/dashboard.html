@@ -22,49 +22,12 @@
 
         <!-- Sección de Eventos -->
         <div class="bg-neutral-gris p-6 rounded-lg">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center">
                 <h2 class="text-xl font-semibold">Eventos</h2>
-           
+                <a href="{% url 'gestor_eventos' %}" class="btn btn-primario">
+                    Gestionar Eventos
+                </a>
             </div>
-            
-            {% if eventos %}
-                <div class="space-y-4">
-                    {% for evento in eventos %}
-                    <div class="bg-white p-4 rounded shadow">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-medium text-primario-DEFAULT">{{ evento.nombre }}</h3>
-                                <p class="text-sm text-gray-600">{{ evento.fecha_hora|date:"d/m/Y H:i" }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <a href="{% url 'editar_evento' evento.id %}" 
-                                   class="text-primario-DEFAULT hover:text-primario-light">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'eliminar_evento' evento.id %}" 
-                                   class="text-red-600 hover:text-red-800"
-                                   onclick="return confirm('¿Estás seguro de querer eliminar este evento?')">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <span class="text-sm text-gray-600">
-                                {{ evento.registros.count }} inscritos / {{ evento.capacidad_maxima }} cupos
-                            </span>
-                            <div class="mt-2">
-                                <a href="{% url 'detalle_evento' evento.id %}" 
-                                   class="text-secundario-DEFAULT hover:text-secundario-dark text-sm">
-                                    Ver detalles →
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="text-gray-600">No hay eventos creados actualmente.</p>
-            {% endif %}
         </div>
 
         <!-- Sección de Canales -->

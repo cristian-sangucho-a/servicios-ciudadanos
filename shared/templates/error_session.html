@@ -15,7 +15,10 @@
                     </p>
                     <div class="mt-4">
                         <a href="{{ return_url }}" class="btn btn-primary me-2">Volver a mi página principal</a>
-                        <a href="{% url 'logout_usuario' %}" class="btn btn-outline-danger">Cerrar sesión</a>
+                        <form action="{% url 'logout_usuario' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">Cerrar sesión</button>
+                        </form>
                     </div>
                 </div>
             </div>

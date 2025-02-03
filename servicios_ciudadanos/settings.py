@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-g)_$(%gf0x-1g3(6#249tsu6p6)h#qk9ikp50u01!o!%*bnp#v'
+GOOGLE_MAPS_API_KEY = 'AIzaSyCQoQSKQ21nZOzInEdKIhrUAqLyfm3kLOE'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,8 +42,20 @@ INSTALLED_APPS = [
     'behave_django',
     'ciudadano_app.apps.CiudadanoAppConfig',
     'entidad_municipal_app.apps.EntidadMunicipalAppConfig',
-    'shared'
+    'shared',
+    'django_browser_reload',
+    'tailwind',
+    'theme',
 ]
+
+TAILWIND_APP_NAME = 'theme'
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+from shutil import which
+NPM_BIN_PATH = which("npm")
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
 ROOT_URLCONF = 'servicios_ciudadanos.urls'
