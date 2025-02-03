@@ -20,6 +20,7 @@ class EventoMunicipalManager(models.Manager):
         if espacio_publico:
             lugar = espacio_publico.direccion
             espacio_publico.estado_espacio_publico = espacio_publico.ESTADO_NO_DISPONIBLE
+            espacio_publico.save()
 
         return self.create(
             nombre_evento=nombre,
