@@ -1,121 +1,126 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Eventos Municipales{% endblock %}
-
-{% block content %}
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2">
-            <i class="fas fa-calendar-alt text-primary me-2"></i>
-            Eventos Municipales
-        </h1>
-        {% if user.is_staff %}
-        <a href="" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>
-            Crear Evento
-        </a>
-        {% endif %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Eventos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <!-- Header -->
+  <header class="bg-[#143D69] text-white py-4">
+    <div class="container mx-auto flex justify-between items-center px-6">
+      <h1 class="text-2xl font-bold">Gestión de Eventos</h1>
     </div>
+  </header>
 
-    <div class="row g-4">
-        {% for evento in eventos %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">{{ evento.nombre_evento }}</h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text text-muted mb-3">
-                        {{ evento.descripcion_evento|truncatechars:150 }}
-                    </p>
-                    <ul class="list-group list-group-flush mb-3">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="fas fa-calendar me-2 text-primary"></i>
-                                Fecha
-                            </span>
-                            <span class="text-muted">
-                                {{ evento.fecha_realizacion|date:"d M Y" }}
-                            </span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="fas fa-clock me-2 text-primary"></i>
-                                Hora
-                            </span>
-                            <span class="text-muted">
-                                {{ evento.fecha_realizacion|date:"H:i" }}
-                            </span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
-                                Lugar
-                            </span>
-                            <span class="text-muted">{{ evento.lugar_evento }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="fas fa-users me-2 text-primary"></i>
-                                Cupos
-                            </span>
-                            <span>
-                                {% if evento.cupos_disponibles > 0 %}
-                                <span class="badge bg-success">
-                                    {{ evento.cupos_disponibles }} disponibles
-                                </span>
-                                {% else %}
-                                <span class="badge bg-danger">Agotado</span>
-                                {% endif %}
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-footer bg-light">
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'detalle_evento' evento.id %}" 
-                           class="btn btn-outline-primary">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Ver Detalles
-                        </a>
-                        {% if user.is_authenticated %}
-                            {% if evento.cupos_disponibles > 0 %}
-                            <form method="post" action="{% url 'inscribir_evento' evento.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-success w-100">
-                                    <i class="fas fa-check-circle me-2"></i>
-                                    Inscribirme
-                                </button>
-                            </form>
-                            {% else %}
-                            <form method="post" action="{% url 'lista_espera' evento.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-warning w-100">
-                                    <i class="fas fa-clock me-2"></i>
-                                    Unirme a Lista de Espera
-                                </button>
-                            </form>
-                            {% endif %}
-                        {% else %}
-                        <a href="{% url 'login' %}?next={{ request.path }}" 
-                           class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt me-2"></i>
-                            Iniciar Sesión para Inscribirte
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                No hay eventos disponibles en este momento.
-            </div>
-        </div>
-        {% endfor %}
+  <!-- Botones de CRUD -->
+  <div class="container mx-auto mt-6 px-6">
+    <div class="flex justify-end space-x-4">
+      <a href="#" class="bg-[#1E4F82] text-white py-2 px-4 rounded hover:bg-[#143D69]">Crear Evento</a>
+      <a href="#" class="bg-[#B08E4D] text-white py-2 px-4 rounded hover:bg-[#9D7A3C]">Editar Evento</a>
+      <!-- Se le asigna un ID para identificarlo en JavaScript -->
+      <a href="#" id="deleteBtn" class="bg-[#9D2235] text-white py-2 px-4 rounded hover:bg-[#7D1A2A]">Eliminar Evento</a>
     </div>
-</div>
-{% endblock %}
+  </div>
+
+  <!-- Tabla de Eventos -->
+  <div class="container mx-auto mt-6 px-6">
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-300">
+        <thead class="bg-[#143D69] text-white">
+          <tr>
+            <th class="py-3 px-4 text-left">Nombre del Evento</th>
+            <th class="py-3 px-4 text-left">Descripción</th>
+            <th class="py-3 px-4 text-left">Fecha</th>
+            <th class="py-3 px-4 text-left">Lugar</th>
+            <th class="py-3 px-4 text-left">Capacidad</th>
+            <th class="py-3 px-4 text-left">Estado</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700">
+          <!-- Cada fila tiene la clase "cursor-pointer" para indicar que es interactiva -->
+          <tr class="border-t cursor-pointer">
+            <td class="py-3 px-4">Concierto de Rock</td>
+            <td class="py-3 px-4">Una noche de música en vivo.</td>
+            <td class="py-3 px-4">2025-03-15</td>
+            <td class="py-3 px-4">Teatro Nacional</td>
+            <td class="py-3 px-4">500</td>
+            <td class="py-3 px-4">Programado</td>
+          </tr>
+          <tr class="border-t cursor-pointer">
+            <td class="py-3 px-4">Concierto de Rock</td>
+            <td class="py-3 px-4">Una noche de música en vivo.</td>
+            <td class="py-3 px-4">2025-03-15</td>
+            <td class="py-3 px-4">Teatro Nacional</td>
+            <td class="py-3 px-4">500</td>
+            <td class="py-3 px-4">Programado</td>
+          </tr>
+          <tr class="border-t cursor-pointer">
+            <td class="py-3 px-4">Concierto de Rock</td>
+            <td class="py-3 px-4">Una noche de música en vivo.</td>
+            <td class="py-3 px-4">2025-03-15</td>
+            <td class="py-3 px-4">Teatro Nacional</td>
+            <td class="py-3 px-4">500</td>
+            <td class="py-3 px-4">Programado</td>
+          </tr>
+          <!-- Más filas pueden añadirse dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación -->
+  <div id="confirmationModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded shadow-lg p-6 w-80">
+      <h2 class="text-xl font-bold mb-4">Confirmar eliminación</h2>
+      <p class="mb-6">¿Estás seguro de que deseas eliminar el evento?</p>
+      <div class="flex justify-end space-x-4">
+        <button id="confirmYes" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">Sí</button>
+        <button id="confirmNo" class="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-[#0F2D4E] text-white text-center py-4 mt-10">
+    <p>© 2025 Entidad Municipal. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    // Obtener elementos del DOM
+    const deleteBtn = document.getElementById('deleteBtn');
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmYes = document.getElementById('confirmYes');
+    const confirmNo = document.getElementById('confirmNo');
+
+    // Mostrar el modal de confirmación al hacer clic en el botón "Eliminar Evento"
+    deleteBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      confirmationModal.classList.remove('hidden');
+    });
+
+    // Ocultar el modal si se selecciona "No"
+    confirmNo.addEventListener('click', function() {
+      confirmationModal.classList.add('hidden');
+    });
+
+    // Acción al confirmar (por ahora solo se cierra el modal y se muestra un mensaje en consola)
+    confirmYes.addEventListener('click', function() {
+      console.log('Evento eliminado');
+      confirmationModal.classList.add('hidden');
+    });
+
+    // Agregar funcionalidad para seleccionar una fila de la tabla
+    const tableRows = document.querySelectorAll('tbody tr');
+    tableRows.forEach(row => {
+      row.addEventListener('click', function() {
+        // Primero se remueve la clase de selección de todas las filas
+        tableRows.forEach(r => r.classList.remove('bg-blue-100'));
+        // Se agrega la clase de selección a la fila clicada
+        this.classList.add('bg-blue-100');
+      });
+    });
+  </script>
+</body>
+</html>

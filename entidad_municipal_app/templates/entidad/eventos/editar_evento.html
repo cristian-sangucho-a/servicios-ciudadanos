@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Evento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-[#143D69] text-white py-4">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-2xl font-bold">Editar Evento</h1>
+        </div>
+    </header>
+
+    <!-- Formulario de Editar Evento -->
+    <div class="container mx-auto mt-6 px-6">
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-3xl font-semibold text-[#143D69]">Editar Evento</h2>
+            <form action="/eventos/editar/{{ evento.id }}/" method="POST" class="mt-4 space-y-4">
+                <!-- CSRF Token -->
+                {% csrf_token %}
+
+                <!-- Nombre del Evento -->
+                <div>
+                    <label for="nombre_evento" class="block text-sm font-medium text-gray-700">Nombre del Evento</label>
+                    <input type="text" id="nombre_evento" name="nombre_evento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#143D69] focus:border-[#143D69]" value="{{ evento.nombre_evento }}" required>
+                </div>
+
+                <!-- Descripción -->
+                <div>
+                    <label for="descripcion_evento" class="block text-sm font-medium text-gray-700">Descripción</label>
+                    <textarea id="descripcion_evento" name="descripcion_evento" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#143D69] focus:border-[#143D69]" required>{{ evento.descripcion_evento }}</textarea>
+                </div>
+
+                <!-- Fecha de Realización -->
+                <div>
+                    <label for="fecha_realizacion" class="block text-sm font-medium text-gray-700">Fecha de Realización</label>
+                    <input type="date" id="fecha_realizacion" name="fecha_realizacion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#143D69] focus:border-[#143D69]" value="{{ evento.fecha_realizacion|date:"Y-m-d" }}" required>
+                </div>
+
+                <!-- Lugar -->
+                <div>
+                    <label for="lugar_evento" class="block text-sm font-medium text-gray-700">Lugar</label>
+                    <input type="text" id="lugar_evento" name="lugar_evento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#143D69] focus:border-[#143D69]" value="{{ evento.lugar_evento }}" required>
+                </div>
+
+                <!-- Capacidad Máxima -->
+                <div>
+                    <label for="capacidad_maxima" class="block text-sm font-medium text-gray-700">Capacidad Máxima</label>
+                    <input type="number" id="capacidad_maxima" name="capacidad_maxima" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#143D69] focus:border-[#143D69]" value="{{ evento.capacidad_maxima }}" required>
+                </div>
+
+                <!-- Botón de Guardar -->
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-[#1E4F82] text-white py-2 px-4 rounded hover:bg-[#143D69]">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#0F2D4E] text-white text-center py-4 mt-10">
+        <p>© 2025 Entidad Municipal. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>
