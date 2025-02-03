@@ -1,11 +1,8 @@
-"""
-Modelo principal de Ciudadano.
-"""
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from ciudadano_app.models.ciudadano.gestor_ciudadano import GestorCiudadano
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 class Ciudadano(AbstractBaseUser):
     """
@@ -13,45 +10,45 @@ class Ciudadano(AbstractBaseUser):
     Extiende el modelo base de usuario de Django para incluir campos específicos.
     """
 
-    correo_electronico: models.EmailField = models.EmailField(
+    correo_electronico = models.EmailField(
         unique=True,
         verbose_name="Correo Electrónico",
         help_text="Dirección de correo electrónico del ciudadano",
     )
 
-    nombre_completo: models.CharField = models.CharField(
+    nombre_completo = models.CharField(
         max_length=120,
         verbose_name="Nombre Completo",
         help_text="Nombre completo del ciudadano",
     )
 
-    numero_identificacion: models.CharField = models.CharField(
+    numero_identificacion = models.CharField(
         max_length=20,
         unique=True,
         verbose_name="Número de Identificación",
         help_text="Número de documento de identidad del ciudadano",
     )
 
-    esta_activo: models.BooleanField = models.BooleanField(
+    esta_activo = models.BooleanField(
         default=True,
         verbose_name="¿Está Activo?",
         help_text="Indica si el ciudadano puede acceder al sistema",
     )
 
-    es_staff: models.BooleanField = models.BooleanField(
+    es_staff = models.BooleanField(
         default=False,
         verbose_name="¿Es Personal Administrativo?",
         help_text="Indica si el ciudadano puede acceder al panel de administración",
     )
 
-    fecha_registro: models.DateTimeField = models.DateTimeField(
+    fecha_registro = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Fecha de Registro",
         help_text="Fecha y hora en que el ciudadano se registró en el sistema",
     )
 
-    is_active: models.BooleanField = models.BooleanField(default=True)
-    is_admin: models.BooleanField = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
 
     sectores_de_interes = models.ManyToManyField(
         'shared.Sector',
@@ -85,6 +82,7 @@ class Ciudadano(AbstractBaseUser):
         return self.nombre_completo
 
     def clean(self):
+        from entidad_municipal_app.models import EntidadMunicipal  # Importación perezosa
         super().clean()
         if EntidadMunicipal.objects.filter(correo_electronico=self.correo_electronico).exists():
             raise ValidationError({
@@ -109,10 +107,10 @@ class Ciudadano(AbstractBaseUser):
         self.ubicacion_actual = sector
         self.save()
 
-    def _str_(self):
+    def __str__(self):  # Corregido de _str_ a __str__
         """Retorna una representación en cadena del ciudadano"""
         return f"Ciudadano: {self.nombre_completo} ({self.correo_electronico})"
-    
+
     def has_perm(self, perm, obj=None):
         return True
 
