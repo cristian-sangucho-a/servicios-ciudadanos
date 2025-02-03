@@ -20,7 +20,7 @@ def reservar(request):
     if request.method == 'POST':
         form = ReservaRegisterForm(request.POST)
         if form.is_valid():
-            id_reserva, exito = servicio_reserva.reservar_area_comunal(area_comunal, fecha_reserva, hora_inicio, hora_fin, form.cleaned_data['tipo_reserva'], ciudadano, form.cleaned_data['correos_invitados'])
+            _, exito = servicio_reserva.reservar_area_comunal(area_comunal, fecha_reserva, hora_inicio, hora_fin, form.cleaned_data['tipo_reserva'], ciudadano, form.cleaned_data['correos_invitados'])
             if exito:
                 messages.success(request, '¡Reserva creada exitosamente!')
                 return redirect('mis_reservas')

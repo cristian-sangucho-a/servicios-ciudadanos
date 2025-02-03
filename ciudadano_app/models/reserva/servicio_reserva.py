@@ -55,8 +55,6 @@ class ServicioReserva(RespositorioReserva):
         if self.ciudadano_supera_maximo_reservas(ciudadano):
             print(self.ciudadano_supera_maximo_reservas(ciudadano))
             return 0, False
-
-        #TODO: verificar que el espacio publico al que pertenece el area comunal este libre para reservar_area_comunal
         reserva = Reserva(
             area_comunal=area_comunal,
             fecha_reserva=fecha_reserva,

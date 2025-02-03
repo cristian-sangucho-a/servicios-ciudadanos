@@ -59,9 +59,6 @@ class CiudadanoRegisterForm(forms.ModelForm):
             ciudadano.save()
         return ciudadano
 
-
-# forms.py
-# forms.py
 class ReservaRegisterForm(forms.ModelForm):
     TIPO_RESERVA_CHOICES = [
         ('publico', 'Público'),
@@ -80,7 +77,16 @@ class ReservaRegisterForm(forms.ModelForm):
 
     class Meta:
         model = Reserva
-        fields = '__all__'
+        fields = [
+            'fecha_reserva',
+            'hora_inicio',
+            'hora_fin',
+            'tipo_reserva',
+            'correos_invitados',  # Campo condicional
+            'estado_reserva',
+            'ciudadano',
+            'area_comunal'
+        ]
         widgets = {
             'fecha_reserva': forms.DateInput(attrs={'type': 'date', 'readonly': True}),
             'hora_inicio': forms.TimeInput(attrs={'type': 'time', 'readonly': True}),
