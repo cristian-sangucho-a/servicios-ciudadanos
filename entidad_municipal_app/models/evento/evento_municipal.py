@@ -226,6 +226,50 @@ class EventoMunicipal(models.Model):
         """Retorna la fecha del evento en formato legible"""
         return self.fecha_realizacion.strftime("%d/%m/%Y %H:%M")
 
+    def obtener_todos_registros(self):
+        """
+        Obtiene todos los registros de asistencia del evento.
+
+        Returns:
+            QuerySet: QuerySet de RegistroAsistencia con todos los estados
+        """
+        return self.registroasistencia_set.all().select_related('ciudadano')
+
+    @transaction.atomic
+    def actualizar_estado_asistencia(self, registro_id, nuevo_estado):
+        """
+        Actualiza el estado de asistencia de un registro.
+
+        Args:
+            registro_id: ID del registro a actualizar
+            nuevo_estado: Nuevo estado a asignar
+
+        Returns:
+            RegistroAsistencia: Registro actualizado
+
+        Raises:
+            ErrorGestionEventos: Si hay problemas con la actualización
+        """
+        try:
+            registro = self.registroasistencia_set.select_for_update().get(id=registro_id)
+            estados_validos = [
+                self.ESTADO_INSCRITO,
+                self.ESTADO_EN_ESPERA,
+                self.ESTADO_ASISTIO,
+                self.ESTADO_NO_ASISTIO,
+                self.ESTADO_CANCELADO_REGISTRO
+            ]
+            
+            if nuevo_estado not in estados_validos:
+                raise ErrorGestionEventos(f"Estado no válido: {nuevo_estado}")
+                
+            registro.estado_registro = nuevo_estado
+            registro.save()
+            return registro
+            
+        except RegistroAsistencia.DoesNotExist:
+            raise ErrorGestionEventos("Registro de asistencia no encontrado")
+
     def save(self, *args, **kwargs):
         # Si el evento tiene un espacio público asociado, actualiza el lugar_evento
         if self.espacio_publico:
@@ -235,13 +279,13 @@ class EventoMunicipal(models.Model):
     @transaction.atomic
     def inscribir_ciudadano(self, ciudadano):
         """
-        Inscribe a un ciudadano en el evento
+        Inscribe a un ciudadano en el evento o reactiva una inscripción cancelada.
 
         Args:
             ciudadano: Instancia del ciudadano a inscribir
 
         Returns:
-            RegistroAsistencia: Registro creado
+            RegistroAsistencia: Registro creado o actualizado
 
         Raises:
             ErrorGestionEventos: Si hay problemas con la inscripción
@@ -249,27 +293,40 @@ class EventoMunicipal(models.Model):
         # Obtener y bloquear el evento para operaciones concurrentes
         evento = EventoMunicipal.objects.select_for_update().get(pk=self.pk)
 
-        # Validar que el ciudadano no tenga una inscripción activa
-        if RegistroAsistencia.objects.tiene_inscripcion_activa(evento, ciudadano):
-            raise ErrorGestionEventos("Ya tienes una inscripción activa para este evento")
+        try:
+            # Intentar obtener un registro existente para este ciudadano y evento
+            registro_existente = RegistroAsistencia.objects.get(ciudadano=ciudadano, evento=evento)
+            
+            # Si el registro está activo, no permitir reinscripción
+            if registro_existente.estado_registro in [RegistroAsistencia.ESTADO_INSCRITO, RegistroAsistencia.ESTADO_EN_ESPERA]:
+                raise ErrorGestionEventos("Ya tienes una inscripción activa para este evento")
+            
+            # Si el registro está cancelado, reactivarlo
+            if registro_existente.estado_registro == RegistroAsistencia.ESTADO_CANCELADO:
+                nuevo_estado = (
+                    RegistroAsistencia.ESTADO_INSCRITO
+                    if evento.esta_disponible_para_inscripcion() and evento.cupos_disponibles > 0
+                    else RegistroAsistencia.ESTADO_EN_ESPERA
+                )
+                registro_existente.estado_registro = nuevo_estado
+                registro_existente.save()
+                self._enviar_notificacion_inscripcion(registro_existente)
+                return registro_existente
 
-        # Determinar el estado del registro
-        if evento.esta_disponible_para_inscripcion() and evento.cupos_disponibles > 0:
-            estado = RegistroAsistencia.ESTADO_INSCRITO
-        else:
-            estado = RegistroAsistencia.ESTADO_EN_ESPERA
-
-        # Crear el registro
-        registro = RegistroAsistencia.objects.create(
-            ciudadano=ciudadano,
-            evento=evento,
-            estado_registro=estado
-        )
-
-        # Enviar notificación
-        self._enviar_notificacion_inscripcion(registro)
-
-        return registro
+        except RegistroAsistencia.DoesNotExist:
+            # No existe registro previo, crear uno nuevo
+            nuevo_estado = (
+                RegistroAsistencia.ESTADO_INSCRITO
+                if evento.esta_disponible_para_inscripcion() and evento.cupos_disponibles > 0
+                else RegistroAsistencia.ESTADO_EN_ESPERA
+            )
+            registro = RegistroAsistencia.objects.create(
+                ciudadano=ciudadano,
+                evento=evento,
+                estado_registro=nuevo_estado
+            )
+            self._enviar_notificacion_inscripcion(registro)
+            return registro
 
     @transaction.atomic
     def cancelar_inscripcion(self, registro_id):
