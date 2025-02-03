@@ -4,6 +4,7 @@ from .bienvenida import bienvenida_entidad
 from .eventos.gestor_eventos import gestor_eventos
 from .eventos.evento import evento
 from .eventos.editar_evento import editar_evento
+from .eventos.crear_evento import crear_evento
 
 
 __all__ = [
@@ -13,4 +14,5 @@ __all__ = [
     'gestor_eventos',
     'evento',
     'editar_evento',
+    'crear_evento',
 ]
