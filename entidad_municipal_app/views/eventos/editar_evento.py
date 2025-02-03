@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
 from django.contrib.auth.decorators import login_required
 from entidad_municipal_app.decorators import entidad_required
