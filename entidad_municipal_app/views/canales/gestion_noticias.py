@@ -44,3 +44,13 @@ def eliminar_noticia(request, noticia_id):
     canal = noticia.canal
     noticia.delete()
     return redirect('/entidad_municipal/lista_canales/noticias_canal/'+str(canal.id))
+
+def alerta_de_emergencia(request,canal_id):
+    if request.method == 'POST':
+        canal = CanalInformativo.objects.get(id=canal_id)
+        incidente = request.POST.get('incidente')
+        localidad = request.POST.get('localidad')
+
+        if incidente and localidad and canal:
+            canal.notificar_alerta_emergencia(incidente, localidad)
+    return redirect('/entidad_municipal/lista_canales/')

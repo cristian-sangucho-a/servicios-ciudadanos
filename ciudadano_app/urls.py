@@ -1,8 +1,8 @@
 from django.urls import path
 from . import views
 from .views.canales.noticia import reaccionar, comentar, conteo_reacciones
-from .views.canales.suscripcion import suscribirse_canal
-from .views.canales.suscripcion import desuscribirse_canal
+from .views.canales.suscripcion import suscribirse_canal, desuscribirse_canal
+from .views.canales.notificacion import listar_notificacion
 from .views.canales.canales import lista_canales, detalle_canal, ver_noticias
 from shared.views.logout import logout_usuario
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path('canal/<int:canal_id>/detalle/', detalle_canal, name='detalle_canal'),
     path('canal/lista_canales/', lista_canales, name='lista_canales'),
     path('muro/', ver_noticias, name='ver_noticias'),
+    path('notificaciones/', listar_notificacion, name='ver_notificaciones'),
     path('muro/reaccion/<int:noticia_id>', reaccionar, name='reaccionar'),
     path('muro/conteo/<int:noticia_id>/', conteo_reacciones, name='conteo_reacciones'),
     path('muro/comentario/<int:noticia_id>/', comentar, name='comentar'),

@@ -19,4 +19,5 @@ urlpatterns = [
     path('lista_canales/noticias_canal/crear_noticia/<int:canal_id>', gestion_noticias.crear_noticia, name='crear_noticia'),
     path('lista_canales/noticias_canal/detalle_noticia/<int:noticia_id>', gestion_noticias.detalle_noticia, name='detalle_noticia'),
     path('lista_canales/noticias_canal/detalle_noticia/eliminar_noticia/<int:noticia_id>', gestion_noticias.eliminar_noticia, name='eliminar_noticia'),
+    path('lista_canales/noticias_canal/crear_alerta_emergencia/<int:canal_id>', gestion_noticias.alerta_de_emergencia, name='alerta_emergencia'),
 ]

@@ -112,7 +112,7 @@ class CanalInformativo(models.Model):
                 Notificacion.objects.create(
                     ciudadano=suscripcion.ciudadano,
                     titulo="Alerta de emergencia",
-                    mensaje=f"Ha ocurrido un ${tipo_incidente} en ${localidad}"
+                    mensaje=f"Ha ocurrido un {tipo_incidente} en {localidad}"
                 )
 
 class Suscripcion(models.Model):
