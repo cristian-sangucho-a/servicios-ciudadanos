@@ -150,6 +150,7 @@ def listar_datos():
     else:
         print("No hay espacios públicos disponibles.")
 
+
 if __name__ == '__main__':
     crear_datos_prueba()
     listar_datos()
