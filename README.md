@@ -22,5 +22,5 @@ pyenv --version
 - pyenv exec python -m venv .venv
 - pyenv exec pip install -r requirements.txt
 
-3. Add the interpreter for the new .venv
+3. Add the interpreteer for the new .venv
  python interpreter -> add interpreter -> select local interpreter -> select existing -> (The path of current project) servicios-ciudadanos\.venv\Scripts\python.exe
