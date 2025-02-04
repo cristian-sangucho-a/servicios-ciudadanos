@@ -25,9 +25,10 @@ Escenario: Organizar un evento en un espacio público no disponible
 Esquema del escenario: Cancelar evento debido a caso fortuito externo
    Dado que existe un evento llamado "<nombre_evento>" con el estado "<estado_evento>"
    Y el espacio público destinado al evento es "<nombre_espacio>"
-   Y está en una situación de "<estado_espacio>" debido a un "<motivoRiesgo>"
-   Cuando la entidad municipal cambia el estado del evento a "<nuevo_estado_evento>"
+   Cuando el espacio publico esta en situación de "<estado_espacio>" debido a un "<motivoRiesgo>"
    Entonces se registra el motivo de la cancelación
+   Y la entidad municipal cambia el estado del evento a "<nuevo_estado_evento>"
+
 
    Ejemplos:
     | nombre_evento                   | estado_evento | nombre_espacio         | estado_espacio | motivoRiesgo       | nuevo_estado_evento |
