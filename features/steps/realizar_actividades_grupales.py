@@ -79,7 +79,7 @@ def step_impl(context, maximo_reservas):
     assert not servicio_reserva.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
 
 
-@step('el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
+@step('el ciudadano realice una reserva de tipo "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, hora_fin):
     """
     Simula la realización de una reserva por parte de un ciudadano.
@@ -128,8 +128,6 @@ def step_impl(context):
         area_comunal=area_comunal, fecha_reserva=fecha_formateada,
         hora_inicio=hora_inicio_formateada, hora_fin=hora_fin_formateada, tipo_reserva=context.tipo_reserva,
         ciudadano=context.ciudadano, correos_invitados="")
-    if context.correos_invitados is not None:
-        servicio_reserva.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,correos_invitados=context.correos_invitados)
     assert reservado
 
 
@@ -167,7 +165,7 @@ def step_impl(context):
 
 
 
-@step('que el ciudadano tiene una reserva "{tipo_reserva}" en el espacio publico "{nombre_espacio}" en el area comunal "{nombre_area}" el "{fecha}" de "{hora_inicio}" a "{hora_fin}"')
+@step('que el ciudadano tiene una reserva de tipo "{tipo_reserva}" en el espacio publico "{nombre_espacio}" en el area comunal "{nombre_area}" el "{fecha}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_inicio, hora_fin):
     """
     Configura un contexto donde un ciudadano tiene una reserva en un espacio público.
@@ -195,12 +193,10 @@ def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_in
     hora_inicio_formateada = datetime.strptime(hora_inicio, "%H:%M").time()
     hora_fin_formateada = datetime.strptime(hora_fin, "%H:%M").time()
 
+    correos_invitados = fake.email() + "," + fake.email()
     context.id_reserva, reservado = servicio_reserva.reservar_area_comunal(
         fecha_reserva=fecha_formateada, hora_inicio=hora_inicio_formateada, hora_fin=hora_fin_formateada, tipo_reserva=tipo_reserva,
-        area_comunal=area_comunal, ciudadano=context.ciudadano, correos_invitados="")
-    correos_invitados = fake.email() + ", " + fake.email()
-    if tipo_reserva == 'privada':
-        servicio_reserva.agregar_correos_invitados_a_reserva(context.id_reserva, correos_invitados)
+        area_comunal=area_comunal, ciudadano=context.ciudadano, correos_invitados=correos_invitados)
     assert reservado
 
 
