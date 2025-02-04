@@ -54,17 +54,17 @@ class EntidadMunicipalManager(BaseUserManager):
 
         return self.create_user(correo_electronico, password, **extra_fields)
 
-class EntidadMunicipal(AbstractBaseUser, PermissionsMixin):
-    """Modelo que representa una entidad municipal en el sistema."""
 
-    correo_electronico = models.EmailField(unique=True, help_text="Correo electrónico de la entidad")
-    nombre = models.CharField(max_length=100, help_text="Nombre de la entidad municipal")
-    direccion = models.CharField(max_length=200, help_text="Dirección física de la entidad")
-    telefono = models.CharField(max_length=20, help_text="Número de teléfono de contacto")
-    fecha_registro = models.DateTimeField(auto_now_add=True, help_text="Fecha de registro en el sistema")
+class EntidadMunicipal(AbstractBaseUser, PermissionsMixin):  # Add PermissionsMixin
+    correo_electronico: models.EmailField = models.EmailField(unique=True, help_text="Correo electrónico de la entidad")
+    nombre: models.CharField = models.CharField(max_length=100, help_text="Nombre de la entidad municipal")
+    direccion: models.CharField = models.CharField(max_length=200, help_text="Dirección física de la entidad")
+    telefono: models.CharField = models.CharField(max_length=20, help_text="Número de teléfono de contacto")
+    fecha_registro: models.DateTimeField = models.DateTimeField(auto_now_add=True, help_text="Fecha de registro en el sistema")
 
-    is_active = models.BooleanField(default=True, help_text="Indica si la entidad está activa")
-    is_staff = models.BooleanField(default=False, help_text="Indica si la entidad tiene acceso al panel de administración")
+    is_active: models.BooleanField = models.BooleanField(default=True, help_text="Indica si la entidad está activa")
+    is_staff: models.BooleanField = models.BooleanField(default=False, help_text="Indica si la entidad tiene acceso al panel de administración")
+
 
     groups = models.ManyToManyField(
         'auth.Group',
