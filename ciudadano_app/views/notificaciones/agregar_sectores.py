@@ -15,7 +15,8 @@ def agregar_sectores_ciudadano(request):
             messages.success(request, f'Sector {sector.nombre} agregado a tus intereses.')
         except ObjectDoesNotExist:
             messages.error(request, 'El sector no existe.')
-        return redirect('listar_sectores')
+        return redirect('agregar_sectores')
     else:
         sectores = Sector.objects.all()
         return render(request, 'notificaciones/agregar_sectores.html', {'sectores': sectores})
+
