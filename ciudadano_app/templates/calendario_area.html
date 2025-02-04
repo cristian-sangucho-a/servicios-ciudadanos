@@ -1,0 +1,237 @@
+{% load static %}
+
+{% block content %}
+    <div class="w-full justify-items-center font-semibold text-3xl p-7">
+        <h1>Revisa los horarios y areas comunales disponibles en nuestro
+            calendario</h1>
+    </div>
+    <div>
+        <!-- component -->
+        <div class="bg-gray-100 flex justify-center">
+            <div class="lg:w-7/12 md:w-9/12 sm:w-10/12 mx-auto p-4">
+                <div class="bg-default shadow-lg rounded-lg overflow-hidden">
+                    <div class="flex items-center justify-between px-6 py-3 bg-primario-default">
+                        <button id="prevMonth" class="text-white">Anterior</button>
+                        <h2 id="currentMonth" class="text-white">Mes y Año:</h2>
+                        <button id="nextMonth" class="text-white">Siguiente</button>
+                    </div>
+                    <div class="grid grid-cols-7 gap-2 p-4" id="calendar">
+                        <!-- Calendar Days Go Here -->
+                    </div>
+                    <div id="myModal" class="modal hidden fixed inset-0 flex items-center justify-center z-50">
+                        <div class="modal-overlay absolute inset-0 bg-black opacity-50"></div>
+                        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                            <div class="modal-content py-4 text-left px-6">
+                                <div class="flex justify-between items-center pb-3">
+                                    <p class="text-2xl font-bold">Fecha seleccionada</p>
+                                    <button id="closeModal"
+                                            class="modal-close px-3 py-1 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring">
+                                        ✕
+                                    </button>
+                                </div>
+                                <div id="modalDate" class="text-xl font-semibold mb-4"></div>
+                                <div id="reservasList" class="space-y-2">
+                                    <!-- Aquí se mostrarán las reservas -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            inicializarCalendario();
+        });
+
+        function generateCalendar(year, month) {
+            const calendarElement = document.getElementById('calendar');
+            const currentMonthElement = document.getElementById('currentMonth');
+            const firstDayOfMonth = new Date(year, month, 1);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            const prevButton = document.getElementById('prevMonth');
+            if (year === today.getFullYear() && month === today.getMonth()) {
+                prevButton.disabled = true;
+                prevButton.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                prevButton.disabled = false;
+                prevButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            calendarElement.innerHTML = '';
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            currentMonthElement.textContent = `${monthNames[month]} ${year}`;
+            const firstDayOfWeek = firstDayOfMonth.getDay();
+            const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+
+            daysOfWeek.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'text-center font-semibold';
+                dayElement.textContent = day;
+                calendarElement.appendChild(dayElement);
+            });
+
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                calendarElement.appendChild(document.createElement('div'));
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'text-center py-2 border';
+                const currentDate = new Date();
+                const selectedDate = new Date(year, month, day);
+                if (selectedDate < new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())) {
+                    dayElement.classList.add('opacity-50', 'cursor-not-allowed', 'text-gray-400');
+                } else {
+                    dayElement.classList.add('cursor-pointer');
+                    dayElement.addEventListener('click', () => {
+                        const optionsDisplay = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+                        const formattedDisplayDate = selectedDate.toLocaleDateString('es-ES', optionsDisplay);
+                        const formattedAPIDate = selectedDate.toISOString().split('T')[0];
+                        showModal(formattedDisplayDate, formattedAPIDate);
+                    });
+                }
+                dayElement.textContent = day;
+                if (year === currentDate.getFullYear() &&
+                    month === currentDate.getMonth() &&
+                    day === currentDate.getDate()) {
+                    dayElement.classList.add('bg-blue-500', 'text-white');
+                }
+
+                calendarElement.appendChild(dayElement);
+            }
+        }
+        const currentDate = new Date();
+        let currentYear = currentDate.getFullYear();
+        let currentMonth = currentDate.getMonth();
+        generateCalendar(currentYear, currentMonth);
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar(currentYear, currentMonth);
+        });
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar(currentYear, currentMonth);
+        });
+        const obtenerReservasUrl = "{% url 'obtener_reservas_por_fecha' %}";
+        async function obtenerReservas(fecha) {
+            const area_comunal_id = document.querySelector('select[name="area_id"]').value;
+            try {
+                const response = await fetch(`${obtenerReservasUrl}?fecha=${fecha}&area_comunal_id=${area_comunal_id}`);
+                const data = await response.json();
+                return data.reservas;
+            } catch (error) {
+                console.error('Error al obtener reservas:', error);
+                return [];
+            }
+        }
+        function mostrarReservas(reservas, fecha) {
+            const reservasList = document.getElementById('reservasList');
+            reservasList.innerHTML = '';
+
+            const bloques = generarBloquesHorarios();
+
+            bloques.forEach(bloque => {
+                const bloqueElement = document.createElement('div');
+                bloqueElement.className = 'p-3 rounded-lg mb-2 border';
+                const reservasEnBloque = reservas.filter(reserva => {
+                    const [horaReserva] = reserva.hora_inicio.split(':').map(Number);
+                    const horaInicioBloque = parseInt(bloque.inicio.split(':')[0], 10);
+                    return horaReserva >= horaInicioBloque && horaReserva < (horaInicioBloque + 2);
+                });
+
+                bloqueElement.innerHTML = `<p class="font-medium">${bloque.inicio} - ${bloque.fin}</p>`;
+
+                if (reservasEnBloque.length > 0) {
+                    reservasEnBloque.forEach(reserva => {
+                        const reservaDiv = document.createElement('div');
+                        reservaDiv.className = 'mt-2 p-2 bg-red-50 rounded';
+                        reservaDiv.innerHTML = `
+                    <p class="text-sm text-red-600">Reservado por: ${reserva.ciudadano}</p>
+                    <p class="text-xs text-gray-500">${reserva.hora_inicio} - ${reserva.hora_fin}</p>
+                `;
+                        bloqueElement.appendChild(reservaDiv);
+                    });
+                    bloqueElement.classList.add('bg-red-100');
+                } else {
+                    const disponibleDiv = document.createElement('div');
+                    const textoDisponible = document.createElement('p');
+                    const agregarReserva = document.createElement('a');
+                    disponibleDiv.className = 'mt-2 p-2 bg-green-50 rounded flex justify-between items-center';
+                    textoDisponible.className = 'text-sm text-green-600';
+                    textoDisponible.textContent = 'Disponible';
+                    const area_comunal_id = document.querySelector('select[name="area_id"]').value;
+                    const params = new URLSearchParams({
+                        fecha_reserva: fecha,
+                        hora_inicio: bloque.inicio,
+                        hora_fin: bloque.fin,
+                        area_comunal: area_comunal_id
+                    });
+                    agregarReserva.className = 'flex items-center text-green-600 hover:text-green-800';
+                    agregarReserva.href = `{% url 'reservar_area_comunal' %}?${params.toString()}`;
+                    agregarReserva.innerHTML = `
+                <svg class="mr-1" width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2Zm0 5a.75.75 0 0 0-.743.648l-.007.102v3.5h-3.5a.75.75 0 0 0-.102 1.493l.102.007h3.5v3.5a.75.75 0 0 0 1.493.102l.007-.102v-3.5h3.5a.75.75 0 0 0 .102-1.493l-.102-.007h-3.5v-3.5A.75.75 0 0 0 12 7Z" fill="currentColor"/>
+                </svg>
+                Reservar`;
+                    disponibleDiv.appendChild(textoDisponible);
+                    disponibleDiv.appendChild(agregarReserva);
+                    bloqueElement.appendChild(disponibleDiv);
+                    bloqueElement.classList.add('bg-green-100');
+                }
+
+                reservasList.appendChild(bloqueElement);
+            });
+        }
+
+        async function showModal(displayDate, apiDate) {
+            const modal = document.getElementById('myModal');
+            const modalDateElement = document.getElementById('modalDate');
+            modalDateElement.textContent = displayDate;
+            const reservas = await obtenerReservas(apiDate);
+            mostrarReservas(reservas, apiDate);
+            modal.classList.remove('hidden');
+        }
+
+        function generarBloquesHorarios() {
+            const bloques = [];
+            let hora = 7;
+            while (hora < 19) {
+                const inicio = `${hora.toString().padStart(2, '0')}:00`;
+                const fin = `${(hora + 2).toString().padStart(2, '0')}:00`;
+                bloques.push({inicio, fin});
+                hora += 2;
+            }
+            return bloques;
+        }
+
+        function hideModal() {
+            document.getElementById('myModal').classList.add('hidden');
+        }
+
+        function inicializarCalendario() {
+            const currentDate = new Date();
+            currentYear = currentDate.getFullYear();
+            currentMonth = currentDate.getMonth();
+            generateCalendar(currentYear, currentMonth);
+        }
+
+        document.getElementById('closeModal').addEventListener('click', hideModal);
+        document.querySelector('.modal-overlay').addEventListener('click', hideModal);
+    </script>
+{% endblock %}

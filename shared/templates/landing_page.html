@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Servicios Ciudadanos{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="relative bg-[#143D69]">
+  <div class="absolute inset-0">
+    <img class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1920&q=80" alt="Ciudad">
+    <div class="absolute inset-0 bg-[#143D69] mix-blend-multiply"></div>
+  </div>
+  <div class="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
+    <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">Servicios Ciudadanos</h1>
+    <p class="mt-6 text-xl text-gray-300 max-w-3xl">
+      Conectamos a los ciudadanos con su municipalidad para una mejor gestión de servicios públicos.
+    </p>
+    <div class="mt-10 flex space-x-4">
+      {% if user.is_authenticated %}
+      {% if user.es_ciudadano %}
+          <a href="{% url 'dashboard_ciudadano' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+              Mi Dashboard
+          </a>
+      {% elif user.es_entidad %}
+          <a href="{% url 'dashboard_entidad' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+              Dashboard Entidad
+          </a>
+      {% endif %}
+      <form action="{% url 'logout_usuario' %}" method="post" class="inline-block">
+          {% csrf_token %}
+          <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+              Cerrar Sesión
+          </button>
+      </form>
+  {% else %}
+      <a href="{% url 'login_ciudadano' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#9D2235] hover:bg-[#B53045]">
+          Acceso Ciudadano
+      </a>
+      <a href="{% url 'login_entidad' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-[#143D69] bg-white hover:bg-gray-50">
+          Acceso Entidad Municipal
+      </a>
+  {% endif %}
+  
+  </div>
+  
+  </div>
+</div>
+
+<!-- Características -->
+<div class="py-12 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="lg:text-center">
+      <h2 class="text-base text-[#9D2235] font-semibold tracking-wide uppercase">Características</h2>
+      <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+        Una mejor manera de conectar con tu ciudad
+      </p>
+    </div>
+
+    <div class="mt-10">
+      <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
+        <!-- Característica 1 -->
+        <div class="relative">
+          <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-[#143D69] text-white">
+            <!-- Icono -->
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Servicios Municipales</p>
+          <p class="mt-2 ml-16 text-base text-gray-500">
+            Accede a todos los servicios municipales desde un solo lugar.
+          </p>
+        </div>
+
+        <!-- Característica 2 -->
+        <div class="relative">
+          <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-[#143D69] text-white">
+            <!-- Icono -->
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+            </svg>
+          </div>
+          <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Comunicación Directa</p>
+          <p class="mt-2 ml-16 text-base text-gray-500">
+            Mantente en contacto directo con tu municipalidad.
+          </p>
+        </div>
+
+        <!-- Característica 3 -->
+        <div class="relative">
+          <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-[#143D69] text-white">
+            <!-- Icono -->
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+          </div>
+          <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Fácil Acceso</p>
+          <p class="mt-2 ml-16 text-base text-gray-500">
+            Gestiona tus trámites de manera sencilla y rápida.
+          </p>
+        </div>
+
+        <!-- Característica 4 -->
+        <div class="relative">
+          <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-[#143D69] text-white">
+            <!-- Icono -->
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Respuesta Rápida</p>
+          <p class="mt-2 ml-16 text-base text-gray-500">
+            Obtén respuestas rápidas a tus solicitudes y consultas.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA Section -->
+<div class="bg-[#143D69]">
+  <div class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+      <span class="block">¿Listo para empezar?</span>
+    </h2>
+    <p class="mt-4 text-lg leading-6 text-gray-200">
+      Únete a nuestra plataforma y sé parte del cambio en tu comunidad.
+    </p>
+    <a href="{% url 'registro_ciudadano' %}" class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-[#143D69] bg-white hover:bg-gray-50 sm:w-auto">
+      Registrarse como Ciudadano
+    </a>
+  </div>
+</div>
+
+
+
+{% endblock %}

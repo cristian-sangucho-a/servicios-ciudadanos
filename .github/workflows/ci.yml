@@ -1,0 +1,54 @@
+name: ci_servicios_ciudadanos
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+jobs:
+  Pull_Request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR name
+        if: github.event_name == 'pull_request'
+        uses: Slashgear/action-check-pr-title@v4.3.0
+        with:
+          regexp: '^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert|release|hotfix)(\([a-zA-Z0-9_\-\.]+\))?:\s.{1,100}$'
+          helpMessage: 'Example: fix(auth): resolve token expiration issue'
+
+  Django_Behave_Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12.5'
+
+      - name: Create .env file from Environment Variables
+        run: |
+          echo "EMAIL_HOST_PASSWORD=${{ vars.EMAIL_HOST_PASSWORD }}" >> servicios_ciudadanos/.env
+          echo "EMAIL_HOST_USER=${{ vars.EMAIL_HOST_USER }}" >> servicios_ciudadanos/.env
+          
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Django Behave tests
+        run: |
+          python manage.py behave
+
+  # sonarqube:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #     with:
+  #       fetch-depth: 0
+  #   - name: SonarQube Scan
+  #     uses: sonarsource/sonarcloud-github-action@v4.0.0
+  #     env:
+  #       SONAR_TOKEN: ${{ secrets.SONNAR_TOKEN }}
+

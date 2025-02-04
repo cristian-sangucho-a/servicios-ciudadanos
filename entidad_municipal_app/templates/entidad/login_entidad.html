@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Login Entidad Municipal{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <!-- Encabezado -->
+            <div class="bg-[#002F5F] px-6 py-4 border-b-4" style="border-color: #D8A35C;">
+                <h2 class="text-white text-center text-2xl font-bold">
+                    Acceso Entidad Municipal
+                </h2>
+            </div>
+            <!-- Formulario -->
+            <form method="POST" class="px-6 py-8">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="correo_electronico" class="block text-gray-700 text-sm font-semibold mb-2">
+                        Correo Electrónico
+                    </label>
+                    <input type="email" name="correo_electronico" id="correo_electronico" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#002F5F]">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">
+                        Contraseña
+                    </label>
+                    <input type="password" name="password" id="password" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#002F5F]">
+                </div>
+                <button type="submit"
+                        class="w-full bg-[#002F5F] hover:bg-[#001c3f] text-white font-semibold py-2 px-4 rounded transition duration-200">
+                    Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

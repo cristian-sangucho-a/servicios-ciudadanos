@@ -1,0 +1,71 @@
+<footer class="bg-dark text-light py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h5 class="mb-3">Servicios Ciudadanos</h5>
+                <p class="text-muted">
+                    Plataforma de gestión de eventos municipales para una mejor organización 
+                    y participación ciudadana.
+                </p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h5 class="mb-3">Enlaces Rápidos</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a href="{% url 'lista_eventos' %}" class="text-muted text-decoration-none">
+                            <i class="fas fa-calendar-alt me-2"></i>Eventos
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="text-muted text-decoration-none">
+                            <i class="fas fa-info-circle me-2"></i>Acerca de
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="text-muted text-decoration-none">
+                            <i class="fas fa-question-circle me-2"></i>Ayuda
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h5 class="mb-3">Contáctanos</h5>
+                <ul class="list-unstyled text-muted">
+                    <li class="mb-2">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Av. Principal #123
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        (123) 456-7890
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-envelope me-2"></i>
+                        contacto@municipalidad.gob.ec
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+                <p class="mb-0 text-muted">
+                    &copy; {% now "Y" %} Servicios Ciudadanos. Todos los derechos reservados.
+                </p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <div class="social-links">
+                    <a href="#" class="text-muted me-3">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-muted me-3">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-muted">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
