@@ -5,11 +5,13 @@ from datetime import datetime
 from ciudadano_app.models.area_comunal import AreaComunal
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from ciudadano_app.models.reserva.servicio_reserva import ServicioReserva
+from ciudadano_app.models.servicio_notificacion_correo import ServicioNotificacionPorCorreo
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from mocks.repositorio_reserva_en_memoria import RepositorioReservaMemoria
 
 fake = Faker()
 servicio_reserva = ServicioReserva()
+servicio_notificacion_por_correo = ServicioNotificacionPorCorreo()
 servicio_reserva_en_memoria = RepositorioReservaMemoria()
 
 @step('que existen areas comunales disponibles en el espacio publico "{nombre_espacio_publico}" en la ciudad y son')
@@ -116,13 +118,13 @@ def step_impl(context):
     Raises:
         AssertionError: Si la reserva no se pudo realizar.
     """
-    context.id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
-        area_comunal=servicio_reserva_en_memoria.obtener_area_comunal(1), fecha_reserva=context.fecha_reserva,
+    area_comunal = servicio_reserva.obtener_area_comunal(1)
+    context.id_reserva, reservado = servicio_reserva.reservar_area_comunal(
+        area_comunal=area_comunal, fecha_reserva=context.fecha_reserva,
         hora_inicio=context.hora_inicio, hora_fin=context.hora_fin, tipo_reserva=context.tipo_reserva,
         ciudadano=context.ciudadano, correos_invitados="")
     if context.correos_invitados is not None:
-        servicio_reserva_en_memoria.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,
-                                                                        correos_invitados=context.correos_invitados)
+        servicio_reserva.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,correos_invitados=context.correos_invitados)
     assert reservado
 
 
@@ -155,8 +157,9 @@ def step_impl(context):
     Raises:
         AssertionError: Si no se pudo enviar la invitación.
     """
-    assert servicio_reserva_en_memoria.enviar_invitacion(
-        servicio_reserva_en_memoria.obtener_reserva_por_id(context.id_reserva))
+
+    assert servicio_notificacion_por_correo.enviar_invitacion(servicio_reserva.obtener_reserva_por_id(context.id_reserva))
+
 
 
 @step('que el ciudadano tiene una reserva "{tipo_reserva}" en el espacio publico "{nombre_espacio}" en el area comunal "{nombre_area}" el "{fecha}" de "{hora_inicio}" a "{hora_fin}"')
@@ -225,7 +228,7 @@ def step_impl(context):
     Raises:
         AssertionError: Si la reserva no se pudo cancelar.
     """
-    assert servicio_reserva_en_memoria.cancelar_reserva(id_reserva=context.id_reserva,
+    assert servicio_reserva.cancelar_reserva(id_reserva=context.id_reserva,
                                                         ciudadano=context.ciudadano)  # verificar que se calcelo con un TRUE
 
 
@@ -243,7 +246,7 @@ def step_impl(context):
     Raises:
         AssertionError: Si no se pudo enviar el correo de cancelación.
     """
-    assert servicio_reserva_en_memoria.enviar_cancelacion(servicio_reserva_en_memoria.obtener_reserva_por_id(context.id_reserva))
+    assert servicio_notificacion_por_correo.enviar_cancelacion(servicio_reserva.obtener_reserva_por_id(context.id_reserva))
 
 
 def crear_contexto_para_la_reserva(context, nombre_espacio, nombre_area):
