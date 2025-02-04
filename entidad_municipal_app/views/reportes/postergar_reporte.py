@@ -8,6 +8,15 @@ from entidad_municipal_app.models.reporte.servicio_de_reporte_municipal import S
 
 @entidad_required
 def postergar_reporte(request, reporte_id):
+    """Postergar un reporte municipal.
+
+    Args:
+        request (HttpRequest): La solicitud HTTP realizada por el usuario.
+        reporte_id (int): El identificador del reporte a postergar.
+
+    Returns:
+        HttpResponseRedirect: Redirige a la vista de lista de reportes.
+    """
     if request.method == "POST":
         # Inicializar el repositorio y el servicio de reporte municipal
         repositorio = RepositorioDeReporteMunicipalDjango()
