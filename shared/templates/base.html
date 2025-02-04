@@ -12,22 +12,33 @@
       theme: {
         extend: {
           colors: {
-            primario: {
+            // Quito's Official Color Palette
+            primary: {
+              deep: '#002F5F',
               light: '#4B83BF',
-              DEFAULT: '#143D69',
-              dark: '#0A1F35',
+              dark: '#001F3F'
             },
-            secundario: {
-              light: '#FFB74D',
-              DEFAULT: '#FF9800',
-              dark: '#F57C00',
+            accent: {
+              red: '#A6192E',
+              gold: '#D8A35C',
+              green: '#007A33'
             },
             neutral: {
               white: '#FFFFFF',
-              gris: '#F5F5F5',
-              negro: '#333333',
+              gray: '#D1D3D4',
+              black: '#000000'
             }
+          },
+          boxShadow: {
+            'modern': '0 10px 25px -10px rgba(0, 47, 95, 0.2)',
+            'hover': '0 15px 30px -10px rgba(0, 47, 95, 0.3)'
+          },
+          transitionProperty: {
+            'colors-shadow': 'color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow'
           }
+        },
+        fontFamily: {
+          'sans': ['Inter', 'system-ui', 'sans-serif']
         }
       }
     }
@@ -39,61 +50,99 @@
     }
   }
 </script>
+  <!-- Google Fonts (Inter) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   {% block extra_css %}{% endblock %}
 </head>
 
-<body class="bg-neutral-gris min-h-screen flex flex-col">
-  <!-- Header -->
-  <header class="bg-primario text-white">
-    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-      <a href="{% url 'landing_page' %}" class="text-2xl font-bold">Servicios Ciudadanos</a>
-      <nav class="flex items-center">
+<body class="bg-neutral-gray/10 min-h-screen flex flex-col antialiased">
+  <!-- Modern Header -->
+  <header class="bg-primary-deep text-white shadow-modern">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="{% url 'landing_page' %}" class="text-3xl font-bold tracking-tight flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-3 text-accent-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h3a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        Servicios Ciudadanos
+      </a>
+      <nav class="flex items-center space-x-4">
         {% if user.is_authenticated %}
-        {% if user.es_ciudadano %}
-        <a href="{% url 'dashboard_ciudadano' %}" class="px-4 py-2 hover:text-secundario-light">Dashboard</a>
+          {% if user.es_ciudadano %}
+            <a href="{% url 'dashboard_ciudadano' %}" class="px-4 py-2 rounded-lg hover:bg-primary-light transition-colors-shadow">
+              Dashboard
+            </a>
+          {% else %}
+            <a href="{% url 'dashboard_entidad' %}" class="px-4 py-2 rounded-lg hover:bg-primary-light transition-colors-shadow">
+              Dashboard
+            </a>
+          {% endif %}
+          <form action="{% url 'logout_usuario' %}" method="post" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="bg-accent-red px-5 py-2.5 rounded-lg hover:bg-accent-red/90 transition-colors-shadow">
+              Cerrar Sesión
+            </button>
+          </form>
         {% else %}
-        <a href="{% url 'dashboard_entidad' %}" class="px-4 py-2 hover:text-secundario-light">Dashboard</a>
-        {% endif %}
-        <form action="{% url 'logout_usuario' %}" method="post" class="inline">
-          {% csrf_token %}
-          <button type="submit" class="bg-secundario px-4 py-2 rounded hover:bg-secundario-dark">
-            Cerrar Sesión
-          </button>
-        </form>
-        {% else %}
-        <a href="{% url 'login_ciudadano' %}" class="px-4 py-2 hover:text-secundario-light">Ciudadano</a>
-        <a href="{% url 'login_entidad' %}" class="px-4 py-2 hover:text-secundario-light">Entidad Municipal</a>
+          <div class="flex items-center space-x-4">
+            <a href="{% url 'login_ciudadano' %}" class="px-4 py-2 rounded-lg hover:bg-primary-light/20 transition-colors-shadow">
+              Ciudadano
+            </a>
+            <a href="{% url 'login_entidad' %}" class="px-4 py-2 rounded-lg hover:bg-primary-light/20 transition-colors-shadow">
+              Entidad Municipal
+            </a>
+          </div>
         {% endif %}
       </nav>
     </div>
   </header>
 
-  <!-- Mensajes -->
+  <!-- Notification Messages -->
   {% if messages %}
-  <div class="container mx-auto px-4 mt-4">
+  <div class="container mx-auto px-4 mt-6">
     {% for message in messages %}
-    <div
-      class="p-4 mb-4 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
-      {{ message }}
-    </div>
+      <div class="p-4 mb-4 rounded-lg shadow-modern {{ message.tags|default:'bg-green-100 text-green-700' }}">
+        <div class="flex items-center">
+          {% if message.tags == 'error' %}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          {% endif %}
+          <span>{{ message }}</span>
+        </div>
+      </div>
     {% endfor %}
   </div>
   {% endif %}
 
-  <!-- Contenido principal -->
+  <!-- Main Content -->
   <main class="flex-grow container mx-auto px-4 py-8">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-primario-dark text-white py-6">
+  <!-- Modern Footer -->
+  <footer class="bg-primary-deep text-white py-8">
     <div class="container mx-auto px-4">
-      <div class="flex flex-col sm:flex-row justify-between items-center">
-        <p class="text-sm">&copy; 2025 Servicios Ciudadanos. Todos los derechos reservados.</p>
-        <div class="mt-2 sm:mt-0">
-          <a href="#" class="mx-2 text-sm hover:text-secundario-light">Términos y Condiciones</a>
-          <a href="#" class="mx-2 text-sm hover:text-secundario-light">Privacidad</a>
-          <a href="#" class="mx-2 text-sm hover:text-secundario-light">Contacto</a>
+      <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 text-accent-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
+          <p class="text-sm font-medium">&copy; 2025 Servicios Ciudadanos. Todos los derechos reservados.</p>
+        </div>
+        <div class="flex space-x-6">
+          <a href="#" class="text-sm text-white/80 hover:text-accent-gold transition-colors">
+            Términos y Condiciones
+          </a>
+          <a href="#" class="text-sm text-white/80 hover:text-accent-gold transition-colors">
+            Privacidad
+          </a>
+          <a href="#" class="text-sm text-white/80 hover:text-accent-gold transition-colors">
+            Contacto
+          </a>
         </div>
       </div>
     </div>
