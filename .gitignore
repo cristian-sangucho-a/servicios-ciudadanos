@@ -45,3 +45,4 @@ Thumbs.db
 
 *.ps1
 
+**/.env
