@@ -13,7 +13,7 @@ from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
 from entidad_municipal_app.models.EntidadMunicipal import EntidadMunicipal
 from entidad_municipal_app.models.espacio_publico import EspacioPublico  # Importar el modelo EspacioPublico
 
-
+##crear espacios publicos de prueba
 def crear_datos_prueba():
     print('Iniciando creación de datos de prueba...')
 
@@ -33,38 +33,24 @@ def crear_datos_prueba():
     else:
         print(f"La entidad municipal {entidad_municipal.nombre} ya existe")
 
-    # Crear ciudadanos de prueba
-    ciudadanos_data = [
-        {"correo_electronico": "juan@test.com", "nombre_completo": "Juan Pérez", "numero_identificacion": "1234567890", "password": "test123"},
-        {"correo_electronico": "maria@test.com", "nombre_completo": "María García", "numero_identificacion": "2345678901", "password": "test123"},
-        {"correo_electronico": "pedro@test.com", "nombre_completo": "Pedro López", "numero_identificacion": "3456789012", "password": "test123"},
-        {"correo_electronico": "ana@test.com", "nombre_completo": "Ana Martínez", "numero_identificacion": "4567890123", "password": "test123"},
-        {"correo_electronico": "luis@test.com", "nombre_completo": "Luis Rodríguez", "numero_identificacion": "5678901234", "password": "test123"},
-    ]
-
-    for data in ciudadanos_data:
-        ciudadano, created = Ciudadano.objects.get_or_create(
-            correo_electronico=data["correo_electronico"],
-            defaults={
-                "nombre_completo": data["nombre_completo"],
-                "numero_identificacion": data["numero_identificacion"]
-            }
-        )
-        if created:
-            # Usar el método set_password para cifrar la contraseña
-            ciudadano.set_password(data["password"])
-            ciudadano.save()
-            print(f"✓ Creado ciudadano: {ciudadano.nombre_completo}")
-        else:
-            print(f"El ciudadano {ciudadano.nombre_completo} ya existe")
-
-    # Crear espacios públicos de prueba (2 disponibles y 2 no disponibles)
+        # Crear espacios públicos de prueba (2 disponibles y 2 no disponibles)
     espacios_publicos_data = [
-        {"nombre": "Parque Central", "direccion": "Calle Principal 456", "estado_espacio_publico": EspacioPublico.ESTADO_DISPONIBLE, "estado_incidente_espacio": EspacioPublico.NO_AFECTADO},
-        {"nombre": "Plaza Mayor", "direccion": "Avenida Libertad 789", "estado_espacio_publico": EspacioPublico.ESTADO_DISPONIBLE, "estado_incidente_espacio": EspacioPublico.NO_AFECTADO},
-        {"nombre": "San Francisco", "direccion": "Avenida 24","estado_espacio_publico": EspacioPublico.ESTADO_DISPONIBLE,"estado_incidente_espacio": EspacioPublico.AFECTADO},
-        {"nombre": "Centro Cultural", "direccion": "Calle Cultura 101", "estado_espacio_publico": EspacioPublico.ESTADO_NO_DISPONIBLE, "estado_incidente_espacio": EspacioPublico.NO_AFECTADO},
-        {"nombre": "Estadio Municipal", "direccion": "Avenida Deportes 202", "estado_espacio_publico": EspacioPublico.ESTADO_NO_DISPONIBLE, "estado_incidente_espacio": EspacioPublico.NO_AFECTADO},
+        {"nombre": "Estadio Municipal", "direccion": "Avenida Deportes 202",
+         "estado_espacio_publico": EspacioPublico.ESTADO_DISPONIBLE,
+         "estado_incidente_espacio": EspacioPublico.NO_AFECTADO,
+         "descripcion": "Estadio principal para eventos deportivos"},
+        {"nombre": "Parque Central", "direccion": "Calle Principal 456",
+         "estado_espacio_publico": EspacioPublico.ESTADO_DISPONIBLE,
+         "estado_incidente_espacio": EspacioPublico.NO_AFECTADO, "descripcion": "Un hermoso parque central"},
+        {"nombre": "Plaza Mayor", "direccion": "Avenida Libertad 789",
+         "estado_espacio_publico": EspacioPublico.ESTADO_DISPONIBLE,
+         "estado_incidente_espacio": EspacioPublico.NO_AFECTADO, "descripcion": "Una plaza principal en el centro"},
+        {"nombre": "Plaza Central", "direccion": "Avenida 24 Mayo",
+         "estado_espacio_publico": EspacioPublico.ESTADO_DISPONIBLE,
+         "estado_incidente_espacio": EspacioPublico.NO_AFECTADO, "descripcion": "Una plaza principal en el centro"},
+        {"nombre": "Centro Cultural", "direccion": "Calle Cultura 101",
+         "estado_espacio_publico": EspacioPublico.ESTADO_NO_DISPONIBLE,
+         "estado_incidente_espacio": EspacioPublico.NO_AFECTADO, "descripcion": "Centro para actividades culturales"},
     ]
 
     espacios_publicos = []
@@ -74,6 +60,7 @@ def crear_datos_prueba():
             defaults={
                 "entidad_municipal": entidad_municipal,
                 "direccion": data["direccion"],
+                "descripcion": data["descripcion"],
                 "estado_espacio_publico": data["estado_espacio_publico"],
                 "estado_incidente_espacio": data["estado_incidente_espacio"]
             }
@@ -84,13 +71,14 @@ def crear_datos_prueba():
             print(f"El espacio público {espacio_publico.nombre} ya existe")
         espacios_publicos.append(espacio_publico)
 
+    # ahorita son datos de prueba se van a borrar
+
     # Crear eventos de prueba y asignarles un espacio público y relacionarle con la entidad que se ha creado
     ahora = timezone.now()
     eventos_data = [
         {"nombre_evento": "Concierto en el Parque", "descripcion_evento": "Gran concierto al aire libre con múltiples artistas", "fecha_realizacion": ahora + timezone.timedelta(days=7), "capacidad_maxima": 100, "espacio_publico": espacios_publicos[0]},
-        {"nombre_evento": "Taller de Arte", "descripcion_evento": "Taller exclusivo de pintura", "fecha_realizacion": ahora + timezone.timedelta(days=5), "capacidad_maxima": 1, "espacio_publico": espacios_publicos[1]},
-        {"nombre_evento": "Feria Gastronómica","descripcion_evento": "Degustación de platos típicos de la región. Más de 30 expositores presentarán sus mejores creaciones culinarias.","fecha_realizacion": ahora + timezone.timedelta(days=3), "lugar_evento": "Plaza Mayor", "capacidad_maxima": 1,"espacio_publico": espacios_publicos[2]},
     ]
+
 
     for data in eventos_data:
         # Verificar si el espacio público ya está ocupado
@@ -130,6 +118,7 @@ def listar_datos():
         print(f"Dirección: {entidad.direccion}")
         print(f"Teléfono: {entidad.telefono}")
 
+        #ahorita son datos de prueba se van a borrar
         # Listar eventos de la entidad
         eventos = EventoMunicipal.objects.filter(entidad_municipal=entidad)
         if eventos.exists():
@@ -141,15 +130,6 @@ def listar_datos():
                 print(f"      Ubicación: {evento.espacio_publico.nombre if evento.espacio_publico else 'No asignado'}")
         else:
             print("  No tiene eventos registrados.")
-
-    print("\n=== Espacios Públicos Disponibles ===")
-    espacios_disponibles = EspacioPublico.objects.filter(estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE)
-    if espacios_disponibles.exists():
-        for espacio in espacios_disponibles:
-            print(f"- {espacio.nombre} ({espacio.direccion})")
-    else:
-        print("No hay espacios públicos disponibles.")
-
 
 if __name__ == '__main__':
     crear_datos_prueba()
