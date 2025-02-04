@@ -122,8 +122,7 @@ def step_impl(context):
         hora_inicio=context.hora_inicio, hora_fin=context.hora_fin, tipo_reserva=context.tipo_reserva,
         ciudadano=context.ciudadano, correos_invitados="")
     if context.correos_invitados is not None:
-        servicio_reserva_en_memoria.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,
-                                                                        correos_invitados=context.correos_invitados)
+        servicio_reserva.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,correos_invitados=context.correos_invitados)
     assert reservado
 
 
