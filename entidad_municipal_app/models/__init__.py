@@ -16,16 +16,16 @@ from .canales.reaccion import Reaccion
 from .canales.comentario import Comentario
 from .reporte.reporte_municipal import ReporteMunicipal
 
-__all__ = [
-    "EntidadMunicipal",
-    "EventoMunicipal",
-    "RegistroAsistencia",
-    "EspacioPublico",
-    "CanalInformativo",
-    "Suscripcion",
-    "Noticia",
-    "Reaccion",
-    "Comentario",
-    "ReporteMunicipal",
-    "Departamento"
+_all_ = [
+    'EntidadMunicipal',
+    'EventoMunicipal',
+    'RegistroAsistencia',
+    'EspacioPublico',
+    'CanalInformativo',
+    'Suscripcion',
+    'Noticia',
+    'Reaccion',
+    'Comentario',
+    'ReporteMunicipal',
+    'Departamento'
 ]
