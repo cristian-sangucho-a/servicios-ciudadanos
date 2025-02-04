@@ -28,6 +28,7 @@
                 <thead class="bg-gray-100 text-gray-700">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Asunto</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Estado</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Prioridad</th>
                         <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Departamento</th>
@@ -39,6 +40,9 @@
                 {% for reporte in reportes %}
                     <tr class="hover:bg-gray-100 transition-all">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ reporte.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ reporte.obtener_asunto }}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             {% if reporte.obtener_estado == "asignado" %}
                                 <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-200 text-blue-800">Asignado</span>
@@ -53,7 +57,7 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ reporte.obtener_prioridad }}
+                            {{ reporte.obtener_prioridad_cantidad }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {{ reporte.obtener_departamento.nombre }}

@@ -41,3 +41,6 @@ class RepositorioDeReporteDjango(RepositorioDeReporte):
             prioridad (int): El nuevo valor de prioridad para los reportes.
         """
         Reporte.objects.filter(tipo_reporte__asunto=asunto).update(prioridad=prioridad)
+
+    def obtener_reportes_ordenados_prioridad(self):
+        return list(Reporte.objects.order_by('-prioridad'))

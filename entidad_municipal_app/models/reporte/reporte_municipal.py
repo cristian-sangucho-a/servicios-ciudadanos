@@ -88,8 +88,14 @@ class ReporteMunicipal(models.Model):
     def obtener_departamento(self):
         return self.reporte_ciudadano.tipo_reporte.departamento
 
+    def obtener_asunto(self):
+        return self.reporte_ciudadano.tipo_reporte.asunto
+
     def obtener_prioridad (self):
         return self.reporte_ciudadano.tipo_reporte.prioridad_de_atencion
+
+    def obtener_prioridad_cantidad(self):
+        return self.reporte_ciudadano.prioridad
 
     def obtener_estado (self):
         return self.estado
