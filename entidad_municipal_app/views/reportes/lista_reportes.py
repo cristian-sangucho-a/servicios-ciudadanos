@@ -6,10 +6,15 @@ from entidad_municipal_app.models.reporte.repositorio_de_reporte_municipal_djang
     RepositorioDeReporteMunicipalDjango
 from entidad_municipal_app.models.reporte.servicio_de_reporte_municipal import ServicioReporteMunicipal
 
-
 def lista_todos_reportes(request):
-    """View to list all municipal reports, filtered by department if selected."""
+    """View to list all municipal reports, filtered by department if selected.
 
+    Args:
+        request (HttpRequest): The HTTP request object containing possible filtering parameters.
+
+    Returns:
+        HttpResponse: The rendered HTML page displaying the list of reports, filtered if applicable.
+    """
     repositorio_reportes = RepositorioDeReporteMunicipalDjango()
     repositorio_departamentos = RepositorioDepartamentoDjango()
     servicio_reporte = ServicioReporteMunicipal(repositorio_reportes)
