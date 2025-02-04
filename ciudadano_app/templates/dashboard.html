@@ -36,15 +36,31 @@
     </div>
   </a>
 
-  <a href="{% url 'lista_canales' %}" class="bg-blue-900 text-white p-6 rounded-lg hover:bg-blue-800 transition-colors">
-    <div class="flex items-center justify-between">
-      <h2 class="text-xl font-bold">Canales</h2>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-      </svg>
-    </div>
-  </a>
-</main>
+        <!-- Sección de Agenda -->
+        <a href="{% url 'agenda' %}"
+           class="bg-blue-300 text-white p-6 rounded-lg hover:bg-blue-600 transition-colors">
+
+            <div class="flex justify-between">
+                <h2 class="text-xl font-semibold mb-4">Agenda Publica</h2>
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 17.75A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V6.25A3.25 3.25 0 0 1 6.25 3h11.5A3.25 3.25 0 0 1 21 6.25v11.5Zm-4-10a.75.75 0 0 0-.648-.743L16.25 7h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 7.75Zm0 8.5a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486L7.75 17h8.5l.102-.007A.75.75 0 0 0 17 16.25ZM17 12a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 12Z"
+                          fill="#FFF"/>
+                </svg>
+            </div>
+        </a>
+
+        <a href="{% url 'lista_canales' %}"
+           class="bg-blue-900 text-white p-6 rounded-lg hover:bg-blue-800 transition-colors">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold">Canales</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+            </div>
+        </a>
+    </main>
 
 <section class="container mx-auto my-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
   <div class="bg-white p-6 rounded-lg shadow">

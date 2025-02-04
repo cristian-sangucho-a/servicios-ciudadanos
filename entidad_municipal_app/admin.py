@@ -4,6 +4,7 @@ from entidad_municipal_app.models import EntidadMunicipal
 from django.contrib import admin
 from django import forms
 from django.contrib.auth.hashers import make_password
+from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico, EventoMunicipal, RegistroAsistencia
 
 # Custom form to ensure password hashing
 class EntidadMunicipalAdminForm(forms.ModelForm):
@@ -45,3 +46,7 @@ class EntidadMunicipalAdmin(UserAdmin):
     list_filter = ('is_active', 'is_staff')  # Removed 'is_superuser'
 
 admin.site.register(EntidadMunicipal, EntidadMunicipalAdmin)
+
+@admin.register(EspacioPublico)
+class EspacioPublicoAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'entidad_municipal')  # entidad_municipal debe ser una relación válida
