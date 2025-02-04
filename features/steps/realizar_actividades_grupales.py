@@ -44,7 +44,7 @@ def step_impl(context, nombre_espacio_publico):
         entidad_municipal=context.entidad_municipal
     )
     for row in context.table:
-        area = AreaComunal.objects.create(
+        context.area_comunal = AreaComunal.objects.create(
             nombre_area=row['Nombre'],
             hora_de_apertura=datetime.strptime("08:00", "%H:%M").time(),
             hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
@@ -118,10 +118,15 @@ def step_impl(context):
     Raises:
         AssertionError: Si la reserva no se pudo realizar.
     """
+    fecha_formateada = datetime.strptime(context.fecha_reserva, "%d/%m/%Y").date()
+    hora_inicio_formateada = datetime.strptime(context.hora_inicio, "%H:%M").time()
+    hora_fin_formateada = datetime.strptime(context.hora_fin, "%H:%M").time()
+
     area_comunal = servicio_reserva.obtener_area_comunal(1)
+
     context.id_reserva, reservado = servicio_reserva.reservar_area_comunal(
-        area_comunal=area_comunal, fecha_reserva=context.fecha_reserva,
-        hora_inicio=context.hora_inicio, hora_fin=context.hora_fin, tipo_reserva=context.tipo_reserva,
+        area_comunal=area_comunal, fecha_reserva=fecha_formateada,
+        hora_inicio=hora_inicio_formateada, hora_fin=hora_fin_formateada, tipo_reserva=context.tipo_reserva,
         ciudadano=context.ciudadano, correos_invitados="")
     if context.correos_invitados is not None:
         servicio_reserva.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,correos_invitados=context.correos_invitados)
