@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}Agenda Pública{% endblock %}
 
@@ -39,6 +38,7 @@
         <div id="calendario-container">
         </div>
     </div>
-<script src="{% static 'htmx.min.js' %}" defer></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
 
 {% endblock %}
