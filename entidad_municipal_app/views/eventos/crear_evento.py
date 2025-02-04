@@ -14,7 +14,8 @@ def crear_evento(request):
     filtrar_disponibles = request.GET.get('disponibles', False)  # Filtro de disponibilidad
 
     # Filtrar espacios públicos
-    espacios = EspacioPublico.objects.all()
+    espacios = EspacioPublico.objects.filter(estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE)
+
 
     # Aplicar filtro de búsqueda
     if query:
@@ -23,8 +24,8 @@ def crear_evento(request):
         )
 
     # Aplicar filtro de disponibilidad
-    if filtrar_disponibles:
-        espacios = espacios.filter(estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE)
+    if filtrar_disponibles == 'False':
+        espacios = EspacioPublico.objects.all()
 
     # Procesar el formulario cuando se envía
     if request.method == 'POST':
@@ -41,7 +42,7 @@ def crear_evento(request):
             espacio_publico.estado_incidente_espacio = EspacioPublico.NO_AFECTADO
             if espacio_publico.estado_espacio_publico != EspacioPublico.ESTADO_DISPONIBLE:
                 messages.error(request, 'El espacio seleccionado no está disponible.')
-                return render(request, 'entidad/eventos/crear_evento.html', {'espacios': espacios})
+                return render(request, 'entidad/eventos/crear_evento.html', {'espacios': espacios.filter(estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE), 'query': query, 'disponibles': filtrar_disponibles})
 
             # Crear el evento
             EventoMunicipal.objects.crear_evento_con_aforo(
