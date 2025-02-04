@@ -28,8 +28,8 @@ jobs:
 
       - name: Create .env file from Environment Variables
         run: |
-          echo "EMAIL_HOST_PASSWORD=${{ vars.EMAIL_HOST_PASSWORD }}" >> .env
-          echo "EMAIL_HOST_USER=${{ vars.EMAIL_HOST_USER }}" >> .env
+          echo "EMAIL_HOST_PASSWORD=${{ vars.EMAIL_HOST_PASSWORD }}" >> servicios_ciudadanos/.env
+          echo "EMAIL_HOST_USER=${{ vars.EMAIL_HOST_USER }}" >> servicios_ciudadanos/.env
           
 
       - name: Install dependencies
