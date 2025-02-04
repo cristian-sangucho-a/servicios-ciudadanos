@@ -81,15 +81,16 @@ def step_impl(context):
 
 @step("se mostrarán los espacios públicos disponibles")
 def step_impl(context):
-    """obtenemos los espacios disponibles"""
-    espacios_disponibles = EspacioPublico.obtener_espacios_disponibles(context.fecha_realizacion)
-    """mostramos los espacios públicos disponibles"""
+    """Obtenemos los espacios disponibles sin necesidad de filtrar por fecha"""
+    espacios_disponibles = EspacioPublico.obtener_espacios_disponibles(filtrar_disponibles=False)
+    """Mostramos los espacios públicos disponibles"""
     if espacios_disponibles.exists():
         print("Espacios públicos disponibles:")
         for espacio in espacios_disponibles:
             print(f"{espacio.nombre} - {espacio.direccion}")
     else:
         print("No hay espacios públicos disponibles.")
+
 
 
 @step('que existe un evento llamado "{nombre_evento}" con el estado "{estado_evento}"')
