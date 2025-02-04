@@ -116,8 +116,9 @@ def step_impl(context):
     Raises:
         AssertionError: Si la reserva no se pudo realizar.
     """
-    context.id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
-        area_comunal=servicio_reserva_en_memoria.obtener_area_comunal(1), fecha_reserva=context.fecha_reserva,
+    area_comunal = servicio_reserva.obtener_area_comunal(1)
+    context.id_reserva, reservado = servicio_reserva.reservar_area_comunal(
+        area_comunal=area_comunal, fecha_reserva=context.fecha_reserva,
         hora_inicio=context.hora_inicio, hora_fin=context.hora_fin, tipo_reserva=context.tipo_reserva,
         ciudadano=context.ciudadano, correos_invitados="")
     if context.correos_invitados is not None:
