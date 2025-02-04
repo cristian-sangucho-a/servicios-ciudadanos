@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from entidad_municipal_app.models import EntidadMunicipal
@@ -54,33 +55,19 @@ class EspacioPublico(models.Model):
         help_text="Estado del espacio público"
     )
 
-    @classmethod
-    def obtener_espacios_disponibles(cls, fecha):
-        """
-        Obtiene los espacios públicos disponibles en una fecha específica.
+    @staticmethod
+    def obtener_espacios_disponibles(query=None, filtrar_disponibles=False):
+        espacios = EspacioPublico.objects.filter(estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE)
 
-        Args:
-            fecha (date): Fecha en la que se desean consultar los espacios disponibles.
+        if query:
+            espacios = espacios.filter(
+                Q(nombre__icontains=query) | Q(direccion__icontains=query)
+            )
 
-        Returns:
-            QuerySet: Espacios públicos disponibles en la fecha dada.
-        """
-        from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
+        if filtrar_disponibles == 'False':
+            espacios = EspacioPublico.objects.all()
 
-        eventos_misma_fecha = EventoMunicipal.objects.filter(
-            fecha_realizacion=fecha,
-            estado_actual__in=[
-                EventoMunicipal.ESTADO_PROGRAMADO,
-                EventoMunicipal.ESTADO_EN_CURSO
-            ]
-        ).values_list('espacio_publico_id', flat=True)
-
-        espacios_disponibles = cls.objects.filter(
-            estado_espacio_publico=cls.ESTADO_DISPONIBLE
-        ).exclude(pk__in=eventos_misma_fecha)
-
-        return espacios_disponibles
-
+        return espacios
 
     def __str__(self):
         return self.nombre

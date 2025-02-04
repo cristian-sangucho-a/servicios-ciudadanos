@@ -20,6 +20,7 @@ class EventoMunicipalManager(models.Manager):
         if espacio_publico:
             lugar = espacio_publico.direccion
             espacio_publico.estado_espacio_publico = espacio_publico.ESTADO_NO_DISPONIBLE
+            espacio_publico.save()
 
         return self.create(
             nombre_evento=nombre,
@@ -387,10 +388,8 @@ class EventoMunicipal(models.Model):
 
     def _enviar_notificacion_inscripcion(self, registro):
         """
-        Envía una notificación por correo sobre el estado de la inscripción
-
-        Args:
-            registro: Instancia de RegistroAsistencia con la información
+        Envía una notificación por correo sobre el estado de la inscripción.
+        Durante las pruebas, utiliza el backend de email configurado en settings.
         """
         plantillas_mensajes = {
             RegistroAsistencia.ESTADO_INSCRITO: {
@@ -438,7 +437,6 @@ class EventoMunicipal(models.Model):
                 fail_silently=False
             )
         except Exception as e:
-            # Log the error but don't stop the process
             print(f"Error al enviar notificación: {str(e)}")
 
     def validar_estado_actual(self,estado_actual):

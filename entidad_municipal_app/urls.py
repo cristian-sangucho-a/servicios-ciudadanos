@@ -30,4 +30,8 @@ urlpatterns = [
     # path('reportes/<str:departamento>/', views.reportes_por_departamento, name='reportes_por_departamento'),
     path('reportes/<int:reporte_id>/resolver/', views.resolver_reporte, name='resolver_reporte'),
 path('reporte/<int:reporte_id>/agregar_evidencia/', views.agregar_evidencia, name='agregar_evidencia'),
+
+    path('eventos/editar_evento/<int:evento_id>/', views.editar_evento, name='editar_evento'),
+    path('eventos/crear_evento/', views.crear_evento, name='crear_evento'),
+    path('eventos/<int:evento_id>/cancelar_evento/', views.cancelar_evento, name='cancelar_evento')
 ]
