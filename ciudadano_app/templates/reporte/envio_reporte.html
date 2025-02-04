@@ -5,37 +5,43 @@
 {% block content %}
 <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6 mt-8">
   <h1 class="text-2xl font-bold mb-4 text-gray-800">Reportar un problema en la comunidad</h1>
-  <p class="text-gray-600">Describe el problema en detalle para que el sistema pueda analizarlo y asignar una prioridad.</p>
+  <p class="text-gray-600">Describe el problema en detalle para que el sistema pueda analizarlo y asignar una prioridad.
+  </p>
 
   <!-- Form to send the report -->
-  <form method="post" class="mt-6">
+  <form method="post" class="mt-6" id="enviar_reporte">
     {% csrf_token %}
     <div class="space-y-4">
       <div>
         <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Asunto</label>
-        <select id="subject" name="asunto" class="rounded-lg px-4 py-2 border border-gray-300 w-full focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <select required id="subject" name="asunto"
+          class="rounded-lg px-4 py-2 border border-gray-300 w-full focus:outline-none focus:ring-blue-500 focus:border-blue-500">
           <option value="" disabled selected>Selecciona una</option>
           {% for tipo_reporte in tipo_reportes %}
-            <option value="{{ tipo_reporte.asunto }}">{{ tipo_reporte.asunto }}</option>
+          <option value="{{ tipo_reporte.asunto }}">{{ tipo_reporte.asunto }}</option>
           {% endfor %}
         </select>
       </div>
 
       <div>
         <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-        <textarea id="description" name="descripcion" class="border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500 outline-none w-full min-h-[120px] resize-y"></textarea>
+        <textarea required id="description" name="descripcion"
+          class="border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500 outline-none w-full min-h-[120px] resize-y"></textarea>
       </div>
 
       <div>
         <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
         <!-- The input is readonly so the user cannot edit it manually -->
-        <input id="location" name="ubicacion" type="text" readonly placeholder="Haz clic para seleccionar en el mapa" class="cursor-pointer border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500 outline-none w-full">
+        <input required id="location" name="ubicacion" type="text" readonly
+          placeholder="Haz clic para seleccionar en el mapa"
+          class="cursor-pointer border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500 outline-none w-full">
       </div>
     </div>
 
     <!-- Submit Button -->
     <div class="mt-6">
-      <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-all w-full">Enviar</button>
+      <button type="submit"
+        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-all w-full">Enviar</button>
     </div>
   </form>
 
@@ -58,9 +64,30 @@
   </div>
 </div>
 
+<script>
+  // Get the form element
+  const form = document.getElementById('enviar_reporte');
+
+  // Add a submit event listener to the form
+  form.addEventListener('submit', function (event) {
+    // Get the value of the location input
+    const locationInput = document.getElementById('location');
+    const locationValue = locationInput.value.trim(); // Trim any leading or trailing whitespace
+
+    // Check if the location input is empty
+    if (locationValue === '') {
+      // Prevent the form from being submitted
+      event.preventDefault();
+      // Display an error message or perform any other action to indicate that the location is required
+      alert('Please enter a location');
+    }
+  });
+</script>
+
 <!-- Leaflet CSS & JS (via CDN) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"
+  integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 
 <script>
   let map, marker;
@@ -73,7 +100,7 @@
     }).addTo(map);
 
     // When the user clicks on the map, reverse geocode to get a human-readable address.
-    map.on('click', async function(e) {
+    map.on('click', async function (e) {
       const { lat, lng } = e.latlng;
       if (marker) {
         marker.setLatLng(e.latlng);
@@ -103,7 +130,7 @@
   }
 
   // Show the map modal when the location input is clicked
-  document.getElementById('location').addEventListener('click', function() {
+  document.getElementById('location').addEventListener('click', function () {
     document.getElementById('mapModal').classList.remove('hidden');
     if (!map) {
       initMap();
@@ -115,7 +142,7 @@
   });
 
   // Close the map modal when the close button is clicked
-  document.getElementById('closeMap').addEventListener('click', function() {
+  document.getElementById('closeMap').addEventListener('click', function () {
     document.getElementById('mapModal').classList.add('hidden');
   });
 </script>
@@ -123,7 +150,7 @@
 {% if success_message %}
 <!-- Redirect to /reporte/ after a shorter delay when a success message is present -->
 <script>
-  setTimeout(function() {
+  setTimeout(function () {
     window.location.href = "{% url 'reportes' %}";
   }, 1000);  // 1500 milliseconds = 1.5 seconds
 </script>
