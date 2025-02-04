@@ -53,22 +53,19 @@ class Ciudadano(AbstractBaseUser):
     sectores_de_interes = models.ManyToManyField(
         'shared.Sector',
         related_name="ciudadanos_interesados",
-        blank=True
+        blank=True,
+        verbose_name=_("Sectores de Interés"),
+        help_text=_("Sectores en los que el ciudadano está interesado")
     )
 
-    ubicacion_actual = models.ForeignKey(
+    sector_actual = models.ForeignKey(  # Campo renombrado y solo uno para ubicación
         'shared.Sector',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="ciudadanos_presentes"
-    )
-
-    sector = models.ForeignKey(
-        'shared.Sector',
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name=_("Sector")
+        related_name="ciudadanos_presentes",
+        verbose_name=_("Sector Actual"),
+        help_text=_("Sector donde se encuentra actualmente el ciudadano")
     )
 
     objects = GestorCiudadano()
