@@ -1,108 +1,56 @@
 {% extends 'base.html' %}
 
-{% block title %}Bienvenida - Entidad Municipal{% endblock %}
+{% block title %}Bienvenido(a) - Municipio de Quito{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100">
-
-  <!-- Contenido principal -->
-  <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="px-4 py-6 sm:px-0">
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-          <h1 class="text-2xl font-bold text-gray-900 mb-4">
-            ¡Bienvenido(a) {{ request.user.nombre_entidad }}!
-          </h1>
-          <p class="text-gray-600">
-            Desde aquí puedes gestionar tus eventos municipales y otras funcionalidades administrativas.
-          </p>
-
-          <!-- Menú de acciones rápidas -->
-          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <a href="{% url 'lista_eventos' %}" class="bg-white overflow-hidden shadow rounded-lg p-6 hover:bg-gray-50">
-              <div class="flex items-center">
-                <div class="flex-shrink-0 bg-[#143D69] rounded-md p-3">
-                  <!-- Aquí podrías poner un ícono -->
-                </div>
-                <div class="ml-4">
-                  <h3 class="text-lg font-medium text-gray-900">Gestionar Eventos</h3>
-                  <p class="mt-1 text-sm text-gray-500">
-                    Ver y administrar eventos municipales
-                  </p>
-                </div>
-              </div>
-            </a>
-
-            <!-- Nueva tarjeta para Agregar Sectores de Interés -->
-            <a href="{% url 'agregar_sectores' %}" class="bg-white overflow-hidden shadow rounded-lg p-6 hover:bg-gray-50">
-              <div class="flex items-center">
-                <div class="flex-shrink-0 bg-[#143D69] rounded-md p-3">
-                  <!-- Aquí podrías poner un ícono -->
-                </div>
-                <div class="ml-4">
-                  <h3 class="text-lg font-medium text-gray-900">Agregar Sectores de Interés</h3>
-                  <p class="mt-1 text-sm text-gray-500">
-                    Añadir nuevos sectores de interés para el ciudadano
-                  </p>
-                </div>
-              </div>
-            </a>
-          </div>
+<div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full bg-white shadow-2xl rounded-2xl overflow-hidden border-t-8 border-[#143D69]">
+    <div class="p-8 text-center">
+      <div class="mb-6 flex justify-center">
+        <div class="bg-[#E6F0FA] rounded-full p-4 inline-block">
+          <i data-feather="shield" class="text-[#143D69] w-16 h-16"></i>
         </div>
       </div>
-    </div>
-  </main>
-</div>
+      <h1 class="text-3xl font-extrabold text-[#143D69] mb-4">
+        Servicios Ciudadanos
+      </h1>
+      <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+        Bienvenido(a) al portal de servicios del Municipio de Quito. Gestiona eventos, trámites y más.
+      </p>
 
-<!-- Burbuja de notificaciones en la esquina inferior derecha -->
-<div class="fixed bottom-4 right-4">
-  <button id="notificaciones-btn" class="bg-[#143D69] text-white p-3 rounded-full shadow-lg hover:bg-[#1a4f7a] focus:outline-none">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-    </svg>
-    <!-- Indicador de notificaciones no leídas -->
-    {% if notificaciones_no_leidas %}
-      <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
-        {{ notificaciones_no_leidas.count }}
-      </span>
-    {% endif %}
-  </button>
-  <!-- Menú desplegable de notificaciones -->
-  <div id="notificaciones-menu" class="hidden absolute bottom-16 right-0 w-64 bg-white rounded-lg shadow-lg">
-    <div class="p-4">
-      <h3 class="text-lg font-bold text-gray-900 mb-2">Notificaciones</h3>
-      <ul class="space-y-2">
-        {% for notificacion in notificaciones_no_leidas %}
-          <li class="text-sm text-gray-700">
-            <div class="p-2 bg-gray-50 rounded-lg">
-              <p>{{ notificacion.mensaje }}</p>
-              <p class="text-xs text-gray-500">{{ notificacion.fecha }}</p>
-            </div>
-          </li>
-        {% empty %}
-          <li class="text-sm text-gray-700">
-            No tienes notificaciones nuevas.
-          </li>
-        {% endfor %}
-      </ul>
+      <button onclick="window.location.href='{% url 'dashboard_ciudadano' %}'" class="w-full px-6 py-3 bg-[#9D2235] text-white rounded-lg text-lg hover:bg-opacity-90 transition duration-300 flex items-center justify-center space-x-2">
+        <i data-feather="arrow-right" class="w-5 h-5"></i>
+        <span>Acceder al Panel</span>
+      </button>
+
+      <div class="text-sm text-gray-600 mt-4 flex items-center justify-center space-x-2">
+        <i data-feather="lock" class="w-4 h-4 text-[#2E6F4E]"></i>
+        <span>Plataforma segura y confiable</span>
+      </div>
+    </div>
+
+    <div class="bg-[#F0F4F8] p-4 text-center">
+      <div class="flex justify-center space-x-6">
+        <a href="#" class="text-[#143D69] hover:text-opacity-80">
+          <i data-feather="help-circle" class="w-6 h-6"></i>
+        </a>
+        <a href="#" class="text-[#143D69] hover:text-opacity-80">
+          <i data-feather="phone" class="w-6 h-6"></i>
+        </a>
+        <a href="#" class="text-[#143D69] hover:text-opacity-80">
+          <i data-feather="mail" class="w-6 h-6"></i>
+        </a>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Script para manejar el menú desplegable de notificaciones -->
+<script 
+    src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" 
+    integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" 
+    crossorigin="anonymous">
+</script>
 <script>
-  document.getElementById('notificaciones-btn').addEventListener('click', function() {
-    const menu = document.getElementById('notificaciones-menu');
-    menu.classList.toggle('hidden');
-  });
-
-  // Cerrar el menú al hacer clic fuera de él
-  document.addEventListener('click', function(event) {
-    const notificacionesBtn = document.getElementById('notificaciones-btn');
-    const notificacionesMenu = document.getElementById('notificaciones-menu');
-    if (!notificacionesBtn.contains(event.target) && !notificacionesMenu.contains(event.target)) {
-      notificacionesMenu.classList.add('hidden');
-    }
-  });
+  feather.replace();
 </script>
 {% endblock %}

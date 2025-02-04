@@ -1,11 +1,9 @@
 name: ci_servicios_ciudadanos
-
 on:
   pull_request:
     branches:
       - develop
       - main
-
 jobs:
   Pull_Request:
     runs-on: ubuntu-latest
@@ -27,6 +25,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.12.5'
+
+      - name: Create .env file from Environment Variables
+        run: |
+          echo "EMAIL_HOST_PASSWORD=${{ vars.EMAIL_HOST_PASSWORD }}" >> servicios_ciudadanos/.env
+          echo "EMAIL_HOST_USER=${{ vars.EMAIL_HOST_USER }}" >> servicios_ciudadanos/.env
+          
 
       - name: Install dependencies
         run: |

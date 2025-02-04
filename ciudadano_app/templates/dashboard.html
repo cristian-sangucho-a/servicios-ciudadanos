@@ -3,28 +3,214 @@
 {% block title %}Dashboard Ciudadano{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-lg shadow-md p-6">
-    <div class="mb-8">
-        <h1 class="text-2xl font-bold text-primario-DEFAULT mb-2">Bienvenido/a, {{ ciudadano.nombre_completo }}</h1>
-        <p class="text-gray-600">Este es tu panel de control personal</p>
-    </div>
+<header class="bg-blue-900 text-white py-4 px-6">
+  <h1 class="text-2xl font-bold">Quito Municipal Dashboard</h1>
+  <p class="text-gray-300">Bienvenido/a, {{ ciudadano.nombre_completo }}</p>
+</header>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Sección de Perfil -->
-        <div class="bg-neutral-gris p-6 rounded-lg">
-            <h2 class="text-xl font-semibold mb-4">Tu Perfil</h2>
-            <div class="space-y-3">
-                <p><span class="font-medium">Nombre:</span> {{ ciudadano.nombre_completo }}</p>
-                <p><span class="font-medium">Email:</span> {{ ciudadano.correo_electronico }}</p>
-                <p><span class="font-medium">ID:</span> {{ ciudadano.numero_identificacion }}</p>
+<main class="container mx-auto my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  <a href="{% url 'lista_eventos' %}" class="bg-red-500 text-white p-6 rounded-lg hover:bg-red-600 transition-colors">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-bold">Reservaciones</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+    </div>
+  </a>
+
+  <a href="{% url 'reportes' %}" class="bg-yellow-500 text-white p-6 rounded-lg hover:bg-yellow-600 transition-colors">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-bold">Reportes</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    </div>
+  </a>
+
+  <a href="{% url 'lista_eventos' %}" class="bg-green-500 text-white p-6 rounded-lg hover:bg-green-600 transition-colors">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-bold">Eventos</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    </div>
+  </a>
+
+        <!-- Sección de Agenda -->
+        <a href="{% url 'agenda' %}"
+           class="bg-blue-300 text-white p-6 rounded-lg hover:bg-blue-600 transition-colors">
+
+            <div class="flex justify-between">
+                <h2 class="text-xl font-semibold mb-4">Agenda Publica</h2>
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 17.75A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V6.25A3.25 3.25 0 0 1 6.25 3h11.5A3.25 3.25 0 0 1 21 6.25v11.5Zm-4-10a.75.75 0 0 0-.648-.743L16.25 7h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 7.75Zm0 8.5a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486L7.75 17h8.5l.102-.007A.75.75 0 0 0 17 16.25ZM17 12a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 12Z"
+                          fill="#FFF"/>
+                </svg>
             </div>
-        </div>
+        </a>
 
-        <!-- Sección de Eventos -->
-        <div class="bg-neutral-gris p-6 rounded-lg">
-            <h2 class="text-xl font-semibold mb-4">Eventos</h2>
-            <a href="{% url 'lista_eventos' %}" class="btn btn-secundario">Ver lista de eventos</a>
-        </div>
+        <a href="{% url 'lista_canales' %}"
+           class="bg-blue-900 text-white p-6 rounded-lg hover:bg-blue-800 transition-colors">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold">Canales</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+            </div>
+        </a>
+    </main>
+
+<section class="container mx-auto my-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="bg-white p-6 rounded-lg shadow">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">Métricas</h2>
+      <div class="flex space-x-2">
+        <button onclick="prevSlide()" class="text-gray-600 hover:text-gray-900">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button onclick="nextSlide()" class="text-gray-600 hover:text-gray-900">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
     </div>
-</div>
+
+    <!-- Slides container -->
+    <div class="relative overflow-hidden">
+      <!-- Eventos Metrics -->
+      <div class="metrics-slide grid grid-cols-2 gap-4">
+        <div>
+          <h3 class="text-lg font-medium mb-2">Eventos Inscritos</h3>
+          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-700">{{ eventos_inscritos }}</span>
+            <span class="text-sm text-gray-500">Registrado</span>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium mb-2">Lista de Espera</h3>
+          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-700">{{ eventos_en_espera }}</span>
+            <span class="text-sm text-gray-500">En espera</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reportes Metrics -->
+      <div class="metrics-slide grid grid-cols-2 gap-4 hidden">
+        <div>
+          <h3 class="text-lg font-medium mb-2">Reportes Enviados</h3>
+          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-700">{{ reportes_enviados }}</span>
+            <span class="text-sm text-gray-500">Total</span>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium mb-2">En Proceso</h3>
+          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-700">{{ reportes_en_proceso }}</span>
+            <span class="text-sm text-gray-500">Pendientes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Canales Metrics -->
+      <div class="metrics-slide grid grid-cols-2 gap-4 hidden">
+        <div>
+          <h3 class="text-lg font-medium mb-2">Mis Canales</h3>
+          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-700">{{ canales_suscritos }}</span>
+            <span class="text-sm text-gray-500">Suscritos</span>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium mb-2">Mensajes</h3>
+          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-700">{{ mensajes_sin_leer }}</span>
+            <span class="text-sm text-gray-500">Sin leer</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reservaciones Metrics -->
+      <div class="metrics-slide grid grid-cols-2 gap-4 hidden">
+        <div>
+          <h3 class="text-lg font-medium mb-2">Reservaciones</h3>
+          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-700">{{ total_reservaciones }}</span>
+            <span class="text-sm text-gray-500">Total</span>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium mb-2">Próximas</h3>
+          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-700">{{ reservaciones_proximas }}</span>
+            <span class="text-sm text-gray-500">Por atender</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide indicators -->
+    <div class="flex justify-center space-x-2 mt-4">
+      <button onclick="goToSlide(0)" class="h-2 w-2 rounded-full bg-blue-600"></button>
+      <button onclick="goToSlide(1)" class="h-2 w-2 rounded-full bg-gray-300"></button>
+      <button onclick="goToSlide(2)" class="h-2 w-2 rounded-full bg-gray-300"></button>
+      <button onclick="goToSlide(3)" class="h-2 w-2 rounded-full bg-gray-300"></button>
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded-lg shadow col-span-2">
+    <h2 class="text-xl font-bold mb-4">Alertas en Tiempo Real</h2>
+    {% if alertas %}
+      {% for alerta in alertas %}
+      <div class="bg-red-500 text-white p-4 rounded mb-4">
+        <p>{{ alerta.mensaje }}</p>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="bg-gray-200 p-4 rounded">
+        <p>No hay alertas activas en este momento.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% block extra_js %}
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.metrics-slide');
+  const indicators = document.querySelectorAll('.flex.justify-center button');
+
+  function showSlide(index) {
+    slides.forEach(slide => slide.classList.add('hidden'));
+    indicators.forEach(indicator => indicator.classList.replace('bg-blue-600', 'bg-gray-300'));
+    
+    slides[index].classList.remove('hidden');
+    indicators[index].classList.replace('bg-gray-300', 'bg-blue-600');
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  function goToSlide(index) {
+    currentSlide = index;
+    showSlide(currentSlide);
+  }
+
+  // Auto-advance slides every 5 seconds
+  setInterval(nextSlide, 5000);
+</script>
+{% endblock %}
 {% endblock %}

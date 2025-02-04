@@ -10,7 +10,8 @@ class RepositorioReservaMemoria(RespositorioReserva):
         self.contador_ids = 0  # Simular autoincremento de IDs
 
 
-    def reservar_area_comunal(self, area_comunal, fecha_reserva, hora_inicio, hora_fin, tipo_reserva, ciudadano):
+    def reservar_area_comunal(self, area_comunal, fecha_reserva, hora_inicio, hora_fin, tipo_reserva, ciudadano,
+                              correos_invitados):
         self.contador_reservas += 1
         nueva_reserva = {
             'id': self.contador_reservas,
