@@ -4,10 +4,12 @@ from faker import Faker
 from datetime import datetime
 from ciudadano_app.models.area_comunal import AreaComunal
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
+from ciudadano_app.models.reserva.servicio_reserva import ServicioReserva
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from mocks.repositorio_reserva_en_memoria import RepositorioReservaMemoria
 
 fake = Faker()
+servicio_reserva = ServicioReserva()
 servicio_reserva_en_memoria = RepositorioReservaMemoria()
 
 @step('que existen areas comunales disponibles en el espacio publico "{nombre_espacio_publico}" en la ciudad y son')
@@ -28,31 +30,26 @@ def step_impl(context, nombre_espacio_publico):
     Raises:
         AssertionError: Si no hay áreas comunales disponibles.
     """
-    context.entidad_municipal = EntidadMunicipal(
+    context.entidad_municipal = EntidadMunicipal.objects.create(
         nombre="Municipalidad Mock",
         direccion=fake.address(),
         telefono=fake.phone_number(),
         correo_electronico=fake.email(),
         fecha_registro=datetime.now()
     )
-    context.entidad_municipal.id = 1
-    context.espacio_publico = EspacioPublico(
+    context.espacio_publico = EspacioPublico.objects.create(
         nombre=nombre_espacio_publico,
         entidad_municipal=context.entidad_municipal
     )
-    context.espacio_publico.id = 1
-    index = 1
     for row in context.table:
-        area = AreaComunal(
+        area = AreaComunal.objects.create(
             nombre_area=row['Nombre'],
             hora_de_apertura=datetime.strptime("08:00", "%H:%M").time(),
             hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
             espacio_publico=context.espacio_publico
         )
-        area.id = index
-        index += 1
-        servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
-    assert servicio_reserva_en_memoria.hay_areas_comunales_disponibles(context.espacio_publico)
+
+    assert servicio_reserva.hay_areas_comunales_disponibles(context.espacio_publico)
 
 
 @step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
@@ -71,15 +68,13 @@ def step_impl(context, maximo_reservas):
     Raises:
         AssertionError: Si el ciudadano supera el número máximo de reservas activas.
     """
-    context.ciudadano = Ciudadano(
+    context.ciudadano = Ciudadano.objects.create(
         nombre_completo=fake.name(),
         correo_electronico=fake.email(),
-        numero_identificacion=str(fake.random_number(digits=10)),
-        esta_activo=True
+        numero_identificacion=str(fake.random_number(digits=10))
     )
-    context.ciudadano.id = 1
     context.maximo_reservas = int(maximo_reservas)
-    assert not servicio_reserva_en_memoria.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
+    assert not servicio_reserva.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
 
 
 @step('el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
