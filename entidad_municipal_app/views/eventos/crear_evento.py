@@ -5,10 +5,18 @@ from entidad_municipal_app.decorators import entidad_required
 from django.contrib import messages
 from entidad_municipal_app.models.espacio_publico import EspacioPublico
 
+
 @entidad_required
 @login_required
 def crear_evento(request):
-    espacios = EspacioPublico.objects.all()
+    # Filtrar espacios disponibles si se solicita
+    filtrar_disponibles = request.GET.get('disponibles', False)
+
+    if filtrar_disponibles:
+        espacios = EspacioPublico.objects.filter(estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE)
+    else:
+        espacios = EspacioPublico.objects.all()
+
     if request.method == 'POST':
         nombre_evento = request.POST.get('nombre_evento')
         descripcion_evento = request.POST.get('descripcion_evento')
