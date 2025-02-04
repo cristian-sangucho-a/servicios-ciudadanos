@@ -1,62 +1,79 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard Ciudadano{% endblock %}
+{% block title %}Dashboard Ciudadano - Municipio de Quito{% endblock %}
 
 {% block content %}
-<header class="bg-blue-900 text-white py-4 px-6">
-  <h1 class="text-2xl font-bold">Quito Municipal Dashboard</h1>
-  <p class="text-gray-300">Bienvenido/a, {{ ciudadano.nombre_completo }}</p>
+<!-- Enhanced Header -->
+<header class="bg-gradient-to-r from-[#002F5F] to-[#004080] text-white py-6 px-8 shadow-lg">
+  <div class="container mx-auto flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight mb-2">Quito Municipal Dashboard</h1>
+      <p class="text-gray-200 text-lg opacity-90">Bienvenido/a, {{ ciudadano.nombre_completo }}</p>
+    </div>
+    <div class="bg-[#D8A35C] p-3 rounded-full shadow-md">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+  </div>
 </header>
 
+<!-- Quick Access Cards -->
 <main class="container mx-auto my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-  <a href="{% url 'lista_eventos' %}" class="bg-red-500 text-white p-6 rounded-lg hover:bg-red-600 transition-colors">
+  <!-- Reservaciones Card -->
+  <a href="{% url 'lista_eventos' %}" class="bg-gradient-to-br from-[#A6192E] to-[#C22A40] text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 group">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-bold">Reservaciones</h2>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <h2 class="text-2xl font-bold tracking-wide">Reservaciones</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#D8A35C] group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
       </svg>
     </div>
   </a>
 
-  <a href="{% url 'reportes' %}" class="bg-yellow-500 text-white p-6 rounded-lg hover:bg-yellow-600 transition-colors">
+  <!-- Reportes Card -->
+  <a href="{% url 'reportes' %}" class="bg-gradient-to-br from-[#007A33] to-[#009945] text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 group">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-bold">Reportes</h2>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <h2 class="text-2xl font-bold tracking-wide">Reportes</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#D8A35C] group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
     </div>
   </a>
 
-  <a href="{% url 'lista_eventos' %}" class="bg-green-500 text-white p-6 rounded-lg hover:bg-green-600 transition-colors">
+  <!-- Eventos Card -->
+  <a href="{% url 'lista_eventos' %}" class="bg-gradient-to-br from-[#002F5F] to-[#004080] text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 group">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-bold">Eventos</h2>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <h2 class="text-2xl font-bold tracking-wide">Eventos</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#D8A35C] group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
     </div>
   </a>
 
-  <a href="{% url 'lista_canales' %}" class="bg-blue-900 text-white p-6 rounded-lg hover:bg-blue-800 transition-colors">
+  <!-- Canales Card -->
+  <a href="{% url 'lista_canales' %}" class="bg-gradient-to-br from-[#4A7F4F] to-[#007A33] text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 group">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-bold">Canales</h2>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <h2 class="text-2xl font-bold tracking-wide">Canales</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#D8A35C] group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
       </svg>
     </div>
   </a>
 </main>
 
+<!-- Metrics and Alerts Section -->
 <section class="container mx-auto my-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <div class="bg-white p-6 rounded-lg shadow">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-bold">Métricas</h2>
+  <!-- Metrics Carousel -->
+  <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-[#002F5F]" id="metricsCarousel">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-[#002F5F]">Métricas</h2>
       <div class="flex space-x-2">
-        <button onclick="prevSlide()" class="text-gray-600 hover:text-gray-900">
+        <button id="prevBtn" class="text-gray-500 hover:text-[#A6192E] transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <button onclick="nextSlide()" class="text-gray-600 hover:text-gray-900">
+        <button id="nextBtn" class="text-gray-500 hover:text-[#A6192E] transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
@@ -64,137 +81,205 @@
       </div>
     </div>
 
-    <!-- Slides container -->
+    <!-- Slides Container -->
     <div class="relative overflow-hidden">
-      <!-- Eventos Metrics -->
-      <div class="metrics-slide grid grid-cols-2 gap-4">
-        <div>
-          <h3 class="text-lg font-medium mb-2">Eventos Inscritos</h3>
-          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
-            <span class="text-3xl font-bold text-gray-700">{{ eventos_inscritos }}</span>
-            <span class="text-sm text-gray-500">Registrado</span>
+      <div class="slides-container transition-transform duration-500 ease-in-out">
+        <!-- Eventos Metrics -->
+        <div class="slide">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Eventos Inscritos</h3>
+              <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                <span class="text-4xl font-bold text-[#007A33]">{{ eventos_inscritos }}</span>
+                <span class="text-sm text-gray-500">Registrado</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Lista de Espera</h3>
+              <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                <span class="text-4xl font-bold text-[#A6192E]">{{ eventos_en_espera }}</span>
+                <span class="text-sm text-gray-500">En espera</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div>
-          <h3 class="text-lg font-medium mb-2">Lista de Espera</h3>
-          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
-            <span class="text-3xl font-bold text-gray-700">{{ eventos_en_espera }}</span>
-            <span class="text-sm text-gray-500">En espera</span>
-          </div>
-        </div>
-      </div>
 
-      <!-- Reportes Metrics -->
-      <div class="metrics-slide grid grid-cols-2 gap-4 hidden">
-        <div>
-          <h3 class="text-lg font-medium mb-2">Reportes Enviados</h3>
-          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
-            <span class="text-3xl font-bold text-gray-700">{{ reportes_enviados }}</span>
-            <span class="text-sm text-gray-500">Total</span>
+        <!-- Reportes Metrics -->
+        <div class="slide">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Reportes Enviados</h3>
+              <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                <span class="text-4xl font-bold text-[#007A33]">{{ reportes_enviados }}</span>
+                <span class="text-sm text-gray-500">Total</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">En Proceso</h3>
+              <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                <span class="text-4xl font-bold text-[#A6192E]">{{ reportes_en_proceso }}</span>
+                <span class="text-sm text-gray-500">Pendientes</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div>
-          <h3 class="text-lg font-medium mb-2">En Proceso</h3>
-          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
-            <span class="text-3xl font-bold text-gray-700">{{ reportes_en_proceso }}</span>
-            <span class="text-sm text-gray-500">Pendientes</span>
-          </div>
-        </div>
-      </div>
 
-      <!-- Canales Metrics -->
-      <div class="metrics-slide grid grid-cols-2 gap-4 hidden">
-        <div>
-          <h3 class="text-lg font-medium mb-2">Mis Canales</h3>
-          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
-            <span class="text-3xl font-bold text-gray-700">{{ canales_suscritos }}</span>
-            <span class="text-sm text-gray-500">Suscritos</span>
+        <!-- Canales Metrics -->
+        <div class="slide">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Mis Canales</h3>
+              <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                <span class="text-4xl font-bold text-[#007A33]">{{ canales_suscritos }}</span>
+                <span class="text-sm text-gray-500">Suscritos</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Mensajes</h3>
+              <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                <span class="text-4xl font-bold text-[#A6192E]">{{ mensajes_sin_leer }}</span>
+                <span class="text-sm text-gray-500">Sin leer</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div>
-          <h3 class="text-lg font-medium mb-2">Mensajes</h3>
-          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
-            <span class="text-3xl font-bold text-gray-700">{{ mensajes_sin_leer }}</span>
-            <span class="text-sm text-gray-500">Sin leer</span>
-          </div>
-        </div>
-      </div>
 
-      <!-- Reservaciones Metrics -->
-      <div class="metrics-slide grid grid-cols-2 gap-4 hidden">
-        <div>
-          <h3 class="text-lg font-medium mb-2">Reservaciones</h3>
-          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
-            <span class="text-3xl font-bold text-gray-700">{{ total_reservaciones }}</span>
-            <span class="text-sm text-gray-500">Total</span>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-lg font-medium mb-2">Próximas</h3>
-          <div class="h-32 bg-gray-100 rounded flex flex-col items-center justify-center">
-            <span class="text-3xl font-bold text-gray-700">{{ reservaciones_proximas }}</span>
-            <span class="text-sm text-gray-500">Por atender</span>
+        <!-- Reservaciones Metrics -->
+        <div class="slide">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Reservaciones</h3>
+              <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                <span class="text-4xl font-bold text-[#007A33]">{{ total_reservaciones }}</span>
+                <span class="text-sm text-gray-500">Total</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Próximas</h3>
+              <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
+                <span class="text-4xl font-bold text-[#A6192E]">{{ reservaciones_proximas }}</span>
+                <span class="text-sm text-gray-500">Por atender</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Slide indicators -->
-    <div class="flex justify-center space-x-2 mt-4">
-      <button onclick="goToSlide(0)" class="h-2 w-2 rounded-full bg-blue-600"></button>
-      <button onclick="goToSlide(1)" class="h-2 w-2 rounded-full bg-gray-300"></button>
-      <button onclick="goToSlide(2)" class="h-2 w-2 rounded-full bg-gray-300"></button>
-      <button onclick="goToSlide(3)" class="h-2 w-2 rounded-full bg-gray-300"></button>
+    <!-- Slide Indicators -->
+    <div class="flex justify-center space-x-2 mt-6" id="slideIndicators">
+      <button class="h-2 w-8 rounded-full bg-[#002F5F] transition-all duration-300"></button>
+      <button class="h-2 w-2 rounded-full bg-gray-300 transition-all duration-300"></button>
+      <button class="h-2 w-2 rounded-full bg-gray-300 transition-all duration-300"></button>
+      <button class="h-2 w-2 rounded-full bg-gray-300 transition-all duration-300"></button>
     </div>
   </div>
 
-  <div class="bg-white p-6 rounded-lg shadow col-span-2">
-    <h2 class="text-xl font-bold mb-4">Alertas en Tiempo Real</h2>
+  <!-- Real-time Alerts -->
+  <div class="bg-white p-6 rounded-2xl shadow-lg col-span-2 border-t-4 border-[#A6192E]">
+    <h2 class="text-2xl font-bold mb-6 text-[#A6192E]">Alertas en Tiempo Real</h2>
     {% if alertas %}
-      {% for alerta in alertas %}
-      <div class="bg-red-500 text-white p-4 rounded mb-4">
-        <p>{{ alerta.mensaje }}</p>
+      <div class="space-y-4">
+        {% for alerta in alertas %}
+        <div class="bg-gradient-to-r from-[#A6192E] to-[#C22A40] text-white p-5 rounded-lg shadow-md flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-4 text-[#D8A35C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <p class="text-lg">{{ alerta.mensaje }}</p>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     {% else %}
-      <div class="bg-gray-200 p-4 rounded">
-        <p>No hay alertas activas en este momento.</p>
+      <div class="bg-gray-100 p-5 rounded-lg text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-[#007A33]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-xl text-[#002F5F]">No hay alertas activas en este momento.</p>
       </div>
     {% endif %}
   </div>
 </section>
-
+<div id="model-viewer" class="mx-auto my-8" style="width: 100%; max-width: 600px; height: 400px; background: #f0f0f0;">
+</div>
 {% block extra_js %}
-<script>
-  let currentSlide = 0;
-  const slides = document.querySelectorAll('.metrics-slide');
-  const indicators = document.querySelectorAll('.flex.justify-center button');
+<!-- Three.js and GLTFLoader for the 3D Model -->
+<script type="module">
+  // With the import map in place, you can now import "three" as a bare module specifier.
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'https://unpkg.com/three@0.152.2/examples/jsm/loaders/GLTFLoader.js';
 
-  function showSlide(index) {
-    slides.forEach(slide => slide.classList.add('hidden'));
-    indicators.forEach(indicator => indicator.classList.replace('bg-blue-600', 'bg-gray-300'));
-    
-    slides[index].classList.remove('hidden');
-    indicators[index].classList.replace('bg-gray-300', 'bg-blue-600');
+  // Get the container element for the model
+  const container = document.getElementById('model-viewer');
+
+  const existingCanvas = container.querySelector('canvas');
+  if (existingCanvas) {
+    container.removeChild(existingCanvas);
   }
 
-  function nextSlide() {
-    currentSlide = (currentSlide + 1) % slides.length;
-    showSlide(currentSlide);
-  }
+  // Create the scene, camera, and renderer
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xF5F5F5);
 
-  function prevSlide() {
-    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-    showSlide(currentSlide);
-  }
+  const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.z = 3;
 
-  function goToSlide(index) {
-    currentSlide = index;
-    showSlide(currentSlide);
-  }
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
 
-  // Auto-advance slides every 5 seconds
-  setInterval(nextSlide, 5000);
+  // Add basic lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Increased intensity
+  scene.add(ambientLight);
+
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.75);
+  directionalLight.position.set(0, 1, 1);
+  scene.add(directionalLight);
+
+  // Load the GLB model
+  const loader = new GLTFLoader();
+  let model;
+  loader.load(
+    '/static/3d/hello.glb', // Replace with your model's actual path
+    (gltf) => {
+      model = gltf.scene;
+      scene.add(model);
+
+      // Optionally center and scale the model
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3()).length();
+      const center = box.getCenter(new THREE.Vector3());
+      model.position.x += (model.position.x - center.x);
+      model.position.y += (model.position.y - center.y);
+      model.position.z += (model.position.z - center.z);
+
+      // Adjust scale as needed
+      const scaleFactor = 3 / size;
+      model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    },
+    undefined,
+    (error) => {
+      console.error('An error occurred loading the model:', error);
+    }
+  );
+
+  // Update renderer and camera on window resize
+  window.addEventListener('resize', () => {
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  });
+
+  // Animation loop: rotate the model
+  function animate() {
+    requestAnimationFrame(animate);
+    if (model) {
+      model.rotation.y += 0.01;
+    }
+    renderer.render(scene, camera);
+  }
+  animate();
 </script>
 {% endblock %}
 {% endblock %}

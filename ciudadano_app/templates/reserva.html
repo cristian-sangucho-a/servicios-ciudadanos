@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Realiza tu reserva{% endblock %}
+
+{% block content %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8 items-start justify-center">
+            <!-- Panel de información -->
+            <div class="w-full lg:w-1/3 bg-gray-50 p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Detalles de la reserva</h2>
+                <div class="space-y-4">
+                    <div>
+                        <p class="font-semibold text-gray-700">Usuario:</p>
+                        <p class="text-gray-600">{{ request.user.nombre_completo }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700">Email:</p>
+                        <p class="text-gray-600">{{ request.user.correo_electronico }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700">Área comunal:</p>
+                        <p class="text-gray-600">{{ area_comunal }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de reserva -->
+            <div class="w-full lg:max-w-2xl bg-white p-8 rounded-lg shadow-md">
+                <h1 class="text-3xl font-bold mb-8 text-center text-primario-DEFAULT">Realiza tu reserva</h1>
+
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+
+                    <!-- Campos ocultos -->
+                    {{ form.estado_reserva }}
+                    {{ form.ciudadano }}
+                    {{ form.area_comunal }}
+
+                    <!-- Campos del formulario -->
+                    <div class="space-y-4">
+                        <!-- Fecha y horas -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="{{ form.fecha_reserva.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
+                                {{ form.fecha_reserva }}
+                            </div>
+                            <div>
+                                <label for="{{ form.hora_inicio.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Hora inicio</label>
+                                {{ form.hora_inicio }}
+                            </div>
+                            <div>
+                                <label for="{{ form.hora_fin.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Hora fin</label>
+                                {{ form.hora_fin }}
+                            </div>
+                        </div>
+
+                        <!-- Tipo de reserva -->
+                        <div>
+                            <label for="{{ form.tipo_reserva.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Tipo de reserva</label>
+                            {{ form.tipo_reserva }}
+                        </div>
+
+                        <!-- Correos invitados (condicional) -->
+                        <div id="correos_invitados_field" class="hidden">
+                            <label for="{{ form.correos_invitados.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Correos de invitados</label>
+                            {{ form.correos_invitados }}
+                            <p class="mt-1 text-sm text-gray-500">Separe los correos con comas</p>
+                        </div>
+                    </div>
+
+                    <!-- Errores generales -->
+                    {% if form.non_field_errors %}
+                        <div class="p-4 bg-red-50 text-red-700 rounded-lg">
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Botón de submit -->
+                    <button type="submit" class="w-full bg-primario hover:bg-primario-dark text-white font-medium py-3 px-6 rounded-lg transition-colors">
+                        Confirmar reserva
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoReservaSelect = document.getElementById('id_tipo_reserva');
+        const correosField = document.getElementById('correos_invitados_field');
+        const correosInput = document.getElementById('id_correos_invitados');
+
+        function actualizarCampoCorreos() {
+            const esPrivado = tipoReservaSelect.value === 'privado';
+
+            // Mostrar/ocultar campo
+            correosField.style.display = esPrivado ? 'block' : 'none';
+
+            // Hacer requerido solo si es privado
+            correosInput.required = esPrivado;
+
+            // Limpiar campo si no es privado
+            if (!esPrivado) {
+                correosInput.value = '';
+            }
+        }
+
+        tipoReservaSelect.addEventListener('change', actualizarCampoCorreos);
+        actualizarCampoCorreos(); // Estado inicial
+    });
+</script>
+{% endblock %}

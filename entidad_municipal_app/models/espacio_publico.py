@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from entidad_municipal_app.models import EntidadMunicipal
+
 class EspacioPublico(models.Model):
     """Modelo para representar un espacio público."""
 
@@ -78,3 +80,14 @@ class EspacioPublico(models.Model):
         ).exclude(pk__in=eventos_misma_fecha)
 
         return espacios_disponibles
+
+
+    def __str__(self):
+        return self.nombre
+
+    def obtener_id(self):
+        return self.id
+
+    def obtener_nombre(self):
+        return self.nombre
+
