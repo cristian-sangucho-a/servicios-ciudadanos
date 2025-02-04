@@ -106,7 +106,6 @@ def step_asigna_espacio(context, nombre_espacio):
     """
     Asigna un espacio público al evento con los datos anteriores
     """
-    #context.espacio_publico = crear_espacio_publico_aleatorio(nombre_espacio=nombre_espacio,estado='DISPONIBLE',entidad_municipal=crear_entidad_municipal_aleatoria())
     context.entidad_municipal = crear_entidad_municipal_aleatoria()
     context.espacio_publico = crear_espacio_publico_aleatorio(nombre_espacio=nombre_espacio,estado= "DISPONIBLE", entidad_municipal=context.entidad_municipal)
 
