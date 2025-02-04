@@ -1,11 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-
 class EspacioPublico(models.Model):
-    """
-    Modelo para representar un espacio público.
-    """
+    """Modelo para representar un espacio público."""
+
     nombre = models.CharField(
         max_length=255,
         help_text="Nombre del espacio público",
@@ -18,7 +16,6 @@ class EspacioPublico(models.Model):
     )
     descripcion = models.TextField()
 
-    # Corregir la referencia a EntidadMunicipal usando string
     entidad_municipal = models.ForeignKey(
         'entidad_municipal_app.EntidadMunicipal',
         on_delete=models.CASCADE,
@@ -47,6 +44,7 @@ class EspacioPublico(models.Model):
         (AFECTADO, 'Afectado'),
         (NO_AFECTADO, 'No Afectado'),
     ]
+
     estado_incidente_espacio = models.CharField(
         max_length=20,
         choices=ESTADO_CHOICES,
@@ -56,16 +54,25 @@ class EspacioPublico(models.Model):
 
     @classmethod
     def obtener_espacios_disponibles(cls, fecha):
-        # Importar EventoMunicipal aquí para evitar importaciones circulares
+        """
+        Obtiene los espacios públicos disponibles en una fecha específica.
+
+        Args:
+            fecha (date): Fecha en la que se desean consultar los espacios disponibles.
+
+        Returns:
+            QuerySet: Espacios públicos disponibles en la fecha dada.
+        """
         from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
 
-        # Filtrar espacios que están disponibles y que no tienen eventos programados en la fecha dada
         eventos_misma_fecha = EventoMunicipal.objects.filter(
             fecha_realizacion=fecha,
-            estado_actual__in=[EventoMunicipal.ESTADO_PROGRAMADO, EventoMunicipal.ESTADO_EN_CURSO]
+            estado_actual__in=[
+                EventoMunicipal.ESTADO_PROGRAMADO,
+                EventoMunicipal.ESTADO_EN_CURSO
+            ]
         ).values_list('espacio_publico_id', flat=True)
 
-        # Obtener espacios disponibles
         espacios_disponibles = cls.objects.filter(
             estado_espacio_publico=cls.ESTADO_DISPONIBLE
         ).exclude(pk__in=eventos_misma_fecha)
