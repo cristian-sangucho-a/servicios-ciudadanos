@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Agenda Pública{% endblock %}
 
@@ -9,11 +10,9 @@
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Espacio Público:</label>
                     <select
+                            id="espacio-select"
                             name="espacio_id"
                             class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                            hx-get="{% url 'cargar_areas_comunales' %}"
-                            hx-trigger="change"
-                            hx-target="#areas-container"
                     >
                         <option value="" disabled selected>Seleccione un espacio público</option>
                         {% for espacio in espacios_publicos %}
@@ -38,7 +37,44 @@
         <div id="calendario-container">
         </div>
     </div>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar áreas al cambiar espacio
+            document.getElementById('espacio-select').addEventListener('change', function() {
+                const espacioId = this.value;
+                if (!espacioId) return;
 
+                fetch(`{% url 'cargar_areas_comunales' %}?espacio_id=${espacioId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('areas-container');
+                        container.innerHTML = html;
+
+                        const areaSelect = container.querySelector('#area-select');
+                        if (areaSelect) {
+                            areaSelect.addEventListener('change', function() {
+                                const areaId = this.value;
+                                if (!areaId) return;
+
+                                fetch(`{% url 'cargar_calendario' %}?area_id=${areaId}`)
+                                    .then(response => response.text())
+                                    .then(html => {
+                                        const calendarContainer = document.getElementById('calendario-container');
+                                        calendarContainer.innerHTML = html;
+
+                                        // Ejecutar scripts del calendario
+                                        const scripts = calendarContainer.querySelectorAll('script');
+                                        scripts.forEach(script => {
+                                            const newScript = document.createElement('script');
+                                            newScript.textContent = script.textContent;
+                                            document.body.appendChild(newScript);
+                                        });
+                                    });
+                            });
+                        }
+                    });
+            });
+        });
+    </script>
 {% endblock %}

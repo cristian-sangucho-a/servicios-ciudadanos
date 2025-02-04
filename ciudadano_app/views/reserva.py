@@ -45,7 +45,7 @@ def reservar(request):
                 messages.success(request, '¡Reserva creada exitosamente!')
                 return redirect('mis_reservas')
             else:
-                messages.error(request, 'No se pudo crear la reserva')
+                messages.error(request, 'No se pudo crear la reserva. Superaste el maximo de reservas activas.')
                 return redirect('agenda')
         else:
             messages.error(request, 'No se llenó correctamente el formulario.')

@@ -25,7 +25,7 @@ class ServicioReserva(RespositorioReserva):
             bool: True si el ciudadano supera el límite de reservas activas, False en caso contrario.
         """
         print(ciudadano.reservas.filter(estado_reserva='Activa').count())
-        return ciudadano.reservas.filter(estado_reserva='Activa').count() > self.MAXIMO_RESERVAS
+        return ciudadano.reservas.filter(estado_reserva='Activa').count() >= self.MAXIMO_RESERVAS
 
     def hay_areas_comunales_disponibles(self, espacio_publico):
         """
@@ -82,9 +82,11 @@ class ServicioReserva(RespositorioReserva):
         reserva = self.obtener_reserva_por_id(id_reserva)
         if reserva.ciudadano != ciudadano:
             return False
-        if reserva.tipo_reserva == "privada":
+
+        if reserva.tipo_reserva == "privado":
             servicio_notificion_correo = ServicioNotificacionPorCorreo()
             servicio_notificion_correo.enviar_cancelacion(reserva)
+
         reserva.estado_reserva = 'Cancelada'
         reserva.save()
         return True
@@ -160,9 +162,7 @@ class ServicioReserva(RespositorioReserva):
         Returns:
             tuple: (ID de la reserva, bool) indicando si la reserva fue exitosa.
         """
-        print(self.ciudadano_supera_maximo_reservas(ciudadano))
         if self.ciudadano_supera_maximo_reservas(ciudadano):
-            print(self.ciudadano_supera_maximo_reservas(ciudadano))
             return 0, False
         reserva = Reserva(
             area_comunal=area_comunal,
