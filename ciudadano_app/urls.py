@@ -30,9 +30,9 @@ urlpatterns = [
     # Nuevas URLs para sectores y notificaciones
     path('agregar-sectores/', views.agregar_sectores_ciudadano, name='agregar_sectores'),
 
-    path('notificacion_de_estado/', views.listar_notificaciones_ciudadano, name='ver_estado_reportes'),
-    path('notificacion_de_estado/', views.notificar_reporte_alta_prioridad_ciudadano, name='ver_estado_reportes'),
-    path('notificacion_de_estado/', views.notificar_estado_riesgo_ciudadano, name='ver_estado_reportes'),
+    path('notificacion_de_estado/', views.listar_notificaciones_ciudadano, name='ver_estado_sector'),
+    path('notificacion_de_estado/', views.notificar_reporte_alta_prioridad_ciudadano, name='ver_estado_sector'),
+    path('notificacion_de_estado/', views.notificar_estado_riesgo_ciudadano, name='ver_estado_sector'),
 
 
 ]

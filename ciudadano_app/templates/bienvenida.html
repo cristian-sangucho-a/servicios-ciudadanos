@@ -4,21 +4,6 @@
 
 {% block content %}
 <div class="min-h-screen bg-gray-100">
-  <!-- Barra de navegación -->
-  <nav class="bg-[#143D69] text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex items-center">
-          <span class="font-bold text-xl">Panel de Entidad Municipal</span>
-        </div>
-        <div class="flex items-center">
-          <a href="{% url 'logout_ciudadano' %}" class="bg-red-600 px-4 py-2 rounded hover:bg-red-500 text-sm font-medium">
-            Cerrar Sesión
-          </a>
-        </div>
-      </div>
-    </div>
-  </nav>
 
   <!-- Contenido principal -->
   <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -48,7 +33,7 @@
               </div>
             </a>
 
-               <!-- Nueva tarjeta para Agregar Sectores de Interés -->
+            <!-- Nueva tarjeta para Agregar Sectores de Interés -->
             <a href="{% url 'agregar_sectores' %}" class="bg-white overflow-hidden shadow rounded-lg p-6 hover:bg-gray-50">
               <div class="flex items-center">
                 <div class="flex-shrink-0 bg-[#143D69] rounded-md p-3">
@@ -57,31 +42,67 @@
                 <div class="ml-4">
                   <h3 class="text-lg font-medium text-gray-900">Agregar Sectores de Interés</h3>
                   <p class="mt-1 text-sm text-gray-500">
-                    Añadir nuevos sectores de interés para la entidad
+                    Añadir nuevos sectores de interés para el ciudadano
                   </p>
                 </div>
               </div>
             </a>
-                          <!-- Nueva tarjeta para Ver estado de Reportes -->
-            <a href="{% url 'ver_estado_reportes' %}" class="bg-white overflow-hidden shadow rounded-lg p-6 hover:bg-gray-50">
-              <div class="flex items-center">
-                <div class="flex-shrink-0 bg-[#143D69] rounded-md p-3">
-                  <!-- Aquí podrías poner un ícono -->
-                </div>
-                <div class="ml-4">
-                  <h3 class="text-lg font-medium text-gray-900">Ver estado de Reportes</h3>
-                  <p class="mt-1 text-sm text-gray-500">
-                    Consultar el estado de los reportes generados
-                  </p>
-                </div>
-              </div>
-            </a>
-
-            <!-- Puedes agregar más tarjetas de acciones aquí -->
           </div>
         </div>
       </div>
     </div>
   </main>
 </div>
+
+<!-- Burbuja de notificaciones en la esquina inferior derecha -->
+<div class="fixed bottom-4 right-4">
+  <button id="notificaciones-btn" class="bg-[#143D69] text-white p-3 rounded-full shadow-lg hover:bg-[#1a4f7a] focus:outline-none">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+    </svg>
+    <!-- Indicador de notificaciones no leídas -->
+    {% if notificaciones_no_leidas %}
+      <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+        {{ notificaciones_no_leidas.count }}
+      </span>
+    {% endif %}
+  </button>
+  <!-- Menú desplegable de notificaciones -->
+  <div id="notificaciones-menu" class="hidden absolute bottom-16 right-0 w-64 bg-white rounded-lg shadow-lg">
+    <div class="p-4">
+      <h3 class="text-lg font-bold text-gray-900 mb-2">Notificaciones</h3>
+      <ul class="space-y-2">
+        {% for notificacion in notificaciones_no_leidas %}
+          <li class="text-sm text-gray-700">
+            <div class="p-2 bg-gray-50 rounded-lg">
+              <p>{{ notificacion.mensaje }}</p>
+              <p class="text-xs text-gray-500">{{ notificacion.fecha }}</p>
+            </div>
+          </li>
+        {% empty %}
+          <li class="text-sm text-gray-700">
+            No tienes notificaciones nuevas.
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Script para manejar el menú desplegable de notificaciones -->
+<script>
+  document.getElementById('notificaciones-btn').addEventListener('click', function() {
+    const menu = document.getElementById('notificaciones-menu');
+    menu.classList.toggle('hidden');
+  });
+
+  // Cerrar el menú al hacer clic fuera de él
+  document.addEventListener('click', function(event) {
+    const notificacionesBtn = document.getElementById('notificaciones-btn');
+    const notificacionesMenu = document.getElementById('notificaciones-menu');
+    if (!notificacionesBtn.contains(event.target) && !notificacionesMenu.contains(event.target)) {
+      notificacionesMenu.classList.add('hidden');
+    }
+  });
+</script>
 {% endblock %}
