@@ -104,3 +104,41 @@ class RepositorioEventos:
         """
         return EventoMunicipal.objects.filter(estado_actual=EventoMunicipal.ESTADO_CANCELADO)
 
+    def listar_eventos_programados_por_entidad(self, entidad_municipal):
+        """
+        Obtiene una lista de todos los eventos programados de una entidad municipal.
+
+        Args:
+            entidad_municipal (EntidadMunicipal): La entidad municipal.
+
+        Returns:
+            QuerySet: QuerySet de eventos programados.
+        """
+        return EventoMunicipal.objects.filter(
+            estado_actual=EventoMunicipal.ESTADO_PROGRAMADO,
+            entidad_municipal=entidad_municipal
+        )
+
+    def listar_eventos_en_curso_por_entidad(self, entidad_municipal):
+        """
+        Obtiene una lista de todos los eventos en curso de una entidad municipal.
+
+        Args:
+            entidad_municipal (EntidadMunicipal): La entidad municipal.
+
+        Returns:
+            QuerySet: QuerySet de eventos en curso.
+        """
+        return EventoMunicipal.objects.filter(
+            estado_actual=EventoMunicipal.ESTADO_EN_CURSO,
+            entidad_municipal=entidad_municipal
+        )
+
+    def listar_todos_los_eventos_por_entidad(self, entidad_municipal):
+            eventos = EventoMunicipal.objects.filter(
+                entidad_municipal=entidad_municipal
+            )
+            if eventos.exists():
+                return eventos
+            else:
+                return "No se encontraron eventos."

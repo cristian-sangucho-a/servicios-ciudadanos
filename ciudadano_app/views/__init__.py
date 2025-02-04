@@ -9,6 +9,8 @@ from .calendario_area import cargar_calendario
 from .obtener_reservas_por_fecha import obtener_reservas_por_fecha
 from .reserva import cancelar_reserva
 from .reserva import mis_reservas
+from .eventos.lista_eventos import lista_eventos
+from .reporte.envio_reporte import envio_reporte
 
 __all__ = [
     'dashboard_ciudadano',
@@ -22,4 +24,6 @@ __all__ = [
     'obtener_reservas_por_fecha',
     'cancelar_reserva',
     'mis_reservas'
+    'lista_eventos',
+    'envio_reporte',
 ]
