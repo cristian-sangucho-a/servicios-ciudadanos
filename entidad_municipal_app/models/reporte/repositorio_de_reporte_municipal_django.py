@@ -1,13 +1,44 @@
-# entidad_municipal_app/models/reporte/repositorio_de_reporte_municipal_django.py
+from threading import Lock
 from django.db import transaction
+from shared.models.reporte.repositorio_de_reporte_django import RepositorioDeReporteDjango
 from .repositorio_de_reporte_municipal import RepositorioDeReporteMunicipal
 from .reporte_municipal import ReporteMunicipal
 
-
 class RepositorioDeReporteMunicipalDjango(RepositorioDeReporteMunicipal):
     """
-    Implementación de Django del repositorio de reportes municipales.
+    Implementación de Django del repositorio de reportes municipales con el patrón Singleton.
     """
+
+    _instance = None
+    _lock = Lock()  # Evita problemas en entornos multihilo
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Implementa el patrón Singleton: Asegura que solo haya una instancia de esta clase.
+        """
+        with cls._lock:
+            if cls._instance is None:
+                cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        """
+        Inicializa el repositorio solo una vez.
+        Se crean automáticamente los Reportes Municipales a partir de los reportes ciudadanos disponibles.
+        """
+        if not hasattr(self, "_initialized"):
+            self.repositorio_reporte_ciudadano = RepositorioDeReporteDjango()
+            self.inicializar_reportes_municipales()
+            self._initialized = True
+
+    def inicializar_reportes_municipales(self):
+        """
+        Crea automáticamente reportes municipales a partir de los reportes ciudadanos.
+        """
+        reportes_ciudadanos = self.repositorio_reporte_ciudadano.obtener_reportes_ordenados_prioridad()
+
+        for reporte_ciudadano in reportes_ciudadanos:
+                self.crear(reporte_ciudadano)
 
     def obtener_por_id(self, id_reporte: int):
         """
