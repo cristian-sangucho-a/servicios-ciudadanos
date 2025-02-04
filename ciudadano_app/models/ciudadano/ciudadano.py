@@ -112,7 +112,7 @@ class Ciudadano(AbstractBaseUser):
     def _str_(self):
         """Retorna una representación en cadena del ciudadano"""
         return f"Ciudadano: {self.nombre_completo} ({self.correo_electronico})"
-    
+
     def has_perm(self, perm, obj=None):
         return True
 

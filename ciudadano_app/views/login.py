@@ -15,7 +15,7 @@ def login_ciudadano(request):
             password = form.cleaned_data['password']
             
             user = authenticate(request, correo_electronico=correo, password=password)
-            
+
             if user is None:
                 form.add_error(None, "Credenciales inválidas")
             elif not isinstance(user, Ciudadano):
