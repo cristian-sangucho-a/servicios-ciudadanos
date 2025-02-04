@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+
+from shared.models.notificacion.sector import Sector
 from ...decorators import ciudadano_required
-from shared.models import Sector
+
 
 @ciudadano_required
 def eliminar_sector_ciudadano(request, sector_id):

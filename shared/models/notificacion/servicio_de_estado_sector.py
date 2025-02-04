@@ -1,5 +1,6 @@
 # services/servicio_de_estado_sector.py
 from datetime import timedelta
+
 from django.utils.timezone import now
 
 # Palabras clave asociadas a cada estado
