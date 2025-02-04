@@ -40,7 +40,7 @@ def dashboard_ciudadano(request):
         'total_reservaciones': 0,
         'reservaciones_proximas': 0,
         
-        # For alerts section
+        # For alerts section (placeholder for now)
         'alertas': [],
     }
     
