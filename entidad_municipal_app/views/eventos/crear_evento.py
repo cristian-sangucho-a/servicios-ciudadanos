@@ -38,6 +38,7 @@ def crear_evento(request):
         try:
             # Verificar si el espacio seleccionado está disponible
             espacio_publico = EspacioPublico.objects.get(pk=espacio_publico_id)
+            espacio_publico.estado_incidente_espacio = EspacioPublico.NO_AFECTADO
             if espacio_publico.estado_espacio_publico != EspacioPublico.ESTADO_DISPONIBLE:
                 messages.error(request, 'El espacio seleccionado no está disponible.')
                 return render(request, 'entidad/eventos/crear_evento.html', {'espacios': espacios})
