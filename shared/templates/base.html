@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,10 +43,18 @@
       }
     }
   </script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.152.2/build/three.module.js"
+    }
+  }
+</script>
   <!-- Google Fonts (Inter) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   {% block extra_css %}{% endblock %}
 </head>
+
 <body class="bg-neutral-gray/10 min-h-screen flex flex-col antialiased">
   <!-- Modern Header -->
   <header class="bg-primary-deep text-white shadow-modern">
@@ -139,6 +148,41 @@
     </div>
   </footer>
 
-  {% block extra_js %}{% endblock %}
+  {% block extra_js %}
+  <!-- Metrics Slider Script -->
+  <script type="module">
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.metrics-slide');
+    const indicators = document.querySelectorAll('.flex.justify-center button');
+
+    function showSlide(index) {
+      slides.forEach(slide => slide.classList.add('hidden'));
+      indicators.forEach(indicator => indicator.classList.replace('bg-blue-600', 'bg-gray-300'));
+
+      slides[index].classList.remove('hidden');
+      indicators[index].classList.replace('bg-gray-300', 'bg-blue-600');
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      showSlide(currentSlide);
+    }
+
+    // Auto-advance slides every 5 seconds
+    setInterval(nextSlide, 5000);
+  </script>
+  {% endblock %}
+
 </body>
+
 </html>

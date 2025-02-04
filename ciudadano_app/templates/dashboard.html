@@ -199,81 +199,87 @@
     {% endif %}
   </div>
 </section>
-
-{% endblock %}
-
+<div id="model-viewer" class="mx-auto my-8" style="width: 100%; max-width: 600px; height: 400px; background: #f0f0f0;">
+</div>
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const carousel = document.getElementById('metricsCarousel');
-  const slides = carousel.querySelectorAll('.slide');
-  const indicators = document.querySelectorAll('#slideIndicators button');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  let currentSlide = 0;
-  let interval;
+<!-- Three.js and GLTFLoader for the 3D Model -->
+<script type="module">
+  // With the import map in place, you can now import "three" as a bare module specifier.
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'https://unpkg.com/three@0.152.2/examples/jsm/loaders/GLTFLoader.js';
 
-  // Configurar el estilo inicial de los slides
-  slides.forEach((slide, index) => {
-    slide.style.display = index === 0 ? 'block' : 'none';
+  // Get the container element for the model
+  const container = document.getElementById('model-viewer');
+
+  const existingCanvas = container.querySelector('canvas');
+  if (existingCanvas) {
+    container.removeChild(existingCanvas);
+  }
+
+  // Create the scene, camera, and renderer
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xF5F5F5);
+
+  const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.z = 3;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+
+  // Add basic lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Increased intensity
+  scene.add(ambientLight);
+
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.75);
+  directionalLight.position.set(0, 1, 1);
+  scene.add(directionalLight);
+
+  // Load the GLB model
+  const loader = new GLTFLoader();
+  let model;
+  loader.load(
+    '/static/3d/hello.glb', // Replace with your model's actual path
+    (gltf) => {
+      model = gltf.scene;
+      scene.add(model);
+
+      // Optionally center and scale the model
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3()).length();
+      const center = box.getCenter(new THREE.Vector3());
+      model.position.x += (model.position.x - center.x);
+      model.position.y += (model.position.y - center.y);
+      model.position.z += (model.position.z - center.z);
+
+      // Adjust scale as needed
+      const scaleFactor = 3 / size;
+      model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    },
+    undefined,
+    (error) => {
+      console.error('An error occurred loading the model:', error);
+    }
+  );
+
+  // Update renderer and camera on window resize
+  window.addEventListener('resize', () => {
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
   });
 
-  function updateSlide(newIndex) {
-    // Ocultar slide actual
-    slides[currentSlide].style.display = 'none';
-    indicators[currentSlide].classList.remove('w-8', 'bg-[#002F5F]');
-    indicators[currentSlide].classList.add('w-2', 'bg-gray-300');
-
-    // Mostrar nuevo slide
-    currentSlide = newIndex;
-    slides[currentSlide].style.display = 'block';
-    indicators[currentSlide].classList.remove('w-2', 'bg-gray-300');
-    indicators[currentSlide].classList.add('w-8', 'bg-[#002F5F]');
+  // Animation loop: rotate the model
+  function animate() {
+    requestAnimationFrame(animate);
+    if (model) {
+      model.rotation.y += 0.01;
+    }
+    renderer.render(scene, camera);
   }
-
-  function nextSlide() {
-    updateSlide((currentSlide + 1) % slides.length);
-  }
-
-  function prevSlide() {
-    updateSlide((currentSlide - 1 + slides.length) % slides.length);
-  }
-
-  function startAutoplay() {
-    interval = setInterval(nextSlide, 5000);
-  }
-
-  function stopAutoplay() {
-    clearInterval(interval);
-  }
-
-  // Event Listeners
-  prevBtn.addEventListener('click', () => {
-    prevSlide();
-    stopAutoplay();
-    startAutoplay();
-  });
-
-  nextBtn.addEventListener('click', () => {
-    nextSlide();
-    stopAutoplay();
-    startAutoplay();
-  });
-
-  indicators.forEach((indicator, index) => {
-    indicator.addEventListener('click', () => {
-      updateSlide(index);
-      stopAutoplay();
-      startAutoplay();
-    });
-  });
-
-  // Iniciar autoplay
-  startAutoplay();
-
-  // Pausar autoplay cuando el mouse está sobre el carrusel
-  carousel.addEventListener('mouseenter', stopAutoplay);
-  carousel.addEventListener('mouseleave', startAutoplay);
-});
+  animate();
 </script>
+{% endblock %}
 {% endblock %}
