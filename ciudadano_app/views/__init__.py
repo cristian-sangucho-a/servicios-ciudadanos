@@ -11,6 +11,7 @@ from .reserva import cancelar_reserva
 from .reserva import mis_reservas
 from .eventos.lista_eventos import lista_eventos
 from .reporte.envio_reporte import envio_reporte
+from .reporte.reportes import reportes_view
 
 __all__ = [
     'dashboard_ciudadano',
@@ -26,4 +27,5 @@ __all__ = [
     'mis_reservas',
     'lista_eventos',
     'envio_reporte',
+    'reportes_view'
 ]
