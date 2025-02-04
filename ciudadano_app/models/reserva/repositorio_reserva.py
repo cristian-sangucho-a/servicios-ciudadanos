@@ -11,7 +11,8 @@ class RespositorioReserva(ABC):
         pass
 
     @abstractmethod
-    def reservar_area_comunal(self, area_comunal, fecha_reserva, hora_inicio, hora_fin, tipo_reserva, ciudadano) -> Tuple[int, bool]:
+    def reservar_area_comunal(self, area_comunal, fecha_reserva, hora_inicio, hora_fin, tipo_reserva, ciudadano,
+                              correos_invitados) -> Tuple[int, bool]:
         pass
 
     @abstractmethod
