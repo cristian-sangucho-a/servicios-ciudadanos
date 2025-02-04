@@ -4,14 +4,14 @@
     <div class="bg-white shadow rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
             <i class="fas fa-file-alt mr-2"></i>
-            Todos los Reportes Municipales
+            Reportes Municipales {% if departamento_seleccionado %} - {{ departamento_seleccionado }} {% endif %}
         </h1>
 
         <!-- Formulario de filtro por departamento -->
         <form method="get" class="w-64 mb-4">
             <select name="departamento"
                     class="block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onchange="location.href='/entidad_municipal/reportes/' + encodeURIComponent(this.value)">
+                    onchange="this.form.submit()">
                 <option value="">Todos los departamentos</option>
                 {% for departamento in departamentos %}
                     <option value="{{ departamento.nombre }}"
@@ -60,7 +60,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {% if reporte.obtener_evidencia %}
-                                <span class="text-green-600">reporte.obtener_evidencia</span>
+                                <span class="text-green-600">{{ reporte.obtener_evidencia }}</span>
                             {% elif reporte.obtener_estado == "atendiendo" %}
                                 <form action="{% url 'agregar_evidencia' reporte.id %}" method="post" class="inline">
                                     {% csrf_token %}
@@ -98,7 +98,7 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay reportes municipales.</td>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay reportes para este departamento.</td>
                     </tr>
                 {% endfor %}
                 </tbody>
