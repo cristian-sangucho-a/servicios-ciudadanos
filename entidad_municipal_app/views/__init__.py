@@ -9,6 +9,11 @@ from .reportes.postergar_reporte import postergar_reporte
 from .reportes.resolver_reporte import resolver_reporte
 from .reportes.agregar_evidencia import agregar_evidencia
 
+from .eventos.editar_evento import editar_evento
+from .eventos.crear_evento import crear_evento
+
+from .eventos.cancelar_evento import cancelar_evento
+
 __all__ = [
     'dashboard_entidad',
     'login_entidad',
@@ -18,5 +23,8 @@ __all__ = [
     'lista_todos_reportes',
     'postergar_reporte',
     'resolver_reporte',
-    'agregar_evidencia'
+    'agregar_evidencia',
+    'editar_evento',
+    'crear_evento',
+    'cancelar_evento'
 ]

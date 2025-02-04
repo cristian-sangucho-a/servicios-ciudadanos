@@ -8,6 +8,15 @@ from entidad_municipal_app.models.reporte.servicio_de_reporte_municipal import S
 
 @entidad_required
 def agregar_evidencia(request, reporte_id):
+    """Agrega evidencia a un reporte municipal y lo marca como resuelto.
+
+    Args:
+        request (HttpRequest): La solicitud HTTP recibida.
+        reporte_id (int): El identificador del reporte municipal.
+
+    Returns:
+        HttpResponse: Redirige a la lista de reportes o renderiza la plantilla de resolución.
+    """
     repositorio = RepositorioDeReporteMunicipalDjango()
     servicio_reporte = ServicioReporteMunicipal(repositorio)
 
