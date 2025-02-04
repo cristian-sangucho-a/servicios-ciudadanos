@@ -21,6 +21,7 @@ def cancelar_evento(request, evento_id):
         if evento.espacio_publico and evento.espacio_publico.estado_incidente_espacio == 'AFECTADO':
             if motivo_cancelacion:
                 evento.estado_actual = EventoMunicipal.ESTADO_CANCELADO
+                evento.motivo_cancelacion = motivo_cancelacion
                 evento.save()
                 messages.success(request, 'El evento ha sido cancelado exitosamente.')
                 return redirect('gestor_eventos')
