@@ -30,8 +30,9 @@ def crear_evento(request):
             espacio_publico = EspacioPublico.objects.get(pk=espacio_publico_id)
             espacio_publico.estado_incidente_espacio = EspacioPublico.NO_AFECTADO
             if espacio_publico.estado_espacio_publico != EspacioPublico.ESTADO_DISPONIBLE:
+                espacios = EspacioPublico.obtener_espacios_disponibles(query=query,filtrar_disponibles=True)
                 messages.error(request, 'El espacio seleccionado no está disponible. Selecciona un espacio disponible.')
-                return render(request, 'entidad/eventos/crear_evento.html', {'espacios': espacios, 'query': query, 'disponibles': filtrar_disponibles})
+                return render(request, 'entidad/eventos/crear_evento.html', {'espacios': espacios})
 
             # Crear el evento
             EventoMunicipal.objects.crear_evento_con_aforo(
