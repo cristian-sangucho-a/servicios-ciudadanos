@@ -13,7 +13,8 @@
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-bold">Reservaciones</h2>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
       </svg>
     </div>
   </a>
@@ -22,45 +23,46 @@
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-bold">Reportes</h2>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
     </div>
   </a>
 
-  <a href="{% url 'lista_eventos' %}" class="bg-green-500 text-white p-6 rounded-lg hover:bg-green-600 transition-colors">
+  <a href="{% url 'lista_eventos' %}"
+    class="bg-green-500 text-white p-6 rounded-lg hover:bg-green-600 transition-colors">
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-bold">Eventos</h2>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
     </div>
   </a>
 
-        <!-- Sección de Agenda -->
-        <a href="{% url 'agenda' %}"
-           class="bg-blue-300 text-white p-6 rounded-lg hover:bg-blue-600 transition-colors">
+  <!-- Sección de Agenda -->
+  <a href="{% url 'agenda' %}" class="bg-blue-300 text-white p-6 rounded-lg hover:bg-blue-600 transition-colors">
 
-            <div class="flex justify-between">
-                <h2 class="text-xl font-semibold mb-4">Agenda Publica</h2>
-                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M21 17.75A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V6.25A3.25 3.25 0 0 1 6.25 3h11.5A3.25 3.25 0 0 1 21 6.25v11.5Zm-4-10a.75.75 0 0 0-.648-.743L16.25 7h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 7.75Zm0 8.5a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486L7.75 17h8.5l.102-.007A.75.75 0 0 0 17 16.25ZM17 12a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 12Z"
-                          fill="#FFF"/>
-                </svg>
-            </div>
-        </a>
+    <div class="flex justify-between">
+      <h2 class="text-xl font-semibold mb-4">Agenda Publica</h2>
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M21 17.75A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V6.25A3.25 3.25 0 0 1 6.25 3h11.5A3.25 3.25 0 0 1 21 6.25v11.5Zm-4-10a.75.75 0 0 0-.648-.743L16.25 7h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 7.75Zm0 8.5a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486L7.75 17h8.5l.102-.007A.75.75 0 0 0 17 16.25ZM17 12a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 12Z"
+          fill="#FFF" />
+      </svg>
+    </div>
+  </a>
 
-        <a href="{% url 'lista_canales' %}"
-           class="bg-blue-900 text-white p-6 rounded-lg hover:bg-blue-800 transition-colors">
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-bold">Canales</h2>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                </svg>
-            </div>
-        </a>
-    </main>
+  <a href="{% url 'lista_canales' %}" class="bg-blue-900 text-white p-6 rounded-lg hover:bg-blue-800 transition-colors">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-bold">Canales</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+      </svg>
+    </div>
+  </a>
+</main>
 
 <section class="container mx-auto my-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
   <div class="bg-white p-6 rounded-lg shadow">
@@ -167,50 +169,99 @@
   <div class="bg-white p-6 rounded-lg shadow col-span-2">
     <h2 class="text-xl font-bold mb-4">Alertas en Tiempo Real</h2>
     {% if alertas %}
-      {% for alerta in alertas %}
-      <div class="bg-red-500 text-white p-4 rounded mb-4">
-        <p>{{ alerta.mensaje }}</p>
-      </div>
-      {% endfor %}
+    {% for alerta in alertas %}
+    <div class="bg-red-500 text-white p-4 rounded mb-4">
+      <p>{{ alerta.mensaje }}</p>
+    </div>
+    {% endfor %}
     {% else %}
-      <div class="bg-gray-200 p-4 rounded">
-        <p>No hay alertas activas en este momento.</p>
-      </div>
+    <div class="bg-gray-200 p-4 rounded">
+      <p>No hay alertas activas en este momento.</p>
+    </div>
     {% endif %}
   </div>
 </section>
-
+<div id="model-viewer" class="mx-auto my-8" style="width: 100%; max-width: 600px; height: 400px; background: #f0f0f0;">
+</div>
 {% block extra_js %}
-<script>
-  let currentSlide = 0;
-  const slides = document.querySelectorAll('.metrics-slide');
-  const indicators = document.querySelectorAll('.flex.justify-center button');
+<!-- Three.js and GLTFLoader for the 3D Model -->
+<script type="module">
+  // With the import map in place, you can now import "three" as a bare module specifier.
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'https://unpkg.com/three@0.152.2/examples/jsm/loaders/GLTFLoader.js';
 
-  function showSlide(index) {
-    slides.forEach(slide => slide.classList.add('hidden'));
-    indicators.forEach(indicator => indicator.classList.replace('bg-blue-600', 'bg-gray-300'));
-    
-    slides[index].classList.remove('hidden');
-    indicators[index].classList.replace('bg-gray-300', 'bg-blue-600');
+  // Get the container element for the model
+  const container = document.getElementById('model-viewer');
+
+  const existingCanvas = container.querySelector('canvas');
+  if (existingCanvas) {
+    container.removeChild(existingCanvas);
   }
 
-  function nextSlide() {
-    currentSlide = (currentSlide + 1) % slides.length;
-    showSlide(currentSlide);
-  }
+  // Create the scene, camera, and renderer
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xF5F5F5);
 
-  function prevSlide() {
-    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-    showSlide(currentSlide);
-  }
+  const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.z = 3;
 
-  function goToSlide(index) {
-    currentSlide = index;
-    showSlide(currentSlide);
-  }
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
 
-  // Auto-advance slides every 5 seconds
-  setInterval(nextSlide, 5000);
+  // Add basic lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Increased intensity
+  scene.add(ambientLight);
+
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.75);
+  directionalLight.position.set(0, 1, 1);
+  scene.add(directionalLight);
+
+  // Load the GLB model
+  const loader = new GLTFLoader();
+  let model;
+  loader.load(
+    '/static/3d/hello.glb', // Replace with your model's actual path
+    (gltf) => {
+      model = gltf.scene;
+      scene.add(model);
+
+      // Optionally center and scale the model
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3()).length();
+      const center = box.getCenter(new THREE.Vector3());
+      model.position.x += (model.position.x - center.x);
+      model.position.y += (model.position.y - center.y);
+      model.position.z += (model.position.z - center.z);
+
+      // Adjust scale as needed
+      const scaleFactor = 3 / size;
+      model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    },
+    undefined,
+    (error) => {
+      console.error('An error occurred loading the model:', error);
+    }
+  );
+
+  // Update renderer and camera on window resize
+  window.addEventListener('resize', () => {
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  });
+
+  // Animation loop: rotate the model
+  function animate() {
+    requestAnimationFrame(animate);
+    if (model) {
+      model.rotation.y += 0.01;
+    }
+    renderer.render(scene, camera);
+  }
+  animate();
 </script>
 {% endblock %}
 {% endblock %}
