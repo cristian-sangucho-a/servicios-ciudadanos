@@ -23,7 +23,7 @@ __all__ = [
     'calendario_area',
     'obtener_reservas_por_fecha',
     'cancelar_reserva',
-    'mis_reservas'
+    'mis_reservas',
     'lista_eventos',
     'envio_reporte',
 ]

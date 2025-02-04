@@ -44,11 +44,7 @@ class ServicioNotificacionPorCorreo:
                 settings.EMAIL_HOST_USER,
                 [email]  # Elimina espacios en blanco alrededor del correo
             )
-            try:
-                msg.send()
-            except Exception as e:
-                # TODO: Manejar el error enviándolo a la vista
-                return False
+            msg.send()
         return True
 
     def enviar_cancelacion(self, reserva: Reserva) -> bool:
@@ -79,9 +75,5 @@ class ServicioNotificacionPorCorreo:
                 settings.EMAIL_HOST_USER,
                 [email]  # Elimina espacios en blanco alrededor del correo
             )
-            try:
-                msg.send()
-            except Exception as e:
-                # TODO: Manejar el error enviándolo a la vista
-                return False
+            msg.send()
         return True
