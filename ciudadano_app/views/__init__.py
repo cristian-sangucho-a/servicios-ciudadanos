@@ -4,6 +4,7 @@ from .login import login_ciudadano
 from .bienvenida import bienvenida_ciudadano
 from .eventos.lista_eventos import lista_eventos
 from .reporte.envio_reporte import envio_reporte
+from .reporte.reportes import reportes_view
 
 __all__ = [
     'dashboard_ciudadano',
@@ -12,4 +13,5 @@ __all__ = [
     'bienvenida_ciudadano',
     'lista_eventos',
     'envio_reporte',
+    'reportes_view'
 ]
