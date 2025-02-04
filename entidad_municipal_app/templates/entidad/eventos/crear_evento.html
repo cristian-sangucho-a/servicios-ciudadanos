@@ -12,6 +12,7 @@
             <form method="POST" class="space-y-4">
                 {% csrf_token %}
 
+                <!-- Campos del formulario -->
                 <div class="space-y-2">
                     <label for="nombre_evento" class="block text-sm font-medium text-gray-700">Nombre del Evento</label>
                     <input type="text" name="nombre_evento" id="nombre_evento" required
@@ -30,39 +31,56 @@
                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#1E4F82] focus:ring-[#1E4F82]">
                 </div>
 
+                <!-- Buscador y Filtros -->
                 <div class="space-y-2">
                     <label for="espacio_publico" class="block text-sm font-medium text-gray-700">Lugar</label>
-                    <a href="{% url 'crear_evento' %}?disponibles=true" class="text-[#1E4F82] hover:underline">Mostrar solo espacios disponibles</a>
+                    <div class="flex space-x-4">
+                        <input type="text" id="buscador" placeholder="Buscar por nombre o dirección"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#1E4F82] focus:ring-[#1E4F82]"
+                               value="{{ query }}">
+                        <a href="{% url 'crear_evento' %}?disponibles=true" class="bg-[#1E4F82] text-white py-2 px-4 rounded hover:bg-[#143D69]">
+                            Mostrar solo disponibles
+                        </a>
+                        <a href="{% url 'crear_evento' %}" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700">
+                            Mostrar todos
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tabla de espacios públicos -->
+                <div class="overflow-y-auto max-h-96">
                     <table class="min-w-full bg-white">
                         <thead>
                             <tr>
+                                <th class="py-2">Seleccionar</th>
                                 <th class="py-2">Nombre</th>
                                 <th class="py-2">Dirección</th>
                                 <th class="py-2">Estado</th>
-                                <th class="py-2">Seleccionar</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for espacio in espacios %}
-                            <tr>
-                                <td class="border px-4 py-2">{{ espacio.nombre }}</td>
-                                <td class="border px-4 py-2">{{ espacio.direccion }}</td>
-                                <td class="border px-4 py-2">{{ espacio.get_estado_espacio_publico_display }}</td>
+                            <tr class="fila-espacio">
                                 <td class="border px-4 py-2">
                                     <input type="radio" name="espacio_publico" value="{{ espacio.id }}" required>
                                 </td>
+                                <td class="border px-4 py-2 nombre">{{ espacio.nombre }}</td>
+                                <td class="border px-4 py-2 direccion">{{ espacio.direccion }}</td>
+                                <td class="border px-4 py-2">{{ espacio.get_estado_espacio_publico_display }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
 
+                <!-- Capacidad máxima -->
                 <div class="space-y-2">
                     <label for="capacidad_maxima" class="block text-sm font-medium text-gray-700">Capacidad Máxima</label>
                     <input type="number" name="capacidad_maxima" id="capacidad_maxima" required min="1"
                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#1E4F82] focus:ring-[#1E4F82]">
                 </div>
 
+                <!-- Botón de enviar -->
                 <div class="pt-4">
                     <button type="submit"
                             class="w-full bg-[#1E4F82] text-white py-2 px-4 rounded hover:bg-[#143D69] transition duration-300">
@@ -73,4 +91,24 @@
         </div>
     </div>
 </div>
+
+<!-- Script del buscador -->
+<script>
+    document.getElementById('buscador').addEventListener('input', function () {
+        const busqueda = this.value.toLowerCase(); // Texto de búsqueda en minúsculas
+        const filas = document.querySelectorAll('.fila-espacio'); // Todas las filas de la tabla
+
+        filas.forEach(function (fila) {
+            const nombre = fila.querySelector('.nombre').textContent.toLowerCase();
+            const direccion = fila.querySelector('.direccion').textContent.toLowerCase();
+
+            // Mostrar u ocultar filas según coincida la búsqueda
+            if (nombre.includes(busqueda) || direccion.includes(busqueda)) {
+                fila.style.display = ''; // Mostrar fila
+            } else {
+                fila.style.display = 'none'; // Ocultar fila
+            }
+        });
+    });
+</script>
 {% endblock %}

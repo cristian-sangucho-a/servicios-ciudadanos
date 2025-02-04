@@ -1,31 +1,48 @@
 from django.shortcuts import render, redirect
-from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
+from django.db.models import Q
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from entidad_municipal_app.decorators import entidad_required
-from django.contrib import messages
+from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
 from entidad_municipal_app.models.espacio_publico import EspacioPublico
-
 
 @entidad_required
 @login_required
 def crear_evento(request):
-    # Filtrar espacios disponibles si se solicita
-    filtrar_disponibles = request.GET.get('disponibles', False)
+    # Obtener parámetros de búsqueda y filtro
+    query = request.GET.get('q')  # Término de búsqueda
+    filtrar_disponibles = request.GET.get('disponibles', False)  # Filtro de disponibilidad
 
+    # Filtrar espacios públicos
+    espacios = EspacioPublico.objects.all()
+
+    # Aplicar filtro de búsqueda
+    if query:
+        espacios = espacios.filter(
+            Q(nombre__icontains=query) | Q(direccion__icontains=query)
+        )
+
+    # Aplicar filtro de disponibilidad
     if filtrar_disponibles:
-        espacios = EspacioPublico.objects.filter(estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE)
-    else:
-        espacios = EspacioPublico.objects.all()
+        espacios = espacios.filter(estado_espacio_publico=EspacioPublico.ESTADO_DISPONIBLE)
 
+    # Procesar el formulario cuando se envía
     if request.method == 'POST':
         nombre_evento = request.POST.get('nombre_evento')
         descripcion_evento = request.POST.get('descripcion_evento')
         fecha_realizacion = request.POST.get('fecha_realizacion')
-        espacio_publico = EspacioPublico.objects.get(pk=request.POST.get('espacio_publico'))
+        espacio_publico_id = request.POST.get('espacio_publico')
         capacidad_maxima = request.POST.get('capacidad_maxima')
         entidad_municipal = request.user
 
         try:
+            # Verificar si el espacio seleccionado está disponible
+            espacio_publico = EspacioPublico.objects.get(pk=espacio_publico_id)
+            if espacio_publico.estado_espacio_publico != EspacioPublico.ESTADO_DISPONIBLE:
+                messages.error(request, 'El espacio seleccionado no está disponible.')
+                return render(request, 'entidad/eventos/crear_evento.html', {'espacios': espacios})
+
+            # Crear el evento
             EventoMunicipal.objects.crear_evento_con_aforo(
                 nombre=nombre_evento,
                 descripcion=descripcion_evento,
@@ -40,4 +57,4 @@ def crear_evento(request):
         except Exception as e:
             messages.error(request, f'Error al crear el evento: {str(e)}')
 
-    return render(request, 'entidad/eventos/crear_evento.html', {'espacios': espacios})
+    return render(request, 'entidad/eventos/crear_evento.html', {'espacios': espacios, 'query': query, 'disponibles': filtrar_disponibles})
