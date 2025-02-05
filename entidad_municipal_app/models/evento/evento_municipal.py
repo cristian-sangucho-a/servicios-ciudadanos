@@ -17,32 +17,14 @@ class EventoMunicipalManager(models.Manager):
         Crea un evento municipal controlado, asignando espacio público y gestionando el aforo.
         """
 
-        # LOG DE ENTRADA
-        print("========================================")
-        print(">>> INICIANDO MÉTODO: crear_evento_con_aforo")
-        print("Datos recibidos:")
-        print(f"  - Nombre del evento: {nombre}")
-        print(f"  - Descripción: {descripcion}")
-        print(f"  - Fecha de realización: {fecha}")
-        print(f"  - Lugar del evento: {lugar}")
-        print(f"  - Capacidad máxima: {capacidad}")
-        print(f"  - Entidad municipal: {entidad_municipal}")
-        print(f"  - Espacio público: {espacio_publico}")
-        print("----------------------------------------")
-
         if espacio_publico:
-            print(f"Verificando disponibilidad del espacio público: {espacio_publico.nombre}")
-            print(f"Estado actual del espacio público: {espacio_publico.estado_espacio_publico}")
-
             if espacio_publico.estado_espacio_publico != EstadoEspacioPublico.DISPONIBLE.value:
-                print("❌ ERROR: El espacio público no está disponible.")
                 raise ValidationError("El espacio público no está disponible")
 
             # Actualizando estado del espacio público
             lugar = espacio_publico.direccion
             espacio_publico.estado_espacio_publico = EstadoEspacioPublico.NO_DISPONIBLE.value
             espacio_publico.save()
-            print(f"✅ Espacio público '{espacio_publico.nombre}' actualizado a NO DISPONIBLE.")
 
         # Intento de creación del evento
         try:
@@ -57,21 +39,8 @@ class EventoMunicipalManager(models.Manager):
                 espacio_publico=espacio_publico,
                 entidad_municipal=entidad_municipal
             )
-            print("✅ Evento creado exitosamente.")
-            print("Detalles del evento creado:")
-            print(f"  - ID del evento: {evento.id}")
-            print(f"  - Nombre del evento: {evento.nombre_evento}")
-            print(f"  - Capacidad máxima: {evento.capacidad_maxima}")
-            print(f"  - Fecha de realización: {evento.fecha_realizacion}")
         except Exception as e:
-            print("❌ ERROR al crear el evento:")
-            print(f"  - Detalle del error: {str(e)}")
             raise e
-
-        # LOG DE SALIDA
-        print("<<< FINALIZANDO MÉTODO: crear_evento_con_aforo")
-        print("========================================\n")
-
         return evento
 
     def proximos(self):
@@ -232,20 +201,13 @@ class EventoMunicipal(models.Model):
         Se determina el estado (INSCRITO o EN_ESPERA) en función de los cupos disponibles.
         Se envía notificación al ciudadano.
         """
-        print(f"\n=== Cancelando inscripción ===")
-        print(f"ID de registro: {registro_id}")
-        print(f"ID del evento: {self.pk}")
-        print(f"Nombre del evento: {self.nombre_evento}")
         
         try:
             # Primero bloqueamos el evento para evitar condiciones de carrera
             evento = type(self).objects.select_for_update().get(pk=self.pk)
-            print("Evento bloqueado para actualización")
-            
+
             # Ahora obtenemos y bloqueamos el registro
-            print(f"Buscando registro {registro_id}")
             registro = evento.registroasistencia_set.select_for_update().get(pk=registro_id)
-            print(f"Registro encontrado: {registro.pk} - Estado: {registro.estado_registro}")
             
             if registro.evento_id != self.pk:
                 raise ErrorGestionEventos("El registro no pertenece a este evento")
@@ -253,32 +215,22 @@ class EventoMunicipal(models.Model):
                 raise ErrorGestionEventos("El registro ya está cancelado")
             
             estado_original = registro.estado_registro
-            print(f"Estado original del registro: {estado_original}")
             registro.cancelar()
-            print(f"Registro cancelado. Nuevo estado: {registro.estado_registro}")
 
             registro_promovido = None
             if estado_original == EstadoRegistro.INSCRITO.value:
-                print("El registro era INSCRITO, buscando siguiente en lista de espera...")
                 registro_promovido = evento._promover_siguiente_en_espera()
-                print(f"Resultado de promoción: {registro_promovido}")
 
             # Enviar notificaciones
-            print(f"Enviando notificación de cancelación para {registro}")
             self._enviar_notificacion_inscripcion(registro)
             if registro_promovido:
-                print(f"Enviando notificación de promoción para {registro_promovido}")
                 self._enviar_notificacion_inscripcion(registro_promovido)
             
-            print("=== Fin de cancelación de inscripción ===\n")
             return registro, registro_promovido
 
         except RegistroAsistencia.DoesNotExist:
-            print(f"ERROR: No se encontró el registro {registro_id}")
             raise ErrorGestionEventos("Registro de asistencia no encontrado")
         except Exception as e:
-            print(f"ERROR inesperado: {str(e)}")
-            print(f"Tipo de error: {type(e)}")
             raise
 
     @transaction.atomic
@@ -324,14 +276,11 @@ class EventoMunicipal(models.Model):
         Promueve al siguiente ciudadano en la lista de espera a estado INSCRITO.
         Retorna el registro promovido o None si no hay nadie en lista de espera.
         """
-        print("Entrando a _promover_siguiente_en_espera")
         siguiente = self.registroasistencia_set.select_for_update().filter(
             estado_registro=EstadoRegistro.EN_ESPERA.value
         ).order_by('fecha_inscripcion').first()
-        print("Siguiente", siguiente)
         
         if siguiente:
-            print("Promoviendo a siguiente")
             siguiente.promover_a_inscrito()
             self._enviar_notificacion_inscripcion(siguiente)
             return siguiente
