@@ -16,33 +16,43 @@ def get_categoria_actual(request):
 
 def obtener_eventos_para_categoria(categoria, ciudadano):
     """Obtiene los eventos según la categoría seleccionada"""
-    if categoria == 'mis_eventos' and ciudadano.is_authenticated:
+    if categoria == 'mis' and ciudadano.is_authenticated:
         return EventoMunicipal.objects.mis_eventos(ciudadano)
     return EventoMunicipal.objects.todos_eventos(ciudadano)
 
 def preparar_contexto_eventos(eventos, ciudadano):
     """
-    Agrega al objeto evento las propiedades:
-    - is_subscribed: indica si el ciudadano está inscrito o en lista de espera
-    - estado_registro: estado actual de la inscripción del ciudadano
+    Agrega al objeto evento las propiedades necesarias para la vista
     """
     eventos_preparados = []
     for evento in eventos:
+        # Propiedades base
         evento.is_subscribed = False
         evento.estado_registro = None
+        
         if ciudadano.is_authenticated:
-            # Incluimos también los registros cancelados para poder mostrarlos en "Mis eventos"
+            # Obtener el registro activo del ciudadano
             registro = evento.registroasistencia_set.filter(
                 ciudadano=ciudadano,
                 estado_registro__in=[
                     EstadoRegistro.INSCRITO.value,
-                    EstadoRegistro.EN_ESPERA.value,
-                    EstadoRegistro.CANCELADO.value
+                    EstadoRegistro.EN_ESPERA.value
                 ]
             ).first()
+            
             if registro:
                 evento.is_subscribed = True
                 evento.estado_registro = registro.estado_registro
+        
+        # Calcular disponibilidad y estado del evento
+        ahora = timezone.now()
+        es_futuro = evento.fecha_realizacion >= ahora
+        esta_programado = evento.estado_actual == EstadoEvento.PROGRAMADO.value
+        
+        # Asignar propiedades calculadas
+        evento.disponible_inscripcion = es_futuro and esta_programado
+        evento.es_proximo_temp = es_futuro and esta_programado  # Atributo temporal sin guion bajo
+        
         eventos_preparados.append(evento)
     return eventos_preparados
 
@@ -54,14 +64,26 @@ def lista_eventos(request):
     eventos = preparar_contexto_eventos(eventos, request.user)
     
     # Preparar contadores
-    total_eventos = EventoMunicipal.objects.count()
-    total_mis_eventos = EventoMunicipal.objects.mis_eventos(request.user).count() if request.user.is_authenticated else 0
+    total_eventos = EventoMunicipal.objects.filter(
+        estado_actual=EstadoEvento.PROGRAMADO.value,
+        fecha_realizacion__gte=timezone.now()
+    ).count()
+    
+    mis_eventos = 0
+    if request.user.is_authenticated:
+        mis_eventos = EventoMunicipal.objects.filter(
+            registroasistencia_set__ciudadano=request.user,
+            registroasistencia_set__estado_registro__in=[
+                EstadoRegistro.INSCRITO.value,
+                EstadoRegistro.EN_ESPERA.value
+            ]
+        ).distinct().count()
     
     context = {
         'eventos': eventos,
-        'categoria': categoria,
+        'categoria_actual': categoria,
         'total_eventos': total_eventos,
-        'total_mis_eventos': total_mis_eventos,
+        'mis_eventos': mis_eventos,
     }
     
     return render(request, 'eventos/lista_eventos.html', context)

@@ -102,7 +102,7 @@
            data-fecha-hora="{{ evento.fecha_realizacion|date:'d/m/Y H:i' }}"
            data-inscrito="{{ evento.is_subscribed|yesno:'true,false' }}"
            data-estado="{{ evento.estado_actual }}"
-           data-disponible="{{ evento.esta_disponible_para_inscripcion|yesno:'true,false' }}"
+           data-disponible="{{ evento.disponible_inscripcion|yesno:'true,false' }}"
            data-titulo="{{ evento.nombre_evento }}"
            data-cupos="{{ evento.cupos_disponibles }}">
         <div class="p-6 flex flex-col h-full">
@@ -135,29 +135,43 @@
                   <div class="text-center bg-gray-100 text-gray-800 px-4 py-2 rounded-lg">
                     Evento Finalizado
                   </div>
-                {% elif evento.es_proximo %}
+                {% elif evento.estado_actual == 'EN_CURSO' %}
+                  <div class="text-center bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
+                    Evento en Curso
+                  </div>
+                {% else %}
                   {% if evento.estado_registro == 'EN_ESPERA' %}
-                    <a href="{% url 'cancelar_inscripcion' evento.id %}" class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    <a href="{% url 'cancelar_inscripcion' evento.id %}" 
+                       class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                       onclick="return confirm('¿Estás seguro de que deseas cancelar tu lugar en la lista de espera?')">
                       Cancelar Lista de Espera
                     </a>
                   {% else %}
-                    <a href="{% url 'cancelar_inscripcion' evento.id %}" class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    <a href="{% url 'cancelar_inscripcion' evento.id %}" 
+                       class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                       onclick="return confirm('¿Estás seguro de que deseas cancelar tu inscripción?')">
                       Cancelar Inscripción
                     </a>
                   {% endif %}
                 {% endif %}
-              {% elif evento.es_proximo %}
+              {% elif evento.es_proximo_temp %}
                 {% if evento.cupos_disponibles > 0 %}
-                  <a href="{% url 'inscribirse_evento' evento.id %}" class="block text-center bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                  <a href="{% url 'inscribirse_evento' evento.id %}" 
+                     class="block text-center bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg transition-colors duration-200">
                     Inscribirse
                   </a>
                 {% else %}
-                  <a href="{% url 'lista_espera_evento' evento.id %}" class="block text-center bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                  <a href="{% url 'lista_espera_evento' evento.id %}" 
+                     class="block text-center bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
                     Lista de Espera
                   </a>
                 {% endif %}
+              {% else %}
+                <div class="text-center bg-gray-100 text-gray-800 px-4 py-2 rounded-lg">
+                  No Disponible
+                </div>
               {% endif %}
-            {% elif not user.is_authenticated %}
+            {% else %}
               <a href="{% url 'login' %}" class="block text-center bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg transition-colors duration-200">
                 Iniciar Sesión
               </a>
