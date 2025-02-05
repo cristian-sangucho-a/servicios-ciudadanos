@@ -1,11 +1,14 @@
 from django.shortcuts import render
 from django.utils import timezone
+
+from shared.models.notificacion.notificacion import Notificacion
 from ..decorators import ciudadano_required
 from entidad_municipal_app.models import EventoMunicipal, RegistroAsistencia
 
 @ciudadano_required
 def dashboard_ciudadano(request):
     ciudadano = request.user
+    print(ciudadano.suscripciones.all())
     ahora = timezone.now()
 
     # Eventos donde estoy inscrito
@@ -39,7 +42,6 @@ def dashboard_ciudadano(request):
         'mensajes_sin_leer': 0,
         'total_reservaciones': 0,
         'reservaciones_proximas': 0,
-        
         # For alerts section (placeholder for now)
         'alertas': [],
     }

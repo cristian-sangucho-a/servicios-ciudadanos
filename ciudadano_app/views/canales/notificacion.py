@@ -17,5 +17,5 @@ def listar_notificacion(request):
             Ciudadano.DoesNotExist: Si no se encuentra un ciudadano con el ID del usuario autenticado.
     """
     ciudadano = Ciudadano.objects.get(id=request.user.id)
-    notificaciones = Notificacion.objects.filter(ciudadano=ciudadano)
+    notificaciones = ciudadano.notificaciones.all()
     return render(request, 'canales/notificaciones.html', {'notificaciones': notificaciones})

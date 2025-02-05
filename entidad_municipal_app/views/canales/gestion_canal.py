@@ -51,7 +51,8 @@ def crear_canal(request):
         nombre = request.POST.get('nombre_canal')
         descripcion = request.POST.get('descripcion_canal')
         es_emergencia = request.POST.get('es_emergencia')
-        if nombre and descripcion and es_emergencia:
+        es_emergencia = es_emergencia in ["True", "true", "on", "1"]
+        if nombre and descripcion:
             CanalInformativo.crear_canal(entidad_municipal,nombre,descripcion,es_emergencia)
     return redirect("/entidad_municipal/lista_canales/")
 

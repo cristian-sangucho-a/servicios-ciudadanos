@@ -138,7 +138,7 @@ class CanalInformativo(models.Model):
         )
 
         # Si es un canal de emergencia, suscribir a todos los ciudadanos
-        if canal.es_emergencia == True:
+        if canal.es_emergencia is True:
             ciudadanos = Ciudadano.objects.all()
             for ciudadano in ciudadanos:
                 canal.suscribir_ciudadano(ciudadano)
