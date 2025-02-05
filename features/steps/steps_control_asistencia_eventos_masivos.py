@@ -11,6 +11,7 @@ from django.core import mail
 from ciudadano_app.models import Ciudadano
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal, ErrorGestionEventos  
 from entidad_municipal_app.models.evento.registro_asistencia import RegistroAsistencia
+from entidad_municipal_app.models.evento.enums import EstadoRegistro, EstadoEvento, EstadoEspacioPublico
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from mocks.repositorio_eventos_memoria import (
     crear_ciudadano_aleatorio,
@@ -45,7 +46,7 @@ def step_inscribir_ciudadano(context):
 def step_verificar_registro_exitoso(context):
     """Verifica que el registro fue exitoso"""
     assert context.error is None, f"Error al registrar: {context.error}"
-    assert context.registro.estado_registro == RegistroAsistencia.ESTADO_INSCRITO, "Estado de registro incorrecto"
+    assert context.registro.estado_registro == EstadoRegistro.INSCRITO.value, "Estado de registro incorrecto"
 
 @then("enviar una confirmación de inscripción por correo electrónico")
 def step_verificar_correo_confirmacion(context):
@@ -95,8 +96,7 @@ def step_verificar_registro_rechazado(context):
     """Verifica que el registro fue rechazado y agregado a la lista de espera"""
     assert context.error is None, f"Error inesperado: {context.error}"
     assert context.registro is not None, "No se creó el registro"
-
-    assert context.registro.estado_registro == RegistroAsistencia.ESTADO_EN_ESPERA, "Estado incorrecto"
+    assert context.registro.estado_registro == EstadoRegistro.EN_ESPERA.value, "Estado incorrecto"
 
 @then("agregar al ciudadano a una lista de espera")
 def step_verificar_lista_espera(context):
@@ -151,13 +151,13 @@ def step_verificar_liberacion_cupo(context):
     """Verifica que se liberó el cupo y se canceló el registro"""
     assert context.error is None, f"Error al cancelar: {context.error}"
     assert context.registro_cancelado is not None, "No se canceló el registro"
-    assert context.registro_cancelado.estado_registro == RegistroAsistencia.ESTADO_CANCELADO, "Estado incorrecto"
+    assert context.registro_cancelado.estado_registro == EstadoRegistro.CANCELADO.value, "Estado incorrecto"
 
 @then("el primer ciudadano en lista de espera debe ser registrado automáticamente")
 def step_verificar_promocion_espera(context):
     """Verifica que se promovió al ciudadano en espera"""
     registro_actualizado = RegistroAsistencia.objects.get(pk=context.registro_espera.pk)
-    assert registro_actualizado.estado_registro == RegistroAsistencia.ESTADO_INSCRITO, "No se promovió el registro"
+    assert registro_actualizado.estado_registro == EstadoRegistro.INSCRITO.value, "No se promovió el registro"
 
 @then("notificar al ciudadano promovido de la lista de espera")
 def step_verificar_notificacion_promocion(context):
