@@ -388,10 +388,8 @@ class EventoMunicipal(models.Model):
 
     def _enviar_notificacion_inscripcion(self, registro):
         """
-        Envía una notificación por correo sobre el estado de la inscripción
-
-        Args:
-            registro: Instancia de RegistroAsistencia con la información
+        Envía una notificación por correo sobre el estado de la inscripción.
+        Durante las pruebas, utiliza el backend de email configurado en settings.
         """
         plantillas_mensajes = {
             RegistroAsistencia.ESTADO_INSCRITO: {
@@ -439,7 +437,6 @@ class EventoMunicipal(models.Model):
                 fail_silently=False
             )
         except Exception as e:
-            # Log the error but don't stop the process
             print(f"Error al enviar notificación: {str(e)}")
 
     def validar_estado_actual(self,estado_actual):
