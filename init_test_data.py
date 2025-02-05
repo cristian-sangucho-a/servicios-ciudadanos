@@ -74,7 +74,7 @@ def create_test_data():
             "estado_espacio_publico": "DISPONIBLE"
         }
     )
-    print(f"EspacioPublico creado: {espacio2.nombre}")
+
 
     # 3. Crear eventos en diferentes estados
     ahora = timezone.now()

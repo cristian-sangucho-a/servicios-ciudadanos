@@ -11,8 +11,10 @@ from entidad_municipal_app.models.evento.gestor_eventos import RepositorioEvento
 from mocks.repositorio_eventos_memoria import (
     crear_entidad_municipal_aleatoria,
     crear_espacio_publico_aleatorio,
-    crear_evento_aleatorio
+    crear_evento_aleatorio, crear_ciudadano_aleatorio
 )
+from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
+
 repositorio = RepositorioEventos()
 
 fake = Faker()
@@ -177,3 +179,22 @@ def step_registra_motivo_cancelacion(context):
             print(f"Motivo de cancelación registrado: {context.motivo_riesgo}")
         else:
             print("No se encontró motivo de cancelación.")
+
+
+@step('se cumple el minimo de {capacidad_minima} cuidadanos para crear el evento')
+def step_impl(context,capacidad_minima):
+    context.ciudadano = crear_ciudadano_aleatorio()
+    context.evento = EventoMunicipal.inscribir_ciudadano( context.ciudadano)
+
+
+@step("se actualizara el estado del evento")
+def step_impl(context):
+   context.evento = context.evento.actualizar_estado_evento(context.evento)
+
+
+
+
+
+
+
+

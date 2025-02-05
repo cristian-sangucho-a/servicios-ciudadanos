@@ -12,7 +12,7 @@ from django.db.models import Count, F
 
 class EventoMunicipalManager(models.Manager):
     @transaction.atomic
-    def crear_evento_con_aforo(self, nombre, descripcion, fecha, lugar, capacidad, entidad_municipal, espacio_publico=None):
+    def crear_evento_con_aforo(self, nombre, descripcion, fecha, lugar, capacidad, entidad_municipal,espacio_publico=None):
         """
         Crea un evento municipal controlado, asignando espacio público y gestionando el aforo.
         """
@@ -37,11 +37,19 @@ class EventoMunicipalManager(models.Manager):
                 capacidad_maxima=capacidad,
                 estado_actual=EstadoEvento.PROGRAMADO.value,
                 espacio_publico=espacio_publico,
-                entidad_municipal=entidad_municipal
+                entidad_municipal=entidad_municipal,
+                cupo_minimo=1
             )
         except Exception as e:
             raise e
         return evento
+
+    def actualizar_estado_evento(self, evento):
+        if evento.cupos_disponibles >= evento.cupo_minimo:
+            evento.estado_actual = EstadoEvento.EN_CURSO.value
+            evento.save()
+        return evento
+
 
     def mis_eventos(self, ciudadano):
         """
@@ -187,6 +195,12 @@ class EventoMunicipal(models.Model):
         help_text='Entidad municipal que organiza el evento'
     )
 
+    cupo_minimo = models.PositiveIntegerField(
+        verbose_name='Cupo Mínimo',
+        help_text='Número mínimo de inscritos requeridos para que el evento se programe',
+        default=2
+    )
+
     objects = EventoMunicipalManager()
 
     class Meta:
@@ -238,7 +252,15 @@ class EventoMunicipal(models.Model):
             registro_existente = evento.registroasistencia_set.get(ciudadano=ciudadano)
             return self._gestionar_registro_existente(registro_existente)
         except RegistroAsistencia.DoesNotExist:
-            return self._crear_nuevo_registro(ciudadano)
+            registro = self._crear_nuevo_registro(ciudadano)
+
+            # Verificar si el número de inscritos alcanza el cupo mínimo
+            if evento.registroasistencia_set.filter(
+                    estado_registro=EstadoRegistro.INSCRITO.value).count() >= evento.cupo_minimo:
+                EventoMunicipal.objects.actualizar_estado_evento(evento)  # Actualizar estado del evento
+
+            return registro
+
 
     @transaction.atomic
     def cancelar_inscripcion(self, registro_id):

@@ -22,6 +22,12 @@ Escenario: Organizar un evento en un espacio público no disponible
   Entonces no se creara el evento
   Y se mostrarán los espacios públicos disponibles
 
+Escenario: Programar un evento cuando un cantidad minima de participantes confirmen su asistencia
+  Dado que una entidad municipal desea organizar un evento
+  Y la fecha del evento es "2024-02-15 10:00:00"
+  Cuando se cumple el minimo de "1" cuidadanos para crear el evento
+  Entonces se actualizara el estado del evento
+
 
 Esquema del escenario: Cancelar evento debido a caso fortuito externo
    Dado que existe un evento llamado "<nombre_evento>" con el estado "<estado_evento>"
