@@ -6,7 +6,7 @@ from .agenda import agenda
 from .reserva import reservar
 from .areas_comunales import cargar_areas
 from .calendario_area import cargar_calendario
-from .obtener_reservas_por_fecha import obtener_reservas_por_fecha
+from .reserva import obtener_reservas_por_fecha
 from .reserva import cancelar_reserva
 from .reserva import mis_reservas
 from .eventos.lista_eventos import lista_eventos
