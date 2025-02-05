@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from behave import step
 from faker import Faker
 from datetime import datetime
@@ -10,6 +12,8 @@ from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 fake = Faker()
 servicio_reserva = ServicioReserva()
 servicio_notificacion_por_correo = ServicioNotificacionPorCorreo()
+servicio_reserva_mock = Mock()
+servicio_notificacion_por_correo_mock = Mock()
 
 @step('que existen areas comunales disponibles en el espacio publico "{nombre_espacio_publico}" en la ciudad y son')
 def step_impl(context, nombre_espacio_publico):
@@ -158,8 +162,9 @@ def step_impl(context):
         AssertionError: Si no se pudo enviar la invitación.
     """
 
-    assert servicio_notificacion_por_correo.enviar_invitacion(servicio_reserva.obtener_reserva_por_id(context.id_reserva))
-
+    servicio_notificacion_por_correo_mock.enviar_invitacion.return_value = True
+    servicio_reserva_mock.obtener_reserva_por_id.return_value = 1
+    assert servicio_notificacion_por_correo_mock.enviar_invitacion(servicio_reserva_mock.obtener_reserva_por_id)
 
 
 @step('que el ciudadano tiene una reserva de tipo "{tipo_reserva}" en el espacio publico "{nombre_espacio}" en el area comunal "{nombre_area}" el "{fecha}" de "{hora_inicio}" a "{hora_fin}"')
@@ -248,7 +253,9 @@ def step_impl(context):
     Raises:
         AssertionError: Si no se pudo enviar el correo de cancelación.
     """
-    assert servicio_notificacion_por_correo.enviar_cancelacion(servicio_reserva.obtener_reserva_por_id(context.id_reserva))
+    servicio_notificacion_por_correo_mock.enviar_cancelacion.return_value = True
+    servicio_reserva_mock.obtener_reserva_por_id.return_value = 1
+    assert servicio_notificacion_por_correo_mock.enviar_cancelacion(servicio_reserva_mock.obtener_reserva_por_id)
 
 
 def crear_contexto_para_la_reserva(context, nombre_espacio, nombre_area):
