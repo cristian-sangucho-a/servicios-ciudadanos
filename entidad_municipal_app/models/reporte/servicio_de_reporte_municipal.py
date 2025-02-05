@@ -15,7 +15,22 @@ class ServicioReporteMunicipal():
 
         :return: Lista de todos los reportes municipales.
         """
-        return self.repositorio_reporte.obtener_todos()
+        reportes = self.repositorio_reporte.obtener_todos()
+        return self.ordenar_reportes_por_prioridad(reportes)
+
+
+    def ordenar_reportes_por_prioridad(self, reportes_municipales):
+        """
+        Ordena una lista de Reportes Municipales por prioridad_cantidad (de mayor a menor).
+
+        Args:
+            reportes_municipales (list[ReporteMunicipal]): Lista de reportes municipales a ordenar.
+
+        Returns:
+            list[ReporteMunicipal]: Lista ordenada de reportes municipales.
+        """
+        return sorted(reportes_municipales, key=lambda r: r.obtener_prioridad_cantidad(), reverse=False)
+
 
     def obtener_reporte_municipal_por_id(self, id_reporte):
         """
