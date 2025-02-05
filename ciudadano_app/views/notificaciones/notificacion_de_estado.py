@@ -13,7 +13,7 @@ from shared.models import Reporte, TipoReporte, Notificacion
 def listar_notificaciones_ciudadano(request):
     ciudadano = request.user
     notificaciones = Notificacion.objects.filter(ciudadano=ciudadano).order_by('-fecha')
-    return render(request, 'notificaciones/ver_estado_sector.html', {'notificaciones': notificaciones})
+    return render(request, 'notificaciones/listar_sectores.html', {'notificaciones': notificaciones})
 
 @ciudadano_required
 def notificar_reporte_alta_prioridad_ciudadano(request, reporte_id):

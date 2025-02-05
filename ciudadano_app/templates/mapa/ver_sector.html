@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Mapa de {{ nombre_sector }}{% endblock %}
+
+{% block content %}
+<!-- Estilos de Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<div class="min-h-screen bg-gray-100 p-6">
+    <div class="max-w-6xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">
+                    Sector: {{ nombre_sector }}
+                </h1>
+                <a href="{% url 'listar_sectores' %}" 
+                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                    Volver
+                </a>
+            </div>
+            
+            <!-- Contenedor del mapa con estilo inline -->
+            <div id="mapa" style="height: 400px; width: 100%; position: relative;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Script de Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // Función para inicializar el mapa
+    function initMap() {
+        // Crear el mapa
+        var map = L.map('mapa', {
+            center: [{{ latitud }}, {{ longitud }}],
+            zoom: 15
+        });
+
+        // Añadir capa de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(map);
+
+        // Añadir marcador
+        L.marker([{{ latitud }}, {{ longitud }}])
+            .addTo(map)
+            .bindPopup("<strong>{{ nombre_sector }}</strong>")
+            .openPopup();
+
+        // Añadir círculo
+        L.circle([{{ latitud }}, {{ longitud }}], {
+            radius: 500,
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.2
+        }).addTo(map);
+    }
+
+    // Inicializar el mapa cuando la página esté cargada
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initMap);
+    } else {
+        initMap();
+    }
+</script>
+{% endblock %} 

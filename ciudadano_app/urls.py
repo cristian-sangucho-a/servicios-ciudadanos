@@ -11,6 +11,7 @@ from .views.eventos.lista_eventos import (
     cancelar_inscripcion,
     lista_espera_evento
 )
+from .views.mapa_sector import ver_mapa_sector
 
 urlpatterns = [
     path('canal/<int:canal_id>/suscribirse/', suscribirse_canal, name='suscribirse_canal'),
@@ -57,4 +58,5 @@ urlpatterns = [
     path('notificacion_de_estado/', views.notificar_reporte_alta_prioridad_ciudadano, name='ver_estado_sector'),
     path('notificacion_de_estado/', views.notificar_estado_riesgo_ciudadano, name='ver_estado_sector'),
 
+    path('ver-mapa-sector/<str:nombre_sector>/', ver_mapa_sector, name='ver_mapa_sector'),
 ]
