@@ -104,7 +104,7 @@
     {% for evento in eventos %}
       <div class="bg-white rounded-xl shadow border border-light hover:shadow-lg transition-shadow duration-200 evento-card" 
            data-fecha="{{ evento.fecha_realizacion|date:'Y-m-d' }}" 
-           data-fecha-hora="{{ evento.obtener_formato_fecha }}"
+           data-fecha-hora="{{ evento.fecha_realizacion|date:'d/m/Y H:i' }}"
            data-inscrito="{{ evento.is_subscribed|yesno:'true,false' }}"
            data-estado="{{ evento.estado_actual }}"
            data-disponible="{{ evento.esta_disponible_para_inscripcion|yesno:'true,false' }}"
@@ -178,6 +178,7 @@
     }
 
     function normalizarTexto(texto) {
+      if (!texto) return '';
       return texto.toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -202,10 +203,7 @@
       
       eventos.forEach(evento => {
         let mostrar = true;
-        const fechaHoraCompleta = evento.dataset.fechaHora;
-        const [fecha, hora] = fechaHoraCompleta.split(' ');
-        const [dia, mes, anio] = fecha.split('/');
-        const fechaEvento = `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+        const fechaEvento = evento.dataset.fecha; // Usamos data-fecha que está en formato YYYY-MM-DD
         const inscrito = evento.dataset.inscrito === 'true';
         const estaDisponible = evento.dataset.disponible === 'true';
         const cuposDisponibles = parseInt(evento.dataset.cupos) || 0;
@@ -220,7 +218,6 @@
         if (mostrar && fechaInicio && fechaFin) {
           const inicio = fechaInicio.toISOString().split('T')[0];
           const fin = fechaFin.toISOString().split('T')[0];
-          
           if (!(fechaEvento >= inicio && fechaEvento <= fin)) {
             mostrar = false;
           }
