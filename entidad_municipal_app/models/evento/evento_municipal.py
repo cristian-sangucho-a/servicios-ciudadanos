@@ -253,6 +253,29 @@ class EventoMunicipal(models.Model):
         registro.marcar_asistencia(asistio)
         return registro
 
+    @transaction.atomic
+    def agregar_a_lista_espera(self, ciudadano):
+        """
+        Agrega un ciudadano a la lista de espera del evento.
+        Si ya existe un registro previo (incluso cancelado), lo reactiva.
+        """
+        evento = type(self).objects.select_for_update().get(pk=self.pk)
+        registro, created = evento.registroasistencia_set.get_or_create(
+            ciudadano=ciudadano,
+            defaults={'estado_registro': EstadoRegistro.EN_ESPERA.value}
+        )
+        
+        if not created:
+            # Si el registro ya existe y está cancelado, lo reactivamos
+            if registro.esta_cancelado:
+                registro.estado_registro = EstadoRegistro.EN_ESPERA.value
+                registro.save()
+            elif registro.esta_activo:
+                raise ValidationError("Ya tienes una inscripción activa para este evento")
+            
+        self._enviar_notificacion_inscripcion(registro)
+        return registro
+
     # Métodos auxiliares (privados)
     def _crear_nuevo_registro(self, ciudadano):
         nuevo_estado = EstadoRegistro.determinar_estado(self.cupos_disponibles)
@@ -307,6 +330,16 @@ class EventoMunicipal(models.Model):
         Retorna un QuerySet con todos los registros del evento.
         """
         return self.registroasistencia_set.all()
+
+    def obtener_registro_activo(self, ciudadano):
+        """
+        Obtiene el registro activo (INSCRITO o EN_ESPERA) de un ciudadano para este evento.
+        Retorna None si no existe un registro activo.
+        """
+        return self.registroasistencia_set.filter(
+            ciudadano=ciudadano,
+            estado_registro__in=[EstadoRegistro.INSCRITO.value, EstadoRegistro.EN_ESPERA.value]
+        ).first()
 
     def clean(self):
         # Validar motivo de cancelación

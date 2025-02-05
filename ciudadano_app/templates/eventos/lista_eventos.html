@@ -132,9 +132,15 @@
           <div class="mt-auto">
             {% if user.is_authenticated %}
               {% if evento.is_subscribed %}
-                <a href="{% url 'cancelar_inscripcion' evento.id %}" class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
-                  Cancelar Inscripción
-                </a>
+                {% if evento.estado_registro == 'EN_ESPERA' %}
+                  <a href="{% url 'cancelar_inscripcion' evento.id %}" class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    Cancelar Lista de Espera
+                  </a>
+                {% else %}
+                  <a href="{% url 'cancelar_inscripcion' evento.id %}" class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    Cancelar Inscripción
+                  </a>
+                {% endif %}
               {% else %}
                 {% if evento.cupos_disponibles > 0 %}
                   <a href="{% url 'inscribirse_evento' evento.id %}" class="block text-center bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg transition-colors duration-200">

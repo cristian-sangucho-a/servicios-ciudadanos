@@ -29,17 +29,22 @@ def obtener_eventos_para_categoria(categoria, ciudadano):
 
 def preparar_contexto_eventos(eventos, ciudadano):
     """
-    Agrega al objeto evento una propiedad 'is_subscribed' que indica si el ciudadano
-    ya está inscrito o en lista de espera para ese evento.
+    Agrega al objeto evento las propiedades:
+    - is_subscribed: indica si el ciudadano está inscrito o en lista de espera
+    - estado_registro: estado actual de la inscripción del ciudadano
     """
     eventos_preparados = []
     for evento in eventos:
         evento.is_subscribed = False
+        evento.estado_registro = None
         if ciudadano.is_authenticated:
-            evento.is_subscribed = evento.registroasistencia_set.filter(
+            registro = evento.registroasistencia_set.filter(
                 ciudadano=ciudadano,
                 estado_registro__in=[EstadoRegistro.INSCRITO.value, EstadoRegistro.EN_ESPERA.value]
-            ).exists()
+            ).first()
+            if registro:
+                evento.is_subscribed = True
+                evento.estado_registro = registro.estado_registro
         eventos_preparados.append(evento)
     return eventos_preparados
 
@@ -92,28 +97,18 @@ def cancelar_inscripcion(request, evento_id):
     Vista para cancelar la inscripción del ciudadano en el evento.
     Si el ciudadano estaba inscrito, se promoverá automáticamente al siguiente en lista de espera.
     """
-    
     try:
-        # Buscamos el registro activo del ciudadano
-        registro = RegistroAsistencia.objects.get(
-            evento_id=evento_id,
-            ciudadano=request.user,
-            estado_registro__in=[EstadoRegistro.INSCRITO.value, EstadoRegistro.EN_ESPERA.value]
-        )
-        
-        # Usamos el método del evento que maneja la promoción de lista de espera
-        evento = registro.evento
-        registro_cancelado, registro_promovido = evento.cancelar_inscripcion(registro.pk)
-        
-        messages.success(request, "Inscripción cancelada correctamente.")
-        if registro_promovido:
-            messages.info(request, "Se ha promovido al siguiente ciudadano de la lista de espera.")
-            
-    except RegistroAsistencia.DoesNotExist:
-        messages.error(request, "No se encontró una inscripción activa para cancelar.")
+        evento = get_object_or_404(EventoMunicipal, pk=evento_id)
+        registro = evento.obtener_registro_activo(request.user)
+        if registro:
+            registro_cancelado, registro_promovido = evento.cancelar_inscripcion(registro.pk)
+            messages.success(request, "Inscripción cancelada correctamente.")
+            if registro_promovido:
+                messages.info(request, "Se ha promovido al siguiente ciudadano de la lista de espera.")
+        else:
+            messages.error(request, "No se encontró una inscripción activa para cancelar.")
     except Exception as e:
         messages.error(request, f"Error al cancelar la inscripción: {str(e)}")
-    
     return redirect('lista_eventos')
 
 @ciudadano_required
@@ -123,12 +118,10 @@ def lista_espera_evento(request, evento_id):
     """
     try:
         evento = get_object_or_404(EventoMunicipal, pk=evento_id)
-        RegistroAsistencia.objects.create(
-            ciudadano=request.user,
-            evento=evento,
-            estado_registro=EstadoRegistro.EN_ESPERA.value
-        )
+        evento.agregar_a_lista_espera(request.user)
         messages.success(request, "Agregado a lista de espera.")
+    except ValidationError as e:
+        messages.error(request, str(e))
     except Exception as e:
         messages.error(request, f"Error al agregar a la lista de espera: {str(e)}")
     return redirect('lista_eventos')
