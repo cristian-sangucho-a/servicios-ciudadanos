@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Municipio de Quito - Eventos{% endblock %}
+{% block title %}Municipio de Quito - eventos{% endblock %}
 
 {% block extra_css %}
 <!-- Flatpickr CSS -->
@@ -79,6 +79,10 @@
         <a href="{% url 'lista_eventos' %}?categoria=mis" 
            class="flex items-center gap-2 px-4 py-2 rounded-full border {% if categoria_actual == 'mis' %}bg-primary text-white{% else %}border-light bg-white hover:bg-primary hover:text-white{% endif %} transition-colors duration-200 focus:outline-none">
           <span class="font-semibold">Mis eventos</span>
+<<<<<<< HEAD
+=======
+          <span class="{% if categoria_actual == 'mis' %}bg-white text-primary{% else %}bg-gold text-black{% endif %} px-2 py-0.5 rounded-full text-xs">{{ mis_eventos }}</span>
+>>>>>>> develop
         </a>
       {% endif %}
     </nav>
@@ -119,7 +123,7 @@
           </p>
           <!-- Cupos Disponibles -->
           <p class="text-gray-600 mb-4">
-            <strong>Cupos Disponibles:</strong> {{ evento.cupos_disponibles }}
+            <strong>Cupos disponibles:</strong> {{ evento.cupos_disponibles }}
           </p>
           <!-- Botón de Acción (funciones directas en el botón) -->
           <div class="mt-auto">
@@ -127,6 +131,7 @@
               {% if evento.is_subscribed %}
                 {% if evento.estado_actual == 'CANCELADO' %}
                   <div class="text-center bg-red-100 text-red-800 px-4 py-2 rounded-lg">
+<<<<<<< HEAD
                     Evento Cancelado
                   </div>
                 {% elif evento.estado_actual == 'FINALIZADO' %}
@@ -163,15 +168,40 @@
                   {% endif %}
                 {% endif %}
               {% elif evento.es_proximo_temp %}
+=======
+                    Evento cancelado
+                  </div>
+                {% elif evento.estado_actual == 'FINALIZADO' %}
+                  <div class="text-center bg-gray-100 text-gray-800 px-4 py-2 rounded-lg">
+                    Evento finalizado
+                  </div>
+                {% elif evento.es_proximo %}
+                  {% if evento.estado_registro == 'EN_ESPERA' %}
+                    <a href="{% url 'cancelar_inscripcion' evento.id %}" class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                      Cancelar lista de espera
+                    </a>
+                  {% else %}
+                    <a href="{% url 'cancelar_inscripcion' evento.id %}" class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                      Cancelar inscripción
+                    </a>
+                  {% endif %}
+                {% endif %}
+              {% elif evento.es_proximo %}
+>>>>>>> develop
                 {% if evento.cupos_disponibles > 0 %}
                   <a href="{% url 'inscribirse_evento' evento.id %}" 
                      class="block text-center bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg transition-colors duration-200">
                     Inscribirse
                   </a>
                 {% else %}
+<<<<<<< HEAD
                   <a href="{% url 'lista_espera_evento' evento.id %}" 
                      class="block text-center bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
                     Lista de Espera
+=======
+                  <a href="{% url 'lista_espera_evento' evento.id %}" class="block text-center bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    Lista de espera
+>>>>>>> develop
                   </a>
                 {% endif %}
               {% else %}
@@ -179,9 +209,9 @@
                   No Disponible
                 </div>
               {% endif %}
-            {% else %}
+            {% elif not user.is_authenticated %}
               <a href="{% url 'login' %}" class="block text-center bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg transition-colors duration-200">
-                Iniciar Sesión
+                Iniciar sesión
               </a>
             {% endif %}
           </div>

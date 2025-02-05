@@ -148,13 +148,23 @@ def create_test_data():
 
     ciudadanos = []
     for data in ciudadanos_data:
+<<<<<<< HEAD
         ciudadano = Ciudadano.objects.create_user(
             correo_electronico=data["correo"],
             password="test123",
+=======
+        ciudadano = Ciudadano.objects.create(
+            correo_electronico=data["correo"],
+>>>>>>> develop
             nombre_completo=f"{data['nombre']} {data['apellido']}",
             numero_identificacion=data["id"],
             esta_activo=True
         )
+<<<<<<< HEAD
+=======
+        ciudadano.set_password("password123")  # Establecer contraseña
+        ciudadano.save()
+>>>>>>> develop
         ciudadanos.append(ciudadano)
         print(f"Ciudadano creado: {ciudadano.nombre_completo} - {ciudadano.correo_electronico}")
 

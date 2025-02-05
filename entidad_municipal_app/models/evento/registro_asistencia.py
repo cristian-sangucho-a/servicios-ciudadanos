@@ -74,6 +74,7 @@ class RegistroAsistencia(models.Model):
         return self.estado_registro == EstadoRegistro.CANCELADO.value
 
     def cancelar(self):
+<<<<<<< HEAD
         """
         Cancela el registro de asistencia.
         
@@ -83,6 +84,9 @@ class RegistroAsistencia(models.Model):
         if self.estado_registro == EstadoRegistro.CONFIRMADO.value:
             raise ValidationError("No se puede cancelar una inscripción confirmada")
             
+=======
+        """Cancela el registro de asistencia."""
+>>>>>>> develop
         self.estado_registro = EstadoRegistro.CANCELADO.value
         self.save()
 
