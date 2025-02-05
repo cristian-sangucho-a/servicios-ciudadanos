@@ -1,5 +1,6 @@
 from .reporte import Reporte
 from .repositorio_de_reporte import RepositorioDeReporte
+from collections import OrderedDict
 
 prioridades: dict[str, dict[str, int]] = {
     "cantidad_prioridad_1": {"recurrencia": 13, "prioridad": 1},
@@ -75,3 +76,20 @@ class ServicioDeReporte:
         self.reporte_repositorio.agregar_reporte(reporte)
 
         return reporte
+    
+    def obetener_lista_reportes_por_asunto(self):
+        reportes = Reporte.objects.all().order_by('tipo_reporte__asunto', '-prioridad')
+    
+        grouped_reportes = {}
+        for reporte in reportes:
+            asunto = reporte.tipo_reporte.asunto
+            if asunto not in grouped_reportes:
+                grouped_reportes[asunto] = []
+            grouped_reportes[asunto].append(reporte)
+        
+        # Sort the grouped_reportes by the prioridad of the first reporte in each group (descending order)
+        sorted_grouped_reportes = OrderedDict(
+            sorted(grouped_reportes.items(), key=lambda item: item[1][0].prioridad or 0)
+        )
+        
+        return sorted_grouped_reportes
