@@ -17,7 +17,7 @@ def listar_canales_administrados(request):
             HttpResponse: El renderizado del template 'canales/lista_canales_administrados.html', con la lista de canales.
     """
     entidad_municipal = request.user
-    canales = CanalInformativo.objects.filter(entidad_municipal=entidad_municipal)
+    canales = entidad_municipal.canales.all()
     return render(request, 'canales/lista_canales_administrados.html',{'canales':canales})
 
 def crear_canal_form(request):

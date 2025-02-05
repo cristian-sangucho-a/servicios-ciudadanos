@@ -24,9 +24,9 @@
     </div>
 
     <!-- Sección de noticias -->
-    {% if noticias %}
+    {% if canal.noticias.all %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for noticia in noticias %}
+        {% for noticia in canal.noticias.all %}
         <div class="bg-white rounded-lg shadow-md p-4">
             <h3 class="text-xl font-semibold text-primario-DEFAULT mb-2">{{ noticia.titulo }}</h3>
             <p class="text-sm text-gray-500 mb-2">{{ noticia.fecha_publicacion }}</p>

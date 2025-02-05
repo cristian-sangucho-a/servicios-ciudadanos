@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from .canal_informativo import CanalInformativo
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
+from django.db.models import Count
 
 class Noticia(models.Model):
     """
@@ -52,10 +53,6 @@ class Noticia(models.Model):
         )
         return noticia
 
-    @classmethod
-    def obtener_noticias_canal(cls, canal):
-        return Noticia.objects.filter(canal=canal)
-
     def reaccionar(self,ciudadano,tipo_reaccion):
         reaccion = Reaccion.objects.create(
         noticia=self,
@@ -79,6 +76,16 @@ class Noticia(models.Model):
 
     def obtener_comentarios(self):
         return self.comentarios
+
+    def contar_reacciones(self):
+        conteos_reacciones = self.reacciones.values('tipo').annotate(conteo=Count('tipo'))
+
+        # Crear un diccionario con los conteos de reacciones
+        reacciones_dict = {tipo: 0 for tipo, _ in Reaccion.TIPOS_REACCION}
+        for conteo in conteos_reacciones:
+            reacciones_dict[conteo['tipo']] = conteo['conteo']
+
+        return reacciones_dict
 
 class Reaccion(models.Model):
     """

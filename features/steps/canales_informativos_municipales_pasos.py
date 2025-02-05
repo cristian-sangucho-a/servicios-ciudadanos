@@ -56,7 +56,7 @@ def step_impl(context, canal_nombre):
 def step_impl(context):
     """Verifica que el ciudadano recibe noticias del canal suscrito."""
     Noticia.crear_noticia(context.canal,fake.sentence(),fake.text(max_nb_chars=500) )
-    noticias = Noticia.obtener_noticias_canal(context.canal)
+    noticias = context.canal.noticias
     assert noticias.exists(), f"No hay noticias en el canal {context.canal.nombre}."
 
 

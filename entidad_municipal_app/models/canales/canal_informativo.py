@@ -1,7 +1,6 @@
 from django.db import models
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from django.utils.timezone import now
-
 from entidad_municipal_app.models import EntidadMunicipal
 from shared.models.notificacion.notificacion import Notificacion
 
@@ -145,6 +144,8 @@ class CanalInformativo(models.Model):
                 canal.suscribir_ciudadano(ciudadano)
 
         return canal
+
+
 
 class Suscripcion(models.Model):
     """
