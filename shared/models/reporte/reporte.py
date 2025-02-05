@@ -11,7 +11,7 @@ class Reporte(models.Model):
 
     # Relación con el modelo Ciudadano; se elimina el reporte si el ciudadano se elimina.
     ciudadano = models.ForeignKey(
-        'ciudadano_app.Ciudadano',  # Referencia como string
+        'ciudadano_app.Ciudadano',
         on_delete=models.CASCADE,
         verbose_name=_("Ciudadano")
     )
@@ -34,7 +34,7 @@ class Reporte(models.Model):
         """
         return bool(self.ciudadano and self.tipo_reporte and self.ubicacion)
 
-    def _str_(self):
+    def __str__(self):  # Doble guión bajo
         """
         Método para obtener la representación en cadena del reporte, mostrando información relevante.
 
@@ -44,5 +44,6 @@ class Reporte(models.Model):
         return f"Reporte de {self.tipo_reporte.asunto} por {self.ciudadano.nombre_completo}"
 
     def algun_metodo(self):
-        from ciudadano_app.models import Ciudadano
-        # usar Ciudadano aquí
+        from ciudadano_app.models import Ciudadano  # Importación perezosa
+        # Usar Ciudadano aquí
+        pass
