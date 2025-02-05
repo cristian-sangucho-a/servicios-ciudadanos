@@ -74,13 +74,11 @@
       <a href="{% url 'lista_eventos' %}?categoria=todos" 
          class="flex items-center gap-2 px-4 py-2 rounded-full border {% if categoria_actual == 'todos' %}bg-primary text-white{% else %}border-light bg-white hover:bg-primary hover:text-white{% endif %} transition-colors duration-200 focus:outline-none">
         <span class="font-semibold">Todos los eventos</span>
-        <span class="{% if categoria_actual == 'todos' %}bg-white text-primary{% else %}bg-gold text-black{% endif %} px-2 py-0.5 rounded-full text-xs">{{ total_eventos }}</span>
       </a>
       {% if user.is_authenticated %}
         <a href="{% url 'lista_eventos' %}?categoria=mis" 
            class="flex items-center gap-2 px-4 py-2 rounded-full border {% if categoria_actual == 'mis' %}bg-primary text-white{% else %}border-light bg-white hover:bg-primary hover:text-white{% endif %} transition-colors duration-200 focus:outline-none">
           <span class="font-semibold">Mis eventos</span>
-          <span class="{% if categoria_actual == 'mis' %}bg-white text-primary{% else %}bg-gold text-black{% endif %} px-2 py-0.5 rounded-full text-xs">{{ mis_eventos }}</span>
         </a>
       {% endif %}
     </nav>

@@ -17,67 +17,82 @@ def get_categoria_actual(request):
 def obtener_eventos_para_categoria(categoria, ciudadano):
     """Obtiene los eventos según la categoría seleccionada"""
     if categoria == 'mis' and ciudadano.is_authenticated:
+        print("Obteniendo mis eventos")
         return EventoMunicipal.objects.mis_eventos(ciudadano)
-    return EventoMunicipal.objects.todos_eventos(ciudadano)
+    else:
+        print("Obteniendo eventos para todos")
+        return EventoMunicipal.objects.todos_eventos(ciudadano)
+
 
 def preparar_contexto_eventos(eventos, ciudadano):
     """
-    Agrega al objeto evento las propiedades necesarias para la vista
+    Prepara contexto de eventos con información de inscripción 
     """
     eventos_preparados = []
+    ahora = timezone.now()
+
     for evento in eventos:
-        # Propiedades base
+        # Información básica de inscripción 
         evento.is_subscribed = False
         evento.estado_registro = None
-        
+
+        # Verificar registro para usuarios autenticados
         if ciudadano.is_authenticated:
-            # Obtener el registro activo del ciudadano
-            registro = evento.registroasistencia_set.filter(
-                ciudadano=ciudadano,
-                estado_registro__in=[
-                    EstadoRegistro.INSCRITO.value,
-                    EstadoRegistro.EN_ESPERA.value
-                ]
-            ).first()
-            
+            registro = evento.obtener_registro_activo(ciudadano)
             if registro:
                 evento.is_subscribed = True
                 evento.estado_registro = registro.estado_registro
-        
-        # Calcular disponibilidad y estado del evento
-        ahora = timezone.now()
+
+        # Validar disponibilidad del evento
         es_futuro = evento.fecha_realizacion >= ahora
         esta_programado = evento.estado_actual == EstadoEvento.PROGRAMADO.value
         
-        # Asignar propiedades calculadas
-        evento.disponible_inscripcion = es_futuro and esta_programado
-        evento.es_proximo_temp = es_futuro and esta_programado  # Atributo temporal sin guion bajo
-        
+        # Modificación clave: siempre establecer es_proximo_temp para eventos inscritos
+        if evento.is_subscribed:
+            evento.es_proximo_temp = True
+            evento.disponible_inscripcion = False
+        else:
+            evento.disponible_inscripcion = es_futuro and esta_programado
+            evento.es_proximo_temp = evento.disponible_inscripcion
+
         eventos_preparados.append(evento)
+
     return eventos_preparados
+
+
 
 @ciudadano_required
 def lista_eventos(request):
-    """Vista para listar eventos municipales"""
-    categoria = request.GET.get('categoria', 'todos')
+    """Vista para listar eventos municipales con depuración detallada"""
+    # Debug: Inicio del proceso
+    print("🔍 Iniciando listado de eventos")
+    print(f"🔑 Usuario autenticado: {request.user}")
+
+    # Obtener categoría
+    categoria = get_categoria_actual(request)
+    print(f"📂 Categoría seleccionada: {categoria}")
+
+    # Obtener eventos para la categoría
     eventos = obtener_eventos_para_categoria(categoria, request.user)
+    total_eventos_en_categoria = eventos.count()
+    print(f"🎫 Total eventos en categoría {categoria}: {total_eventos_en_categoria}")
+
+    # Preparar contexto de eventos
     eventos = preparar_contexto_eventos(eventos, request.user)
-    
-    # Preparar contadores
+    print(f"✅ Eventos procesados: {len(eventos)}")
+
+    # Contar eventos programados
     total_eventos = EventoMunicipal.objects.filter(
         estado_actual=EstadoEvento.PROGRAMADO.value,
         fecha_realizacion__gte=timezone.now()
     ).count()
+    print(f"📅 Total eventos programados futuros: {total_eventos}")
     
+    # Contar mis eventos
     mis_eventos = 0
     if request.user.is_authenticated:
-        mis_eventos = EventoMunicipal.objects.filter(
-            registroasistencia_set__ciudadano=request.user,
-            registroasistencia_set__estado_registro__in=[
-                EstadoRegistro.INSCRITO.value,
-                EstadoRegistro.EN_ESPERA.value
-            ]
-        ).distinct().count()
+        mis_eventos = EventoMunicipal.objects.mis_eventos(request.user).count()
+    print(f"👤 Mis eventos: {mis_eventos}")
     
     context = {
         'eventos': eventos,

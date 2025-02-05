@@ -49,7 +49,8 @@ class EventoMunicipalManager(models.Manager):
         sin filtrar por estado del evento ni del registro.
         Incluye eventos cancelados, finalizados, en curso y programados.
         """
-        return self.filter(
+        print("Obteniendo eventos del ciudadano", ciudadano)
+        eventos = self.filter(
             registroasistencia_set__ciudadano=ciudadano,
             registroasistencia_set__estado_registro__in=[
                 EstadoRegistro.INSCRITO.value,
@@ -57,6 +58,8 @@ class EventoMunicipalManager(models.Manager):
                 EstadoRegistro.CANCELADO.value
             ]
         ).distinct().order_by('-fecha_realizacion')
+        print("Encontrados", len(eventos), "eventos")
+        return eventos
 
     def disponibles_para_inscripcion(self, ciudadano):
         """
