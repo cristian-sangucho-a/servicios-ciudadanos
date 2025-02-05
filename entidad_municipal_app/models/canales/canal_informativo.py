@@ -46,7 +46,7 @@ class CanalInformativo(models.Model):
         Args:
             ciudadano (Ciudadano): El ciudadano que se suscribe al canal.
         """
-        Suscripcion.objects.get_or_create(canal=self, ciudadano=ciudadano)
+        return Suscripcion.objects.get_or_create(canal=self, ciudadano=ciudadano)
 
     def desuscribir_ciudadano(self, ciudadano):
         """
@@ -115,6 +115,40 @@ class CanalInformativo(models.Model):
                 mensaje=f"Ha ocurrido un {tipo_incidente} en {localidad}"
             )
 
+    @classmethod
+    def obtener_canal(cls,nombre_canal):
+       return CanalInformativo.objects.get(nombre=nombre_canal)
+
+    @classmethod
+    def crear_canal(cls, entidad_municipal, nombre, descripcion, es_emergencia):
+        """
+        Crea un nuevo canal informativo.
+
+        Si el canal es de emergencia, suscribe a todos los ciudadanos al canal.
+
+        Args:
+            entidad_municipal (EntidadMunicipal): El municipio al que pertenece el canal.
+            nombre (str): El nombre del canal.
+            descripcion (str): La descripción del canal.
+            es_emergencia (bool): Indica si el canal es de emergencia.
+
+        Returns:
+            CanalInformativo: La instancia del canal creado.
+        """
+        canal = CanalInformativo.objects.create(
+            entidad_municipal=entidad_municipal,
+            nombre=nombre,
+            descripcion=descripcion,
+            es_emergencia=es_emergencia
+        )
+
+        # Si es un canal de emergencia, suscribir a todos los ciudadanos
+        if canal.es_emergencia:
+            ciudadanos = Ciudadano.objects.all()
+            for ciudadano in ciudadanos:
+                canal.suscribir_ciudadano(ciudadano)
+
+        return canal
 
 class Suscripcion(models.Model):
     """
