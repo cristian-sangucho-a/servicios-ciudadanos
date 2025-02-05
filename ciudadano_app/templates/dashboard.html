@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard Ciudadano - Municipio de Quito{% endblock %}
+{% block title %}Dashboard ciudadano - Municipio de Quito{% endblock %}
 
 {% block content %}
 <!-- Enhanced Header -->
@@ -8,7 +8,7 @@
 <header class="bg-gradient-to-r from-[#002F5F] to-[#004080] text-white py-6 px-8 shadow-lg">
   <div class="container mx-auto flex items-center justify-between">
     <div>
-      <h1 class="text-3xl font-extrabold tracking-tight mb-2">Quito Municipal Dashboard</h1>
+      <h1 class="text-3xl font-extrabold tracking-tight mb-2">Dashboard del Municipio de Quito</h1>
       <p class="text-gray-200 text-lg opacity-90">Bienvenido/a, {{ ciudadano.nombre_completo }}</p>
     </div>
     <div class="flex items-center space-x-4">
@@ -80,10 +80,9 @@
   </a>
     <!-- Sección de Agenda -->
         <a href="{% url 'agenda' %}"
-           class="bg-blue-300 text-white p-6 rounded-lg hover:bg-blue-600 transition-colors">
-
+class="bg-gradient-to-br from-[#2596be] to-[#2596be] text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 group">
             <div class="flex justify-between">
-                <h2 class="text-xl font-semibold mb-4">Agenda Publica</h2>
+                <h2 class="text-2xl font-bold tracking-wide">Agenda pública</h2>
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 17.75A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V6.25A3.25 3.25 0 0 1 6.25 3h11.5A3.25 3.25 0 0 1 21 6.25v11.5Zm-4-10a.75.75 0 0 0-.648-.743L16.25 7h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 7.75Zm0 8.5a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486L7.75 17h8.5l.102-.007A.75.75 0 0 0 17 16.25ZM17 12a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 12Z"
                           fill="#FFF"/>
@@ -158,14 +157,14 @@
         <div class="slide">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Eventos Inscritos</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Eventos inscritos</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#007A33]">{{ eventos_inscritos }}</span>
                 <span class="text-sm text-gray-500">Registrado</span>
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Lista de Espera</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Lista de espera</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#A6192E]">{{ eventos_en_espera }}</span>
                 <span class="text-sm text-gray-500">En espera</span>
@@ -178,14 +177,14 @@
         <div class="slide">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Reportes Enviados</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Reportes enviados</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#007A33]">{{ reportes_enviados }}</span>
                 <span class="text-sm text-gray-500">Total</span>
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">En Proceso</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">En proceso</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#A6192E]">{{ reportes_en_proceso }}</span>
                 <span class="text-sm text-gray-500">Pendientes</span>
@@ -198,7 +197,7 @@
         <div class="slide">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Mis Canales</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Mis canales</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#007A33]">{{ canales_suscritos }}</span>
                 <span class="text-sm text-gray-500">Suscritos</span>
@@ -248,7 +247,7 @@
 
   <!-- Real-time Alerts -->
   <div class="bg-white p-6 rounded-2xl shadow-lg col-span-2 border-t-4 border-[#A6192E]">
-    <h2 class="text-2xl font-bold mb-6 text-[#A6192E]">Alertas en Tiempo Real</h2>
+    <h2 class="text-2xl font-bold mb-6 text-[#A6192E]">Alertas en tiempo real</h2>
     {% if alertas %}
       <div class="space-y-4">
         {% for alerta in alertas %}

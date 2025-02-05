@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Estado de Sectores de Interés - Ciudadano{% endblock %}
+{% block title %}Sectores de interés - ciudadano{% endblock %}
+
 
 {% block content %}
 <div class="min-h-screen bg-gray-100 flex justify-center items-center">
@@ -60,7 +61,9 @@
     </div>
 
     <h1 class="text-2xl font-bold text-gray-900 text-center mb-6">
-      Estado de Sectores de Interés
+
+      Sectores de interés
+
     </h1>
 
     {% if messages %}
@@ -80,7 +83,9 @@
 
     {% if sectores_agregados %}
       <div class="mt-8">
-        <h2 class="text-xl font-semibold text-gray-800 text-center mb-4">Estado de tus Sectores</h2>
+
+        <h2 class="text-xl font-semibold text-gray-800 text-center mb-4">Sectores agregados</h2>
+
         <div class="overflow-x-auto">
           <table class="w-full border-collapse border border-gray-300">
             <thead>
