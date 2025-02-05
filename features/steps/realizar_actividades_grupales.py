@@ -1,14 +1,19 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
+
 from behave import step
 from faker import Faker
 from datetime import datetime
 from ciudadano_app.models.area_comunal import AreaComunal
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
+from ciudadano_app.models.reserva.servicio_reserva import ServicioReserva
+from ciudadano_app.models.servicio_notificacion_correo import ServicioNotificacionPorCorreo
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
-from mocks.repositorio_reserva_en_memoria import RepositorioReservaMemoria
 
 fake = Faker()
-servicio_reserva_en_memoria = RepositorioReservaMemoria()
+servicio_reserva = ServicioReserva()
+servicio_notificacion_por_correo = ServicioNotificacionPorCorreo()
+servicio_reserva_mock = Mock()
+servicio_notificacion_por_correo_mock = Mock()
 
 @step('que existen areas comunales disponibles en el espacio publico "{nombre_espacio_publico}" en la ciudad y son')
 def step_impl(context, nombre_espacio_publico):
@@ -28,31 +33,26 @@ def step_impl(context, nombre_espacio_publico):
     Raises:
         AssertionError: Si no hay áreas comunales disponibles.
     """
-    context.entidad_municipal = EntidadMunicipal(
+    context.entidad_municipal = EntidadMunicipal.objects.create(
         nombre="Municipalidad Mock",
         direccion=fake.address(),
         telefono=fake.phone_number(),
         correo_electronico=fake.email(),
         fecha_registro=datetime.now()
     )
-    context.entidad_municipal.id = 1
-    context.espacio_publico = EspacioPublico(
+    context.espacio_publico = EspacioPublico.objects.create(
         nombre=nombre_espacio_publico,
         entidad_municipal=context.entidad_municipal
     )
-    context.espacio_publico.id = 1
-    index = 1
     for row in context.table:
-        area = AreaComunal(
+        context.area_comunal = AreaComunal.objects.create(
             nombre_area=row['Nombre'],
             hora_de_apertura=datetime.strptime("08:00", "%H:%M").time(),
             hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
             espacio_publico=context.espacio_publico
         )
-        area.id = index
-        index += 1
-        servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
-    assert servicio_reserva_en_memoria.hay_areas_comunales_disponibles(context.espacio_publico)
+
+    assert servicio_reserva.hay_areas_comunales_disponibles(context.espacio_publico)
 
 
 @step('el ciudadano no supera las "{maximo_reservas}" reservas activas')
@@ -71,18 +71,16 @@ def step_impl(context, maximo_reservas):
     Raises:
         AssertionError: Si el ciudadano supera el número máximo de reservas activas.
     """
-    context.ciudadano = Ciudadano(
+    context.ciudadano = Ciudadano.objects.create(
         nombre_completo=fake.name(),
         correo_electronico=fake.email(),
-        numero_identificacion=str(fake.random_number(digits=10)),
-        esta_activo=True
+        numero_identificacion=str(fake.random_number(digits=10))
     )
-    context.ciudadano.id = 1
     context.maximo_reservas = int(maximo_reservas)
-    assert not servicio_reserva_en_memoria.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
+    assert not servicio_reserva.ciudadano_supera_maximo_reservas(ciudadano=context.ciudadano)
 
 
-@step('el ciudadano realice una reserva "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
+@step('el ciudadano realice una reserva de tipo "{tipo_reserva}" en el area comunal "{area_comunal}" el "{fecha_reserva}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, tipo_reserva, area_comunal, fecha_reserva, hora_inicio, hora_fin):
     """
     Simula la realización de una reserva por parte de un ciudadano.
@@ -121,13 +119,16 @@ def step_impl(context):
     Raises:
         AssertionError: Si la reserva no se pudo realizar.
     """
-    context.id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
-        area_comunal=servicio_reserva_en_memoria.obtener_area_comunal(1), fecha_reserva=context.fecha_reserva,
-        hora_inicio=context.hora_inicio, hora_fin=context.hora_fin, tipo_reserva=context.tipo_reserva,
+    fecha_formateada = datetime.strptime(context.fecha_reserva, "%d/%m/%Y").date()
+    hora_inicio_formateada = datetime.strptime(context.hora_inicio, "%H:%M").time()
+    hora_fin_formateada = datetime.strptime(context.hora_fin, "%H:%M").time()
+
+    area_comunal = servicio_reserva.obtener_area_comunal(1)
+
+    context.id_reserva, reservado = servicio_reserva.reservar_area_comunal(
+        area_comunal=area_comunal, fecha_reserva=fecha_formateada,
+        hora_inicio=hora_inicio_formateada, hora_fin=hora_fin_formateada, tipo_reserva=context.tipo_reserva,
         ciudadano=context.ciudadano, correos_invitados="")
-    if context.correos_invitados is not None:
-        servicio_reserva_en_memoria.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,
-                                                                        correos_invitados=context.correos_invitados)
     assert reservado
 
 
@@ -160,11 +161,13 @@ def step_impl(context):
     Raises:
         AssertionError: Si no se pudo enviar la invitación.
     """
-    assert servicio_reserva_en_memoria.enviar_invitacion(
-        servicio_reserva_en_memoria.obtener_reserva_por_id(context.id_reserva))
+
+    servicio_notificacion_por_correo_mock.enviar_invitacion.return_value = True
+    servicio_reserva_mock.obtener_reserva_por_id.return_value = 1
+    assert servicio_notificacion_por_correo_mock.enviar_invitacion(servicio_reserva_mock.obtener_reserva_por_id)
 
 
-@step('que el ciudadano tiene una reserva "{tipo_reserva}" en el espacio publico "{nombre_espacio}" en el area comunal "{nombre_area}" el "{fecha}" de "{hora_inicio}" a "{hora_fin}"')
+@step('que el ciudadano tiene una reserva de tipo "{tipo_reserva}" en el espacio publico "{nombre_espacio}" en el area comunal "{nombre_area}" el "{fecha}" de "{hora_inicio}" a "{hora_fin}"')
 def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_inicio, hora_fin):
     """
     Configura un contexto donde un ciudadano tiene una reserva en un espacio público.
@@ -187,14 +190,19 @@ def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_in
     Raises:
         AssertionError: Si la reserva no se pudo realizar.
     """
-    crear_contexto_para_la_reserva(context, nombre_espacio)
-    context.id_reserva, reservado = servicio_reserva_en_memoria.reservar_area_comunal(
-        area_comunal=servicio_reserva_en_memoria.obtener_area_comunal(1), fecha_reserva=fecha, hora_inicio=hora_inicio,
-        hora_fin=hora_fin, tipo_reserva=tipo_reserva, ciudadano=context.ciudadano, correos_invitados="")
-    context.correos_invitados = "jean.cotera@epn.edu.ec, jorman.chuquer@epn.edu.ec"
-    if tipo_reserva == "privada":
-        servicio_reserva_en_memoria.agregar_correos_invitados_a_reserva(id_reserva=context.id_reserva,
-                                                                        correos_invitados=context.correos_invitados)
+    area_comunal = crear_contexto_para_la_reserva(context, nombre_espacio, nombre_area)
+    fecha_formateada = datetime.strptime(fecha, "%d/%m/%Y").date()
+    hora_inicio_formateada = datetime.strptime(hora_inicio, "%H:%M").time()
+    hora_fin_formateada = datetime.strptime(hora_fin, "%H:%M").time()
+
+    if tipo_reserva == "privado":
+        correos_invitados = fake.email() + "," + fake.email()
+    else:
+        correos_invitados = ""
+
+    context.id_reserva, reservado = servicio_reserva.reservar_area_comunal(
+        fecha_reserva=fecha_formateada, hora_inicio=hora_inicio_formateada, hora_fin=hora_fin_formateada, tipo_reserva=tipo_reserva,
+        area_comunal=area_comunal, ciudadano=context.ciudadano, correos_invitados=correos_invitados)
     assert reservado
 
 
@@ -227,7 +235,7 @@ def step_impl(context):
     Raises:
         AssertionError: Si la reserva no se pudo cancelar.
     """
-    assert servicio_reserva_en_memoria.cancelar_reserva(id_reserva=context.id_reserva,
+    assert servicio_reserva.cancelar_reserva(id_reserva=context.id_reserva,
                                                         ciudadano=context.ciudadano)  # verificar que se calcelo con un TRUE
 
 
@@ -245,10 +253,12 @@ def step_impl(context):
     Raises:
         AssertionError: Si no se pudo enviar el correo de cancelación.
     """
-    assert servicio_reserva_en_memoria.enviar_cancelacion(servicio_reserva_en_memoria.obtener_reserva_por_id(context.id_reserva))
+    servicio_notificacion_por_correo_mock.enviar_cancelacion.return_value = True
+    servicio_reserva_mock.obtener_reserva_por_id.return_value = 1
+    assert servicio_notificacion_por_correo_mock.enviar_cancelacion(servicio_reserva_mock.obtener_reserva_por_id)
 
 
-def crear_contexto_para_la_reserva(context, nombre_espacio):
+def crear_contexto_para_la_reserva(context, nombre_espacio, nombre_area):
     """
     Crea un contexto básico para configurar una reserva.
 
@@ -262,34 +272,27 @@ def crear_contexto_para_la_reserva(context, nombre_espacio):
         - Se agregan áreas comunales al espacio público.
         - Se crea un ciudadano mock.
     """
-    context.entidad_municipal = EntidadMunicipal(
+    context.entidad_municipal = EntidadMunicipal.objects.create(
         nombre="Municipalidad Mock",
         direccion=fake.address(),
         telefono=fake.phone_number(),
         correo_electronico=fake.email(),
         fecha_registro=datetime.now()
     )
-    context.entidad_municipal.id = 1
-    context.espacio_publico = EspacioPublico(
+    context.espacio_publico = EspacioPublico.objects.create(
         nombre=nombre_espacio,
         entidad_municipal=context.entidad_municipal
     )
-    context.espacio_publico.id = 1
-    index = 1
-    for _ in range(0, 3):
-        area = AreaComunal(
-            nombre_area=fake.word(),
-            hora_de_apertura=datetime.strptime("08:00", "%H:%M").time(),
-            hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
-            espacio_publico=context.espacio_publico
-        )
-        index += 1
-        area.id = index
-        servicio_reserva_en_memoria.agregar_area_comunal(area, context.espacio_publico)
-    context.ciudadano = Ciudadano(
+    area_comunal = AreaComunal.objects.create(
+        nombre_area=nombre_area,
+        hora_de_apertura=datetime.strptime("08:00", "%H:%M").time(),
+        hora_de_cierre=datetime.strptime("20:00", "%H:%M").time(),
+        espacio_publico=context.espacio_publico
+    )
+    context.ciudadano = Ciudadano.objects.create(
         nombre_completo=fake.name(),
         correo_electronico=fake.email(),
         numero_identificacion=str(fake.random_number(digits=10)),
         esta_activo=True
     )
-    context.ciudadano.id = 1
+    return area_comunal
