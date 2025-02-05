@@ -114,7 +114,7 @@
           <!-- Encabezado: Nombre y Fecha del Evento -->
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-bold text-xl text-primary">{{ evento.nombre_evento }}</h3>
-            <span class="text-sm text-gray-500">{{ evento.obtener_formato_fecha }}</span>
+            <span class="text-sm text-gray-500">{{ evento.fecha_realizacion|date:"d/m/Y H:i" }}</span>
           </div>
           <!-- Descripción resumida -->
           <p class="text-gray-600 mb-4 line-clamp-3">
