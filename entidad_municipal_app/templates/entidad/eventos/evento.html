@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Detalle del Evento - Municipio de Quito{% endblock %}
+{% block title %}Detalle del evento - Municipio de Quito{% endblock %}
 
 {% block content %}
   <!-- CABECERA -->
   <header class="mb-8">
     <h1 class="text-3xl font-bold text-[#002F5F]">
-      Municipio de Quito - Detalle del Evento
+      Municipio de Quito - Detalle del evento
     </h1>
   </header>
 
@@ -26,7 +26,7 @@
           <p>{{ evento.entidad_municipal.nombre }}</p>
         </div>
         <div>
-          <h3 class="font-semibold text-[#A6192E]">Fecha y Hora:</h3>
+          <h3 class="font-semibold text-[#A6192E]">Fecha y hora:</h3>
           <p>{{ evento.fecha_realizacion|date:"d/m/Y H:i" }}</p>
         </div>
         <div>
@@ -42,11 +42,11 @@
           <p class="text-2xl font-bold text-blue-800">{{ evento.capacidad_maxima }}</p>
         </div>
         <div class="bg-green-50 p-4 rounded-lg">
-          <h4 class="font-semibold text-green-700">Estado del Evento:</h4>
+          <h4 class="font-semibold text-green-700">Estado del evento:</h4>
           <p class="text-2xl font-bold text-green-800">{{ evento.estado_actual }}</p>
         </div>
         <div class="bg-yellow-50 p-4 rounded-lg">
-          <h4 class="font-semibold text-yellow-700">Cupos Disponibles:</h4>
+          <h4 class="font-semibold text-yellow-700">Cupos disponibles:</h4>
           <p class="text-2xl font-bold text-yellow-800">{{ evento.cupos_disponibles }}</p>
         </div>
       </div>
@@ -54,7 +54,7 @@
 
     <!-- CONTROL DE ASISTENCIA -->
     <section class="bg-white rounded-xl shadow p-6 mb-8 border border-gray-200">
-      <h2 class="text-xl font-bold text-[#002F5F] mb-4">Control de Asistencia</h2>
+      <h2 class="text-xl font-bold text-[#002F5F] mb-4">Control de asistencia</h2>
       
       <!-- Tabla de Asistencia -->
       <div class="overflow-x-auto">
@@ -63,8 +63,8 @@
             <tr>
               <th class="px-4 py-3 text-left">Cédula</th>
               <th class="px-4 py-3 text-left">Ciudadano</th>
-              <th class="px-4 py-3 text-left">Estado Registro</th>
-              <th class="px-4 py-3 text-left">Estado Asistencia</th>
+              <th class="px-4 py-3 text-left">Estado registro</th>
+              <th class="px-4 py-3 text-left">Estado asistencia</th>
               <th class="px-4 py-3 text-left">Acciones</th>
             </tr>
           </thead>
