@@ -2,11 +2,68 @@
 
 {% block title %}Sectores de interés - ciudadano{% endblock %}
 
+
 {% block content %}
 <div class="min-h-screen bg-gray-100 flex justify-center items-center">
-  <main class="w-full max-w-3xl px-6 py-8 bg-white shadow-lg rounded-lg">
+  <main class="w-full max-w-4xl px-6 py-8 bg-white shadow-lg rounded-lg">
+    <!-- Burbuja de Notificaciones -->
+    <div class="relative mb-6">
+      <div class="absolute top-0 right-0">
+        <button id="notificaciones-btn" class="relative p-2 text-gray-600 hover:text-gray-800">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          {% with total_notificaciones=0 %}
+            {% for sector in sectores_agregados %}
+              {% with notif_count=sector.notificaciones.count %}
+                {% if notif_count > 0 %}
+                  {% with total_notificaciones=total_notificaciones|add:notif_count %}{% endwith %}
+                {% endif %}
+              {% endwith %}
+            {% endfor %}
+            {% if total_notificaciones > 0 %}
+              <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {{ total_notificaciones }}
+              </span>
+            {% endif %}
+          {% endwith %}
+        </button>
+        
+        <!-- Panel de Notificaciones -->
+        <div id="notificaciones-panel" class="hidden absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl z-50">
+          <div class="p-4">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Notificaciones Recientes</h3>
+            <div class="space-y-3 max-h-96 overflow-y-auto">
+              {% for sector in sectores_agregados %}
+                {% for notificacion in sector.notificaciones.all|slice:":5" %}
+                  <div class="p-3 {% if not notificacion.leida %}bg-blue-50{% else %}bg-gray-50{% endif %} rounded-lg">
+                    <div class="flex items-start">
+                      <div class="flex-shrink-0">
+                        {% if "riesgo" in notificacion.mensaje|lower %}
+                          <span class="text-red-500 text-xl">⚠️</span>
+                        {% else %}
+                          <span class="text-blue-500 text-xl">📢</span>
+                        {% endif %}
+                      </div>
+                      <div class="ml-3">
+                        <p class="text-sm text-gray-900">{{ notificacion.mensaje }}</p>
+                        <p class="text-xs text-gray-500 mt-1">{{ notificacion.fecha|date:"d/m/Y H:i" }}</p>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <h1 class="text-2xl font-bold text-gray-900 text-center mb-6">
+
       Sectores de interés
+
     </h1>
 
     {% if messages %}
@@ -26,28 +83,69 @@
 
     {% if sectores_agregados %}
       <div class="mt-8">
+
         <h2 class="text-xl font-semibold text-gray-800 text-center mb-4">Sectores agregados</h2>
+
         <div class="overflow-x-auto">
           <table class="w-full border-collapse border border-gray-300">
             <thead>
               <tr class="bg-gray-200">
-                <th class="border border-gray-300 px-4 py-2">ID</th>
-                <th class="border border-gray-300 px-4 py-2">Nombre</th>
+                <th class="border border-gray-300 px-4 py-2">Sector</th>
+                <th class="border border-gray-300 px-4 py-2">Estado</th>
+                <th class="border border-gray-300 px-4 py-2">Notificaciones</th>
                 <th class="border border-gray-300 px-4 py-2">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {% for sector in sectores_agregados %}
-                <tr class="text-center">
-                  <td class="border border-gray-300 px-4 py-2">{{ sector.id }}</td>
+                <tr class="text-center {% if sector.estado == 'RIESGO' %}bg-red-50{% endif %}">
                   <td class="border border-gray-300 px-4 py-2">{{ sector.nombre }}</td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <form method="post" action="{% url 'eliminar_sector' sector.id %}">
-                      {% csrf_token %}
-                      <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                        Eliminar
-                      </button>
-                    </form>
+                    <span class="px-2 py-1 rounded-full text-sm 
+                      {% if sector.estado == 'SEGURO' %}
+                        bg-green-100 text-green-800
+                      {% elif sector.estado == 'PRECAUCIÓN' %}
+                        bg-yellow-100 text-yellow-800
+                      {% else %}
+                        bg-red-100 text-red-800
+                      {% endif %}">
+                      {{ sector.get_estado_display }}
+                    </span>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    {% with notif_count=sector.notificaciones.count %}
+                      {% if notif_count > 0 %}
+                        <div class="flex flex-col items-center">
+                          <span class="bg-red-500 text-white px-2 py-1 rounded-full text-sm mb-1">
+                            {{ notif_count }} nueva(s)
+                          </span>
+                          <span class="text-xs text-gray-500">
+                            Última: {{ sector.notificaciones.first.fecha|date:"d/m/Y H:i" }}
+                          </span>
+                        </div>
+                      {% else %}
+                        <span class="text-gray-500">Sin notificaciones</span>
+                      {% endif %}
+                    {% endwith %}
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="flex justify-center space-x-2">
+                      <a href="{% url 'ver_mapa_sector' sector.nombre|urlencode %}" 
+                         class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6-3v13m2-13l5.447 2.724A1 1 0 0121 8.618v10.764a1 1 0 01-1.447.894L15 17"/>
+                        </svg>
+                        Ver en mapa
+                      </a>
+                      <form method="post" action="{% url 'eliminar_sector' sector.id %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm">
+                          Eliminar
+                        </button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               {% endfor %}
@@ -56,13 +154,43 @@
         </div>
       </div>
     {% else %}
-      <p class="text-center">No tienes sectores agregados aún.</p>
+      <div class="text-center py-8">
+        <p class="text-gray-600 mb-4">No tienes sectores agregados aún.</p>
+        <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
     {% endif %}
-    <div class="mt-4 text-center">
-        <a href="{% url 'agregar_sectores' %}" class="w-full sm:w-auto bg-[#143D69] text-white px-6 py-2 rounded-lg shadow-md hover:bg-[#1a4f7a] transition-all">
-            Agregar más sectores
-        </a>
+
+    <div class="mt-6 text-center space-x-4">
+      <a href="{% url 'agregar_sectores' %}" 
+         class="inline-block bg-[#143D69] text-white px-6 py-2 rounded-lg shadow-md hover:bg-[#1a4f7a] transition-all">
+        Agregar más sectores
+      </a>
+      <a href="{% url 'dashboard_ciudadano' %}" 
+         class="inline-block bg-gray-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-gray-600 transition-all">
+        Volver al Dashboard
+      </a>
     </div>
   </main>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const notificacionesBtn = document.getElementById('notificaciones-btn');
+    const notificacionesPanel = document.getElementById('notificaciones-panel');
+
+    notificacionesBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        notificacionesPanel.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!notificacionesPanel.contains(e.target) && e.target !== notificacionesBtn) {
+            notificacionesPanel.classList.add('hidden');
+        }
+    });
+});
+</script>
 {% endblock %}

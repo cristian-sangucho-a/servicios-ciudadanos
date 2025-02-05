@@ -2,6 +2,7 @@ from django.db import models
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from django.utils import timezone
 from ciudadano_app.models import Ciudadano
+from ..sector import Sector  # Si necesitas importar Sector aquí
 
 class Notificacion(models.Model):
     """

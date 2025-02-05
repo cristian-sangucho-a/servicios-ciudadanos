@@ -3,7 +3,7 @@ from faker import Faker
 from ciudadano_app.models import Ciudadano
 from shared.models import  Reporte, TipoReporte
 from shared.models.notificacion.notificacion import Notificacion
-from shared.models.notificacion.sector import Sector
+from shared.models import Sector
 from shared.models.notificacion.servicio_de_notificacion import ServicioDeNotificacion
 from django.utils import timezone
 

@@ -4,7 +4,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from ..models import Ciudadano
 
-
 def registro_ciudadano(request):
     """Vista para el registro de nuevos ciudadanos"""
     if request.method == 'POST':
