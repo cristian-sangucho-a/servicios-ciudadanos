@@ -180,6 +180,26 @@ class EventoMunicipal(models.Model):
         except RegistroAsistencia.DoesNotExist:
             raise ErrorGestionEventos("Registro de asistencia no encontrado")
 
+    @transaction.atomic
+    def marcar_asistencia(self, registro_id, asistio: bool):
+        """
+        Permite marcar la asistencia (ASISTIO o NO_ASISTIO) para un registro,
+        solo si el evento se encuentra en curso.
+        """
+        if self.estado_actual != EstadoEvento.EN_CURSO.value:
+            raise ErrorGestionEventos("El evento debe estar en curso para marcar asistencia")
+        
+        try:
+            registro = self.registroasistencia_set.get(
+                pk=registro_id,
+                estado_registro=EstadoRegistro.INSCRITO.value  # Solo se marca asistencia para inscritos
+            )
+        except RegistroAsistencia.DoesNotExist:
+            raise ErrorGestionEventos("Registro no encontrado o no válido para marcar asistencia")
+        
+        registro.marcar_asistencia(asistio)
+        return registro
+
     # Métodos auxiliares (privados)
     def _crear_nuevo_registro(self, ciudadano):
         nuevo_estado = EstadoRegistro.determinar_estado(self.cupos_disponibles)

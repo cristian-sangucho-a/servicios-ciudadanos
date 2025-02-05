@@ -4,7 +4,7 @@ Modelo que representa el registro de asistencia a un evento municipal.
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from .enums import EstadoRegistro
+from .enums import EstadoRegistro, EstadoAsistencia
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 
 class RegistroAsistencia(models.Model):
@@ -31,6 +31,13 @@ class RegistroAsistencia(models.Model):
         default=EstadoRegistro.INSCRITO.value,
         verbose_name='Estado del registro',
         help_text='Estado actual del registro de asistencia'
+    )
+    estado_asistencia = models.CharField(
+        max_length=20,
+        choices=EstadoAsistencia.choices(),
+        default=EstadoAsistencia.PENDIENTE.value,
+        verbose_name='Estado de asistencia',
+        help_text='Estado de asistencia del ciudadano al evento'
     )
     fecha_inscripcion = models.DateTimeField(
         auto_now_add=True,
@@ -84,6 +91,11 @@ class RegistroAsistencia(models.Model):
         if self.estado_registro != EstadoRegistro.EN_ESPERA.value:
             raise ValueError("Solo se pueden promover registros en estado EN_ESPERA")
         self.estado_registro = EstadoRegistro.INSCRITO.value
+        self.save()
+
+    def marcar_asistencia(self, asistio: bool):
+        """Marca la asistencia del ciudadano al evento."""
+        self.estado_asistencia = EstadoAsistencia.ASISTIO.value if asistio else EstadoAsistencia.NO_ASISTIO.value
         self.save()
 
     def actualizar_estado(self, nuevo_estado):
