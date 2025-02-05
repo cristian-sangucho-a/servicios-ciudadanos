@@ -42,5 +42,11 @@ class RepositorioDeReporteDjango(RepositorioDeReporte):
         """
         Reporte.objects.filter(tipo_reporte__asunto=asunto).update(prioridad=prioridad)
 
-    def obtener_reportes_ordenados_prioridad(self):
-        return list(Reporte.objects.order_by('-prioridad'))
+    def obtener_todos_reportes(self):
+        """
+        Obtiene todos los reportes almacenados en la base de datos.
+
+        Returns:
+            list[Reporte]: Una lista con todas las instancias de Reporte en la base de datos.
+        """
+        return list(Reporte.objects.all())
