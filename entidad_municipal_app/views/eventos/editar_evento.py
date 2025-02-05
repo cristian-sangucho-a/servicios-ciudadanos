@@ -23,13 +23,21 @@ def editar_evento(request, evento_id):
             # Validar y parsear la fecha
             fecha_realizacion = request.POST.get('fecha_realizacion')
             try:
-                fecha_datetime = datetime.strptime(fecha_realizacion, "%Y-%m-%dT%H:%M")
+                fecha_datetime = datetime.strptime(fecha_realizacion, "%Y-%m-%d")
+                # Mantener la hora original del evento
+                fecha_datetime = fecha_datetime.replace(
+                    hour=evento.fecha_realizacion.hour,
+                    minute=evento.fecha_realizacion.minute
+                )
+                # Hacer la fecha consciente de la zona horaria
+                fecha_datetime = timezone.make_aware(fecha_datetime)
+                
                 if fecha_datetime < timezone.now():
                     if evento.estado_actual == EstadoEvento.PROGRAMADO.value:
                         messages.error(request, "No se puede programar un evento para una fecha pasada.")
                         return render(request, 'entidad/eventos/editar_evento.html', {'evento': evento})
             except ValueError:
-                messages.error(request, "Formato de fecha no válido. Usa el formato correcto (YYYY-MM-DDTHH:MM).")
+                messages.error(request, "Formato de fecha no válido. Use el formato YYYY-MM-DD.")
                 return render(request, 'entidad/eventos/editar_evento.html', {'evento': evento})
             
             # Validar y convertir la capacidad
