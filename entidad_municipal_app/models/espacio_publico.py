@@ -78,3 +78,56 @@ class EspacioPublico(models.Model):
     def obtener_nombre(self):
         return self.nombre
 
+    def marcar_como_no_disponible(self):
+        """
+        Marca el espacio público como no disponible.
+        """
+        self.estado_espacio_publico = self.ESTADO_NO_DISPONIBLE
+        self.save()
+
+    def marcar_como_disponible(self):
+        """
+        Marca el espacio público como disponible.
+        """
+        self.estado_espacio_publico = self.ESTADO_DISPONIBLE
+        self.save()
+
+    def marcar_como_afectado(self, guardar=True):
+        """
+        Marca el espacio público como afectado por un incidente.
+        
+        Args:
+            guardar (bool): Si es True, guarda los cambios en la base de datos.
+        """
+        self.estado_incidente_espacio = self.AFECTADO
+        if guardar:
+            self.save()
+
+    def marcar_como_no_afectado(self, guardar=True):
+        """
+        Marca el espacio público como no afectado.
+        
+        Args:
+            guardar (bool): Si es True, guarda los cambios en la base de datos.
+        """
+        self.estado_incidente_espacio = self.NO_AFECTADO
+        if guardar:
+            self.save()
+
+    def esta_disponible(self):
+        """
+        Verifica si el espacio público está disponible.
+        
+        Returns:
+            bool: True si el espacio está disponible, False en caso contrario.
+        """
+        return self.estado_espacio_publico == self.ESTADO_DISPONIBLE
+
+    def esta_afectado(self):
+        """
+        Verifica si el espacio público está afectado por un incidente.
+        
+        Returns:
+            bool: True si el espacio está afectado, False en caso contrario.
+        """
+        return self.estado_incidente_espacio == self.AFECTADO

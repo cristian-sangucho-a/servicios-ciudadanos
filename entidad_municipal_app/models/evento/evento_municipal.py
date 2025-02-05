@@ -16,23 +16,63 @@ class EventoMunicipalManager(models.Manager):
         """
         Crea un evento municipal controlado, asignando espacio público y gestionando el aforo.
         """
+
+        # LOG DE ENTRADA
+        print("========================================")
+        print(">>> INICIANDO MÉTODO: crear_evento_con_aforo")
+        print("Datos recibidos:")
+        print(f"  - Nombre del evento: {nombre}")
+        print(f"  - Descripción: {descripcion}")
+        print(f"  - Fecha de realización: {fecha}")
+        print(f"  - Lugar del evento: {lugar}")
+        print(f"  - Capacidad máxima: {capacidad}")
+        print(f"  - Entidad municipal: {entidad_municipal}")
+        print(f"  - Espacio público: {espacio_publico}")
+        print("----------------------------------------")
+
         if espacio_publico:
+            print(f"Verificando disponibilidad del espacio público: {espacio_publico.nombre}")
+            print(f"Estado actual del espacio público: {espacio_publico.estado_espacio_publico}")
+
             if espacio_publico.estado_espacio_publico != EstadoEspacioPublico.DISPONIBLE.value:
+                print("❌ ERROR: El espacio público no está disponible.")
                 raise ValidationError("El espacio público no está disponible")
+
+            # Actualizando estado del espacio público
             lugar = espacio_publico.direccion
             espacio_publico.estado_espacio_publico = EstadoEspacioPublico.NO_DISPONIBLE.value
             espacio_publico.save()
+            print(f"✅ Espacio público '{espacio_publico.nombre}' actualizado a NO DISPONIBLE.")
 
-        return self.create(
-            nombre_evento=nombre,
-            descripcion_evento=descripcion,
-            fecha_realizacion=fecha,
-            lugar_evento=lugar,
-            capacidad_maxima=capacidad,
-            estado_actual=EstadoEvento.PROGRAMADO.value,
-            espacio_publico=espacio_publico,
-            entidad_municipal=entidad_municipal
-        )
+        # Intento de creación del evento
+        try:
+            print("Creando evento en la base de datos...")
+            evento = self.create(
+                nombre_evento=nombre,
+                descripcion_evento=descripcion,
+                fecha_realizacion=fecha,
+                lugar_evento=lugar,
+                capacidad_maxima=capacidad,
+                estado_actual=EstadoEvento.PROGRAMADO.value,
+                espacio_publico=espacio_publico,
+                entidad_municipal=entidad_municipal
+            )
+            print("✅ Evento creado exitosamente.")
+            print("Detalles del evento creado:")
+            print(f"  - ID del evento: {evento.id}")
+            print(f"  - Nombre del evento: {evento.nombre_evento}")
+            print(f"  - Capacidad máxima: {evento.capacidad_maxima}")
+            print(f"  - Fecha de realización: {evento.fecha_realizacion}")
+        except Exception as e:
+            print("❌ ERROR al crear el evento:")
+            print(f"  - Detalle del error: {str(e)}")
+            raise e
+
+        # LOG DE SALIDA
+        print("<<< FINALIZANDO MÉTODO: crear_evento_con_aforo")
+        print("========================================\n")
+
+        return evento
 
     def proximos(self):
         """
@@ -285,8 +325,28 @@ class EventoMunicipal(models.Model):
         return self.registroasistencia_set.all()
 
     def clean(self):
+        # Validar motivo de cancelación
         if self.estado_actual == EstadoEvento.CANCELADO.value and not self.motivo_cancelacion:
             raise ValidationError("Debe proporcionar un motivo para cancelar el evento")
+        
+        # Validar fecha de realización
+        if self.fecha_realizacion and self.fecha_realizacion < timezone.now():
+            if not self.pk:  # Si es un nuevo evento
+                raise ValidationError("No se puede crear un evento con fecha en el pasado")
+            elif self.estado_actual == EstadoEvento.PROGRAMADO.value:
+                raise ValidationError("No se puede programar un evento para una fecha pasada")
+
+    def set_motivo_cancelacion(self, motivo):
+        """
+        Establece el motivo de cancelación del evento y lo guarda.
+        
+        Args:
+            motivo (str): Motivo por el cual se cancela el evento
+        """
+        self.motivo_cancelacion = motivo
+        self.estado_actual = EstadoEvento.CANCELADO.value
+        self.full_clean()  # Validar que el motivo no esté vacío
+        self.save()
 
     def __str__(self):
         return f"{self.nombre_evento} ({self.fecha_realizacion.strftime('%d/%m/%Y %H:%M')})"
