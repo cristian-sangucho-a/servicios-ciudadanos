@@ -138,13 +138,14 @@ class CanalInformativo(models.Model):
         )
 
         # Si es un canal de emergencia, suscribir a todos los ciudadanos
-        if canal.es_emergencia:
+        if canal.es_emergencia == True:
             ciudadanos = Ciudadano.objects.all()
             for ciudadano in ciudadanos:
                 canal.suscribir_ciudadano(ciudadano)
-
         return canal
 
+    def esta_suscrito(self,ciudadano):
+        return self.suscripciones.filter(ciudadano=ciudadano).exists()
 
 
 class Suscripcion(models.Model):

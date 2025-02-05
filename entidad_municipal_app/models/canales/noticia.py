@@ -72,10 +72,10 @@ class Noticia(models.Model):
         return comentario
 
     def obtener_reacciones(self):
-        return self.reacciones
+        return self.reacciones.all()
 
     def obtener_comentarios(self):
-        return self.comentarios
+        return self.comentarios.all()
 
     def contar_reacciones(self):
         conteos_reacciones = self.reacciones.values('tipo').annotate(conteo=Count('tipo'))
@@ -86,6 +86,13 @@ class Noticia(models.Model):
             reacciones_dict[conteo['tipo']] = conteo['conteo']
 
         return reacciones_dict
+
+    @staticmethod
+    def obtener_noticias(ciudadano):
+        canales=[]
+        for suscripcion in ciudadano.suscripciones.all():
+            canales.append(suscripcion.canal)
+        return Noticia.objects.filter(canal__in=canales)
 
 class Reaccion(models.Model):
     """

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from entidad_municipal_app.models import Noticia
@@ -35,12 +35,11 @@ def detalle_canal(request, canal_id):
             Ciudadano.DoesNotExist: Si no se encuentra un ciudadano con el ID del usuario autenticado.
             CanalInformativo.DoesNotExist: Si no se encuentra un canal con el ID proporcionado.
     """
-    ciudadano = Ciudadano.objects.get(id=request.user.id)
-    canal = CanalInformativo.objects.get(id=canal_id)
-    noticias = Noticia.objects.filter(canal=canal)
-    esta_suscrito = Suscripcion.objects.filter(canal=canal, ciudadano=ciudadano).exists()
+    ciudadano = request.user
+    canal = get_object_or_404(CanalInformativo,id=canal_id)
+    esta_suscrito = canal.esta_suscrito(ciudadano)
     return render(request, 'canales/detalle_canal.html',
-                  {'noticias': noticias, 'esta_suscrito': esta_suscrito, 'canal': canal})
+                  { 'esta_suscrito': esta_suscrito, 'canal': canal})
 
 
 def ver_noticias(request):
@@ -56,7 +55,6 @@ def ver_noticias(request):
         Raises:
             Ciudadano.DoesNotExist: Si no se encuentra un ciudadano con el ID del usuario autenticado.
     """
-    ciudadano = Ciudadano.objects.get(id=request.user.id)
-    canales = (CanalInformativo.objects.filter(suscripciones__ciudadano=ciudadano))
-    noticias = (Noticia.objects.filter(canal__in=canales))
+    ciudadano = request.user
+    noticias = Noticia.obtener_noticias(ciudadano)
     return render(request, 'canales/muro.html', {'noticias': noticias})

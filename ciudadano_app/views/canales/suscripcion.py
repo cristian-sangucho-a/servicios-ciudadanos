@@ -20,7 +20,7 @@ def suscribirse_canal(request, canal_id):
             CanalInformativo.DoesNotExist: Si el canal con el ID proporcionado no existe.
             Ciudadano.DoesNotExist: Si no se encuentra un ciudadano con el ID del usuario autenticado.
     """
-    canal = CanalInformativo.objects.get(id=canal_id)
+    canal = get_object_or_404(CanalInformativo,id=canal_id)
     ciudadano = Ciudadano.objects.get(id=request.user.id)
     canal.suscribir_ciudadano(ciudadano)
     return redirect(request.META.get('HTTP_REFERER', 'dashboard_ciudadano'))
