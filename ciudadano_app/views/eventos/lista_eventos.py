@@ -15,17 +15,10 @@ def get_categoria_actual(request):
     return request.GET.get('categoria', 'todos')
 
 def obtener_eventos_para_categoria(categoria, ciudadano):
-    """
-    Según la categoría, se obtienen los eventos:
-      - 'mis': Eventos en los que el ciudadano ya está inscrito.
-      - 'disponibles': Eventos disponibles para inscripción.
-      - 'todos': Eventos próximos (por defecto).
-    """
-    if categoria == 'mis':
-        return EventoMunicipal.objects.para_ciudadano(ciudadano)
-    elif categoria == 'disponibles':
-        return EventoMunicipal.objects.disponibles_para_inscripcion(ciudadano)
-    return EventoMunicipal.objects.proximos()
+    """Obtiene los eventos según la categoría seleccionada"""
+    if categoria == 'mis_eventos' and ciudadano.is_authenticated:
+        return EventoMunicipal.objects.mis_eventos(ciudadano)
+    return EventoMunicipal.objects.todos_eventos(ciudadano)
 
 def preparar_contexto_eventos(eventos, ciudadano):
     """
@@ -38,9 +31,14 @@ def preparar_contexto_eventos(eventos, ciudadano):
         evento.is_subscribed = False
         evento.estado_registro = None
         if ciudadano.is_authenticated:
+            # Incluimos también los registros cancelados para poder mostrarlos en "Mis eventos"
             registro = evento.registroasistencia_set.filter(
                 ciudadano=ciudadano,
-                estado_registro__in=[EstadoRegistro.INSCRITO.value, EstadoRegistro.EN_ESPERA.value]
+                estado_registro__in=[
+                    EstadoRegistro.INSCRITO.value,
+                    EstadoRegistro.EN_ESPERA.value,
+                    EstadoRegistro.CANCELADO.value
+                ]
             ).first()
             if registro:
                 evento.is_subscribed = True
@@ -50,33 +48,23 @@ def preparar_contexto_eventos(eventos, ciudadano):
 
 @ciudadano_required
 def lista_eventos(request):
-    """
-    Vista para listar los eventos según la categoría:
-      - todos (próximos)
-      - mis eventos (inscritos)
-      - disponibles (para inscripción)
-    """
-    categoria = get_categoria_actual(request)
-    ciudadano = request.user
-
-    try:
-        eventos = obtener_eventos_para_categoria(categoria, ciudadano)
-        eventos_preparados = preparar_contexto_eventos(eventos, ciudadano)
-
-        context = {
-            'eventos': eventos_preparados,
-            'categoria_actual': categoria,
-            'total_eventos': EventoMunicipal.objects.proximos().count(),
-            'mis_eventos': RegistroAsistencia.objects.filter(
-                ciudadano=ciudadano,
-                estado_registro__in=[EstadoRegistro.INSCRITO.value, EstadoRegistro.EN_ESPERA.value]
-            ).count(),
-            'eventos_disponibles': EventoMunicipal.objects.disponibles_para_inscripcion(ciudadano).count(),
-        }
-        return render(request, 'eventos/lista_eventos.html', context)
-    except Exception as e:
-        messages.error(request, f"Error al cargar eventos: {str(e)}")
-        return redirect('bienvenida_ciudadano')
+    """Vista para listar eventos municipales"""
+    categoria = request.GET.get('categoria', 'todos')
+    eventos = obtener_eventos_para_categoria(categoria, request.user)
+    eventos = preparar_contexto_eventos(eventos, request.user)
+    
+    # Preparar contadores
+    total_eventos = EventoMunicipal.objects.count()
+    total_mis_eventos = EventoMunicipal.objects.mis_eventos(request.user).count() if request.user.is_authenticated else 0
+    
+    context = {
+        'eventos': eventos,
+        'categoria': categoria,
+        'total_eventos': total_eventos,
+        'total_mis_eventos': total_mis_eventos,
+    }
+    
+    return render(request, 'eventos/lista_eventos.html', context)
 
 @ciudadano_required
 def inscribirse_evento(request, evento_id):
@@ -120,8 +108,6 @@ def lista_espera_evento(request, evento_id):
         evento = get_object_or_404(EventoMunicipal, pk=evento_id)
         evento.agregar_a_lista_espera(request.user)
         messages.success(request, "Agregado a lista de espera.")
-    except ValidationError as e:
-        messages.error(request, str(e))
     except Exception as e:
         messages.error(request, f"Error al agregar a la lista de espera: {str(e)}")
     return redirect('lista_eventos')

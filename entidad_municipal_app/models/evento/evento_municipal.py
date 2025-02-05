@@ -43,6 +43,57 @@ class EventoMunicipalManager(models.Manager):
             raise e
         return evento
 
+    def mis_eventos(self, ciudadano):
+        """
+        Retorna todos los eventos en los que el ciudadano está registrado,
+        sin filtrar por estado del evento ni del registro.
+        Incluye eventos cancelados, finalizados, en curso y programados.
+        """
+        return self.filter(
+            registroasistencia_set__ciudadano=ciudadano,
+            registroasistencia_set__estado_registro__in=[
+                EstadoRegistro.INSCRITO.value,
+                EstadoRegistro.EN_ESPERA.value,
+                EstadoRegistro.CANCELADO.value
+            ]
+        ).distinct().order_by('-fecha_realizacion')
+
+    def disponibles_para_inscripcion(self, ciudadano):
+        """
+        Retorna los eventos próximos (con fecha en el futuro y en estado PROGRAMADO)
+        en los que el ciudadano NO esté registrado y que tengan cupos disponibles.
+        """
+        return self.exclude(
+            registroasistencia_set__ciudadano=ciudadano
+        ).filter(
+            estado_actual=EstadoEvento.PROGRAMADO.value,
+            fecha_realizacion__gte=timezone.now()
+        ).annotate(
+            total_inscritos=Count(
+                'registroasistencia_set',
+                filter=models.Q(registroasistencia_set__estado_registro=EstadoRegistro.INSCRITO.value)
+            )
+        ).filter(
+            total_inscritos__lt=F('capacidad_maxima')
+        ).order_by('fecha_realizacion')
+
+    def todos_eventos(self, ciudadano):
+        """
+        Retorna la unión de:
+         - Los eventos en los que el ciudadano está registrado (todos los estados)
+         - Los eventos próximos en los que el ciudadano NO está registrado.
+        """
+        mis = self.filter(
+            registroasistencia_set__ciudadano=ciudadano
+        )
+        disponibles = self.exclude(
+            registroasistencia_set__ciudadano=ciudadano
+        ).filter(
+            estado_actual=EstadoEvento.PROGRAMADO.value,
+            fecha_realizacion__gte=timezone.now()
+        )
+        return (mis | disponibles).distinct().order_by('fecha_realizacion')
+
     def proximos(self):
         """
         Retorna los eventos próximos o en curso.
@@ -60,23 +111,6 @@ class EventoMunicipalManager(models.Manager):
             registroasistencia_set__ciudadano=ciudadano,
             registroasistencia_set__estado_registro__in=[EstadoRegistro.INSCRITO.value, EstadoRegistro.EN_ESPERA.value]
         ).distinct().order_by('fecha_realizacion')
-
-    def disponibles_para_inscripcion(self, ciudadano):
-        """
-        Retorna los eventos disponibles para inscripción.
-        Excluye aquellos en los que el ciudadano ya está registrado.
-        """
-        return self.exclude(
-            registroasistencia_set__ciudadano=ciudadano
-        ).filter(
-            estado_actual=EstadoEvento.PROGRAMADO.value,
-            fecha_realizacion__gte=timezone.now()
-        ).annotate(
-            total_inscritos=Count('registroasistencia_set', 
-                filter=models.Q(registroasistencia_set__estado_registro=EstadoRegistro.INSCRITO.value))
-        ).filter(
-            total_inscritos__lt=models.F('capacidad_maxima')
-        ).order_by('fecha_realizacion')
 
 class EventoMunicipal(models.Model):
     """
@@ -176,6 +210,16 @@ class EventoMunicipal(models.Model):
         return self.registroasistencia_set.filter(
             estado_registro__in=[EstadoRegistro.INSCRITO.value, EstadoRegistro.EN_ESPERA.value]
         )
+
+    # Propiedad para determinar si el evento es próximo
+    @property
+    def es_proximo(self):
+        """
+        Retorna True si el evento es próximo, es decir:
+         - La fecha de realización es mayor o igual al momento actual
+         - Y su estado es PROGRAMADO.
+        """
+        return self.fecha_realizacion >= timezone.now() and self.estado_actual == EstadoEvento.PROGRAMADO.value
 
     # Métodos de negocio
     @transaction.atomic
