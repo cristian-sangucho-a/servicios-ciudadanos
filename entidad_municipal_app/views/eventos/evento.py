@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.views.decorators.http import require_http_methods
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
 from entidad_municipal_app.models.evento.registro_asistencia import RegistroAsistencia
 from entidad_municipal_app.decorators import entidad_required
 
 @entidad_required
+@require_http_methods(["GET"])
 def evento(request, evento_id):
     """
     Vista que muestra el detalle del evento, incluyendo la tabla de ciudadanos registrados
@@ -20,6 +22,7 @@ def evento(request, evento_id):
     return render(request, 'entidad/eventos/evento.html', context)
 
 @entidad_required
+@require_http_methods(["POST"])
 def actualizar_asistencia(request, registro_id):
     """
     Vista que procesa la actualización de la asistencia de un ciudadano a un evento.
@@ -49,6 +52,7 @@ def actualizar_asistencia(request, registro_id):
     return redirect('detalle_evento', evento_id=registro.evento.pk)
 
 @entidad_required
+@require_http_methods(["POST"])
 def eliminar_inscripcion(request, registro_id):
     """
     Vista que permite eliminar la inscripción de un ciudadano a un evento.
