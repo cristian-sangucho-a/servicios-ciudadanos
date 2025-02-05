@@ -1,5 +1,9 @@
+# models.py
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from shared.models import ServicioDeNotificacion
+from shared.models.notificacion.servicio_de_estado_sector import ServicioDeEstadoSector
 
 # Lista de sectores disponibles
 SECTORES = [
@@ -39,22 +43,36 @@ SECTORES = [
 
 # Definición de los estados posibles del sector
 ESTADOS_SECTOR = [
-    ('Seguro', 'Seguro'),
-    ('En Riesgo', 'En Riesgo'),
-    ('Peligroso', 'Peligroso'),
+    ('SEGURO', 'Seguro'),
+    ('PRECAUCIÓN', 'Precaución'),
+    ('RIESGO', 'Riesgo'),
 ]
 
 class Sector(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
+    nombre = models.CharField(
+        max_length=100,
+        choices=SECTORES,
+        unique=True,
+        verbose_name=_("Nombre del Sector"),  # Nombres más descriptivos
+        help_text=_("Nombre único del sector")  # Ayuda en el formulario
+    )
     estado = models.CharField(
         max_length=20,
-        choices=[
-            ('Seguro', 'Seguro'),
-            ('Riesgo', 'Riesgo'),
-            ('Peligroso', 'Peligroso')
-        ],
-        default='Seguro'
+        choices=ESTADOS_SECTOR,
+        default='SEGURO',
+        verbose_name=_("Estado del Sector"),
+        help_text=_("Estado actual del sector (Seguro, Precaución, Riesgo)")
     )
 
-    def _str_(self):
-        return self.nombre  # Simplificado para evitar confusión
+    def __str__(self):
+        return self.nombre
+
+    def actualizar_estado_y_notificar(self):
+        servicio_estado = ServicioDeEstadoSector(self)
+        estado_anterior = self.estado
+        servicio_estado.actualizar_estado()  # Calcula el nuevo estado
+
+        if self.estado != estado_anterior:  # Si hubo un cambio de estado
+            servicio_notificacion = ServicioDeNotificacion()
+            for ciudadano in self.ciudadanos_interesados.all():  # Notifica a interesados
+                servicio_notificacion.notificar_estado_riesgo(ciudadano, self)
