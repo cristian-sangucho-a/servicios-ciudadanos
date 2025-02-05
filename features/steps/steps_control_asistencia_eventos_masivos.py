@@ -178,27 +178,16 @@ def step_verificar_notificacion_promocion(context):
     assert correo_encontrado, "No se encontró el correo de confirmación para el ciudadano promovido"
 
 # Escenario: Confirmación de inscripción
-@given("que un ciudadano está inscrito en un evento")
-def step_crear_evento_con_inscripcion_confirmacion(context):
-    """Crea un evento y registra un ciudadano"""
-    context.evento = crear_evento_aleatorio(capacidad=2)
-    context.ciudadano = crear_ciudadano_aleatorio()
-    context.registro = context.evento.inscribir_ciudadano(context.ciudadano)
-
 @when("el ciudadano decide confirmar su inscripción")
 def step_confirmar_inscripcion(context):
     """
     Confirma la inscripción del ciudadano en el evento
     """
     try:
-        # Obtener el registro activo del ciudadano
-        registro = context.evento.obtener_registro_activo(context.ciudadano)
-        assert registro is not None, "El ciudadano no está inscrito en el evento"
-        
-        # Confirmar la inscripción
-        context.registro_confirmado = context.evento.confirmar_inscripcion(registro.id)
+        # Confirmar la inscripción usando el método del ciudadano
+        context.registro_confirmado = context.ciudadano.confirmar_inscripcion_evento(context.evento.id)
         context.error = None
-    except (ErrorGestionEventos, AssertionError) as e:
+    except ErrorGestionEventos as e:
         context.error = str(e)
 
 @then("el sistema debe promover al ciudadano a estado confirmado")

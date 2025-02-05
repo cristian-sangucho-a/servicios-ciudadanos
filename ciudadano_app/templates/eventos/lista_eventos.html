@@ -140,11 +140,21 @@
                 {% else %}
                   {% if evento.estado_registro == 'EN_ESPERA' %}
                     <a href="{% url 'cancelar_inscripcion' evento.id %}" 
-                       class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                       class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 mb-2"
                        onclick="return confirm('¿Estás seguro de que deseas cancelar tu lugar en la lista de espera?')">
                       Cancelar Lista de Espera
                     </a>
                   {% else %}
+                    {% if evento.estado_registro == 'INSCRITO' %}
+                      <a href="{% url 'confirmar_inscripcion_evento' evento.id %}" 
+                         class="block text-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 mb-2">
+                        Confirmar Inscripción
+                      </a>
+                    {% elif evento.estado_registro == 'CONFIRMADO' %}
+                      <div class="text-center bg-green-100 text-green-800 px-4 py-2 rounded-lg font-semibold">
+                        ✓ Inscripción Confirmada
+                      </div>
+                    {% endif %}
                     <a href="{% url 'cancelar_inscripcion' evento.id %}" 
                        class="block text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
                        onclick="return confirm('¿Estás seguro de que deseas cancelar tu inscripción?')">

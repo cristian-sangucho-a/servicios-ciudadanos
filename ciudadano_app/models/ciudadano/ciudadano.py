@@ -113,6 +113,47 @@ class Ciudadano(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
+    
+    def confirmar_inscripcion_evento(self, evento_id):
+        """
+        Confirma la inscripción del ciudadano en un evento específico.
+        
+        Args:
+            evento_id: ID del evento al que se quiere confirmar la inscripción
+            
+        Returns:
+            RegistroAsistencia: El registro actualizado a estado CONFIRMADO
+            
+        Raises:
+            ErrorGestionEventos: Si no existe un registro activo para el evento
+                               o si ocurre un error durante la confirmación
+        """
+        try:
+            # Obtener el evento
+            from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
+            from entidad_municipal_app.models.evento.enums import EstadoRegistro
+            
+            evento = EventoMunicipal.objects.get(pk=evento_id)
+            
+            # Obtener el registro activo
+            registro = evento.obtener_registro_activo(self)
+            if not registro:
+                raise ErrorGestionEventos("No se encontró una inscripción activa para este evento")
+                
+            if registro.estado_registro != EstadoRegistro.INSCRITO.value:
+                raise ErrorGestionEventos("Solo se pueden confirmar inscripciones en estado INSCRITO")
+            
+            # Confirmar la inscripción
+            registro.estado_registro = EstadoRegistro.CONFIRMADO.value
+            registro.save()
+            
+            # Notificar al ciudadano (usando el gestor de notificaciones del evento)
+            evento._enviar_notificacion_inscripcion(registro)
+            
+            return registro
+            
+        except EventoMunicipal.DoesNotExist:
+            raise ErrorGestionEventos("El evento especificado no existe")
 
     @property
     def is_staff(self):

@@ -148,3 +148,20 @@ def lista_espera_evento(request, evento_id):
     except Exception as e:
         messages.error(request, f"Error al agregar a la lista de espera: {str(e)}")
     return redirect('lista_eventos')
+
+@ciudadano_required
+def confirmar_inscripcion_evento(request, evento_id):
+    """
+    Vista para confirmar la inscripción de un ciudadano en un evento.
+    """
+    try:
+        # Obtener el registro confirmado
+        registro = request.user.confirmar_inscripcion_evento(evento_id)
+        messages.success(request, '¡Has confirmado tu inscripción al evento exitosamente!')
+        
+    except ErrorGestionEventos as e:
+        messages.error(request, str(e))
+    except Exception as e:
+        messages.error(request, f'Ocurrió un error al confirmar la inscripción: {str(e)}')
+    
+    return redirect('lista_eventos')

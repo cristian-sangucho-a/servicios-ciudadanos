@@ -9,7 +9,8 @@ from .views.eventos.lista_eventos import (
     lista_eventos,
     inscribirse_evento,
     cancelar_inscripcion,
-    lista_espera_evento
+    lista_espera_evento,
+    confirmar_inscripcion_evento
 )
 
 urlpatterns = [
@@ -41,6 +42,7 @@ urlpatterns = [
     # URLs para eventos
     path('eventos/', lista_eventos, name='lista_eventos'),
     path('eventos/<int:evento_id>/inscribirse/', inscribirse_evento, name='inscribirse_evento'),
+    path('eventos/<int:evento_id>/confirmar/', confirmar_inscripcion_evento, name='confirmar_inscripcion_evento'),
     path('eventos/<int:evento_id>/cancelar/', cancelar_inscripcion, name='cancelar_inscripcion'),
     path('eventos/<int:evento_id>/lista-espera/', lista_espera_evento, name='lista_espera_evento'),
 

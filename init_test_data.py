@@ -150,7 +150,7 @@ def create_test_data():
     for data in ciudadanos_data:
         ciudadano = Ciudadano.objects.create_user(
             correo_electronico=data["correo"],
-            password="password123",
+            password="test123",
             nombre_completo=f"{data['nombre']} {data['apellido']}",
             numero_identificacion=data["id"],
             esta_activo=True
