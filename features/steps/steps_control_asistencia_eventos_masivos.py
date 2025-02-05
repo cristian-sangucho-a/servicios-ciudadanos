@@ -11,6 +11,7 @@ from django.core import mail
 from ciudadano_app.models import Ciudadano
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal, ErrorGestionEventos  
 from entidad_municipal_app.models.evento.registro_asistencia import RegistroAsistencia
+from entidad_municipal_app.models.evento.enums import EstadoRegistro, EstadoEvento, EstadoEspacioPublico
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from mocks.repositorio_eventos_memoria import (
     crear_ciudadano_aleatorio,
@@ -23,6 +24,8 @@ from mocks.repositorio_eventos_memoria import (
 @given("que existe un evento con aforo disponible")
 def step_crear_evento_disponible(context):
     """Crea un evento programado con cupos disponibles"""
+    # Limpiar el buzón de correo antes de cada escenario
+    mail.outbox = []
     context.evento = crear_evento_aleatorio()
 
 @given("el ciudadano cumple con los requisitos de inscripción")
@@ -43,13 +46,25 @@ def step_inscribir_ciudadano(context):
 def step_verificar_registro_exitoso(context):
     """Verifica que el registro fue exitoso"""
     assert context.error is None, f"Error al registrar: {context.error}"
-    assert context.registro.estado_registro == RegistroAsistencia.ESTADO_INSCRITO, "Estado de registro incorrecto"
+    assert context.registro.estado_registro == EstadoRegistro.INSCRITO.value, "Estado de registro incorrecto"
 
 @then("enviar una confirmación de inscripción por correo electrónico")
 def step_verificar_correo_confirmacion(context):
     """Verifica que se envió el correo de confirmación"""
-    # TODO: Implementar cuando se desarrolle la funcionalidad de correos
-    pass
+    # Verificar que hay al menos un correo en la bandeja de salida
+    assert len(mail.outbox) > 0, "No se envió ningún correo"
+    
+    # Buscar el correo enviado al ciudadano
+    correo_encontrado = False
+    for email in mail.outbox:
+        if context.ciudadano.correo_electronico in email.to:
+            correo_encontrado = True
+            # Verificar que es un correo de confirmación de inscripción
+            assert "confirmación" in email.subject.lower(), "El asunto no indica que es una confirmación"
+            assert context.evento.nombre_evento in email.subject, "El asunto no contiene el nombre del evento"
+            break
+    
+    assert correo_encontrado, "No se encontró el correo de confirmación para el ciudadano"
 
 @then("reducir un cupo disponible del evento")
 def step_verificar_reduccion_cupo(context):
@@ -81,8 +96,7 @@ def step_verificar_registro_rechazado(context):
     """Verifica que el registro fue rechazado y agregado a la lista de espera"""
     assert context.error is None, f"Error inesperado: {context.error}"
     assert context.registro is not None, "No se creó el registro"
-
-    assert context.registro.estado_registro == RegistroAsistencia.ESTADO_EN_ESPERA, "Estado incorrecto"
+    assert context.registro.estado_registro == EstadoRegistro.EN_ESPERA.value, "Estado incorrecto"
 
 @then("agregar al ciudadano a una lista de espera")
 def step_verificar_lista_espera(context):
@@ -93,8 +107,20 @@ def step_verificar_lista_espera(context):
 @then("notificar al ciudadano de su estado en la lista de espera")
 def step_verificar_notificacion_lista_espera(context):
     """Verifica que se notificó al ciudadano sobre la lista de espera"""
-    # TODO: Implementar cuando se desarrolle la funcionalidad de correos
-    pass
+    # Verificar que hay al menos un correo en la bandeja de salida
+    assert len(mail.outbox) > 0, "No se envió ningún correo"
+    
+    # Buscar el correo enviado al ciudadano
+    correo_encontrado = False
+    for email in mail.outbox:
+        if context.ciudadano.correo_electronico in email.to:
+            correo_encontrado = True
+            # Verificar que es un correo de lista de espera
+            assert "lista de espera" in email.subject.lower(), "El asunto no indica lista de espera"
+            assert context.evento.nombre_evento in email.subject, "El asunto no contiene el nombre del evento"
+            break
+    
+    assert correo_encontrado, "No se encontró el correo de lista de espera para el ciudadano"
 
 # Escenario: Cancelación de inscripción por parte del ciudadano
 @given("que un ciudadano está inscrito en un evento")
@@ -125,16 +151,28 @@ def step_verificar_liberacion_cupo(context):
     """Verifica que se liberó el cupo y se canceló el registro"""
     assert context.error is None, f"Error al cancelar: {context.error}"
     assert context.registro_cancelado is not None, "No se canceló el registro"
-    assert context.registro_cancelado.estado_registro == RegistroAsistencia.ESTADO_CANCELADO, "Estado incorrecto"
+    assert context.registro_cancelado.estado_registro == EstadoRegistro.CANCELADO.value, "Estado incorrecto"
 
 @then("el primer ciudadano en lista de espera debe ser registrado automáticamente")
 def step_verificar_promocion_espera(context):
     """Verifica que se promovió al ciudadano en espera"""
     registro_actualizado = RegistroAsistencia.objects.get(pk=context.registro_espera.pk)
-    assert registro_actualizado.estado_registro == RegistroAsistencia.ESTADO_INSCRITO, "No se promovió el registro"
+    assert registro_actualizado.estado_registro == EstadoRegistro.INSCRITO.value, "No se promovió el registro"
 
 @then("notificar al ciudadano promovido de la lista de espera")
 def step_verificar_notificacion_promocion(context):
     """Verifica que se notificó al ciudadano promovido"""
-    # TODO: Implementar cuando se desarrolle la funcionalidad de correos
-    pass
+    # Verificar que hay al menos un correo en la bandeja de salida
+    assert len(mail.outbox) > 0, "No se envió ningún correo"
+    
+    # Buscar el correo enviado al ciudadano promovido
+    correo_encontrado = False
+    for email in mail.outbox:
+        if context.ciudadano_espera.correo_electronico in email.to:
+            correo_encontrado = True
+            # Verificar que es un correo de confirmación de inscripción
+            assert "confirmación" in email.subject.lower(), "El asunto no indica que es una confirmación"
+            assert context.evento.nombre_evento in email.subject, "El asunto no contiene el nombre del evento"
+            break
+    
+    assert correo_encontrado, "No se encontró el correo de confirmación para el ciudadano promovido"

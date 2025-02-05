@@ -1,5 +1,7 @@
 from django.shortcuts import render
 
+from ciudadano_app.models.reserva.servicio_reserva import ServicioReserva
+
 
 def cargar_calendario(request):
     """
@@ -18,6 +20,16 @@ def cargar_calendario(request):
                       con el ID del área comunal como contexto.
     """
     area_id = request.GET.get('area_id')
+
+    service_reserva = ServicioReserva()
+
+
+    #service_reserva.obtener_reserva_por_area(area_id)
+
+
+
+
+
     return render(request, 'calendario_area.html', {
         'area_id': area_id
     })
