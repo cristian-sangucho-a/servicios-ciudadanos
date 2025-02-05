@@ -47,8 +47,7 @@ def step_impl(context, canal_nombre):
 def step_impl(context, canal_nombre):
     """El ciudadano se suscribe al canal especificado."""
     context.ciudadano = crear_ciudadano()
-    canal = CanalInformativo.obtener_canal(canal_nombre)
-    context.suscripcion = canal.suscribir_ciudadano(context.ciudadano)
+    context.suscripcion = context.canal.suscribir_ciudadano(context.ciudadano)
 
     assert context.suscripcion, f"El ciudadano no se suscribió correctamente al canal {canal.nombre}."
 

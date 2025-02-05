@@ -116,10 +116,6 @@ class CanalInformativo(models.Model):
             )
 
     @classmethod
-    def obtener_canal(cls,nombre_canal):
-       return CanalInformativo.objects.get(nombre=nombre_canal)
-
-    @classmethod
     def crear_canal(cls, entidad_municipal, nombre, descripcion, es_emergencia):
         """
         Crea un nuevo canal informativo.
