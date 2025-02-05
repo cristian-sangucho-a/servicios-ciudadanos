@@ -66,6 +66,7 @@ def lista_eventos(request):
                 ciudadano=ciudadano,
                 estado_registro__in=[EstadoRegistro.INSCRITO.value, EstadoRegistro.EN_ESPERA.value]
             ).count(),
+            'eventos_disponibles': EventoMunicipal.objects.disponibles_para_inscripcion(ciudadano).count(),
         }
         return render(request, 'eventos/lista_eventos.html', context)
     except Exception as e:

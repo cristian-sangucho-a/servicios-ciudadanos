@@ -85,7 +85,7 @@
         <a href="{% url 'lista_eventos' %}?categoria=disponibles" 
            class="flex items-center gap-2 px-4 py-2 rounded-full border {% if categoria_actual == 'disponibles' %}bg-primary text-white{% else %}border-light bg-white hover:bg-primary hover:text-white{% endif %} transition-colors duration-200 focus:outline-none">
           <span class="font-semibold">Disponibles</span>
-          <span class="{% if categoria_actual == 'disponibles' %}bg-white text-primary{% else %}bg-gold text-black{% endif %} px-2 py-0.5 rounded-full text-xs">{{ total_eventos }}</span>
+          <span class="{% if categoria_actual == 'disponibles' %}bg-white text-primary{% else %}bg-gold text-black{% endif %} px-2 py-0.5 rounded-full text-xs">{{ eventos_disponibles }}</span>
         </a>
       {% endif %}
     </nav>
