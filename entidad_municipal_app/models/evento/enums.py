@@ -17,6 +17,7 @@ class EstadoRegistro(Enum):
     INSCRITO = 'INSCRITO'
     EN_ESPERA = 'EN_ESPERA'
     CANCELADO = 'CANCELADO'
+    CONFIRMADO = 'CONFIRMADO'
     
     @classmethod
     def choices(cls):

@@ -27,3 +27,8 @@ Característica: Controlar la asistencia a eventos masivos
     Entonces el sistema debe liberar el cupo correspondiente
     Y el primer ciudadano en lista de espera debe ser registrado automáticamente
     Y notificar al ciudadano promovido de la lista de espera
+
+    Escenario: Confirmación de inscripción por parte del ciudadano
+    Dado que un ciudadano está inscrito en un evento
+    Cuando el ciudadano decide confirmar su inscripción
+    Entonces el sistema debe promover al ciudadano a estado confirmado
