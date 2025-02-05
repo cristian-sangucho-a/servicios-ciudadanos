@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Servicios Ciudadanos{% endblock %}</title>
+  <title>{% block title %}Servicios ciudadanos{% endblock %}</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -63,7 +63,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-3 text-accent-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h3a1 1 0 011 1v5m-4 0h4" />
         </svg>
-        Servicios Ciudadanos
+        Servicios ciudadanos
       </a>
       <nav class="flex items-center space-x-4">
         {% if user.is_authenticated %}
@@ -79,7 +79,7 @@
           <form action="{% url 'logout_usuario' %}" method="post" class="inline">
             {% csrf_token %}
             <button type="submit" class="bg-accent-red px-5 py-2.5 rounded-lg hover:bg-accent-red/90 transition-colors-shadow">
-              Cerrar Sesión
+              Cerrar sesión
             </button>
           </form>
         {% else %}
@@ -88,7 +88,7 @@
               Ciudadano
             </a>
             <a href="{% url 'login_entidad' %}" class="px-4 py-2 rounded-lg hover:bg-primary-light/20 transition-colors-shadow">
-              Entidad Municipal
+              Entidad municipal
             </a>
           </div>
         {% endif %}
@@ -131,11 +131,11 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 text-accent-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
           </svg>
-          <p class="text-sm font-medium">&copy; 2025 Servicios Ciudadanos. Todos los derechos reservados.</p>
+          <p class="text-sm font-medium">&copy; 2025 Servicios ciudadanos. Todos los derechos reservados.</p>
         </div>
         <div class="flex space-x-6">
           <a href="#" class="text-sm text-white/80 hover:text-accent-gold transition-colors">
-            Términos y Condiciones
+            Términos y condiciones
           </a>
           <a href="#" class="text-sm text-white/80 hover:text-accent-gold transition-colors">
             Privacidad
