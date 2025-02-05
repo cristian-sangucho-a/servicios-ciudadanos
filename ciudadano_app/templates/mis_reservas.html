@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %}Mis Reservas{% endblock %}
+{% block title %}Mis reservas{% endblock %}
 
 {% block content %}
     <div class="flex items-left justify-center gap-10">
         <div class="text-left mt-4">
             <a href="{% url 'agenda' %}"
                class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
-                Ver Calendario
+                Ver calendario
             </a>
         </div>
         <div class="w-full lg:w-2/3 mt-8 p-4 bg-gray-100 rounded shadow-md">
-            <h2 class="text-2xl font-bold mb-4 text-center">Mis Reservas</h2>
+            <h2 class="text-2xl font-bold mb-4 text-center">Mis reservas</h2>
 
             {% if reservas %}
 
@@ -23,8 +23,8 @@
                                     <p><strong>Fecha:</strong> {{ reserva.fecha_reserva }}</p>
                                     <p><strong>Hora inicio:</strong> {{ reserva.hora_inicio }}</p>
                                     <p><strong>Hora fin:</strong> {{ reserva.hora_fin }}</p>
-                                    <p><strong>Área Comunal:</strong> {{ reserva.area_comunal }}</p>
-                                    <p><strong>Tipo de Reserva:</strong> {{ reserva.tipo_reserva }}</p>
+                                    <p><strong>Área comunal:</strong> {{ reserva.area_comunal }}</p>
+                                    <p><strong>Tipo de reserva:</strong> {{ reserva.tipo_reserva }}</p>
                                 </div>
                                 <form method="POST" action="{% url 'cancelar_reserva' %}">
                                     {% csrf_token %}
