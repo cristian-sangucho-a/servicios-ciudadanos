@@ -1,4 +1,3 @@
-from unittest.mock import Mock, patch
 from behave import step
 from faker import Faker
 from datetime import datetime
@@ -7,12 +6,10 @@ from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from ciudadano_app.models.reserva.servicio_reserva import ServicioReserva
 from ciudadano_app.models.servicio_notificacion_correo import ServicioNotificacionPorCorreo
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
-from mocks.repositorio_reserva_en_memoria import RepositorioReservaMemoria
 
 fake = Faker()
 servicio_reserva = ServicioReserva()
 servicio_notificacion_por_correo = ServicioNotificacionPorCorreo()
-servicio_reserva_en_memoria = RepositorioReservaMemoria()
 
 @step('que existen areas comunales disponibles en el espacio publico "{nombre_espacio_publico}" en la ciudad y son')
 def step_impl(context, nombre_espacio_publico):
@@ -193,7 +190,11 @@ def step_impl(context, tipo_reserva, nombre_espacio, nombre_area, fecha, hora_in
     hora_inicio_formateada = datetime.strptime(hora_inicio, "%H:%M").time()
     hora_fin_formateada = datetime.strptime(hora_fin, "%H:%M").time()
 
-    correos_invitados = fake.email() + "," + fake.email()
+    if tipo_reserva == "privado":
+        correos_invitados = fake.email() + "," + fake.email()
+    else:
+        correos_invitados = ""
+
     context.id_reserva, reservado = servicio_reserva.reservar_area_comunal(
         fecha_reserva=fecha_formateada, hora_inicio=hora_inicio_formateada, hora_fin=hora_fin_formateada, tipo_reserva=tipo_reserva,
         area_comunal=area_comunal, ciudadano=context.ciudadano, correos_invitados=correos_invitados)
