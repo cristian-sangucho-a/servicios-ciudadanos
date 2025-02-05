@@ -14,7 +14,6 @@ from mocks.repositorio_eventos_memoria import (
     crear_evento_aleatorio
 )
 repositorio = RepositorioEventos()
-# use_step_matcher("re")
 
 fake = Faker()
 
@@ -24,23 +23,24 @@ def step_impl(context):
     context.entidad_municipal = crear_entidad_municipal_aleatoria()
     context.evento = None
 
-@step('la fecha del evento es {fecha_evento}')
+@step('la fecha del evento es "{fecha_evento}"')
 def step_impl(context, fecha_evento):
     """Guarda la fecha del evento en el contexto"""
-    context.fecha_realizacion = fake.date_time().strftime("%Y-%m-%d %H:%M:%S")
+    context.fecha_realizacion = datetime.strptime(fecha_evento, "%Y-%m-%d %H:%M:%S")
 
-
-@step('el espacio público {nombre_espacio_publico} se encuentre en estado {estado_espacio_publico}')
+@step('el espacio público "{nombre_espacio_publico}" se encuentre en estado {estado_espacio_publico}')
 def step_impl(context, nombre_espacio_publico, estado_espacio_publico):
     """Crea un espacio público aleatorio con el estado especificado"""
-    context.estado_disponible = estado_espacio_publico
-    context.espacio_publico = crear_espacio_publico_aleatorio(nombre_espacio_publico,context.estado_disponible,context.entidad_municipal)
-    if context.espacio_publico.estado_espacio_publico != EstadoEspacioPublico.DISPONIBLE.value:
+    # Convertir el string del estado a enum value
+    estado = EstadoEspacioPublico[estado_espacio_publico].value
+    context.espacio_publico = crear_espacio_publico_aleatorio(
+        nombre_espacio_publico,
+        estado,
+        context.entidad_municipal
+    )
+    context.disponible = context.espacio_publico.estado_espacio_publico == EstadoEspacioPublico.DISPONIBLE.value
+    if not context.disponible:
         print(f"El espacio '{context.espacio_publico.nombre}' no está disponible para eventos.")
-        context.disponible = False
-    else:
-        context.disponible = True
-
 
 @step("se creara el evento")
 def step_impl(context):
@@ -49,8 +49,8 @@ def step_impl(context):
         context.evento = EventoMunicipal.objects.crear_evento_con_aforo(
             nombre="Concierto de Música",
             descripcion="Un concierto al aire libre con artistas locales.",
-            fecha=timezone.now() + timezone.timedelta(days=7),
-            lugar="Parque Central",
+            fecha=context.fecha_realizacion,
+            lugar=context.espacio_publico.nombre,
             capacidad=500,
             entidad_municipal=context.entidad_municipal,
             espacio_publico=context.espacio_publico
@@ -65,27 +65,27 @@ def step_impl(context):
 @step('el espacio público "{nombre_espacio_publico}" se encuentra en estado {estado_espacio_publico}')
 def step_impl(context, nombre_espacio_publico, estado_espacio_publico):
     """Crea un espacio público aleatorio con el estado especificado"""
-    context.estado_no_disponible = estado_espacio_publico
-    context.espacio_publico = crear_espacio_publico_aleatorio(nombre_espacio_publico,context.estado_no_disponible,context.entidad_municipal)
-
+    estado = EstadoEspacioPublico[estado_espacio_publico].value
+    context.espacio_publico = crear_espacio_publico_aleatorio(
+        nombre_espacio_publico,
+        estado,
+        context.entidad_municipal
+    )
 
 @step("no se creara el evento")
 def step_impl(context):
     """Verifica si el espacio público está disponible"""
     if context.espacio_publico.estado_espacio_publico == EstadoEspacioPublico.NO_DISPONIBLE.value:
         print("El espacio público no está disponible para este evento.")
-        """Asegura que el evento no se haya creado"""
         assert context.evento is None, "Se esperaba que el evento no se creara."
     else:
-        """Si el espacio público está disponible, esto es un caso inesperado"""
         raise AssertionError(
             f"Se esperaba que el espacio '{context.espacio_publico.nombre}' no estuviera disponible, pero está disponible.")
 
 @step("se mostrarán los espacios públicos disponibles")
 def step_impl(context):
     """Obtenemos los espacios disponibles sin necesidad de filtrar por fecha"""
-    espacios_disponibles = EspacioPublico.obtener_espacios_disponibles(filtrar_disponibles=False)
-    """Mostramos los espacios públicos disponibles"""
+    espacios_disponibles = EspacioPublico.obtener_espacios_disponibles(filtrar_disponibles=True)
     if espacios_disponibles.exists():
         print("Espacios públicos disponibles:")
         for espacio in espacios_disponibles:
@@ -93,29 +93,35 @@ def step_impl(context):
     else:
         print("No hay espacios públicos disponibles.")
 
-
-
 @step('que existe un evento llamado "{nombre_evento}" con el estado "{estado_evento}"')
 def step_existe_evento(context, nombre_evento, estado_evento):
-    """
-    Se guardan los datos para crear el evento en pasos siguientes
-    """
+    """Se guardan los datos para crear el evento en pasos siguientes"""
+    if estado_evento == "NULL":
+        context.evento = None
+        return
+        
     context.nombre_evento = nombre_evento
-    context.estado_evento = estado_evento
+    context.estado_evento = EstadoEvento[estado_evento].value
 
 @step('el espacio público destinado al evento es "{nombre_espacio}"')
 def step_asigna_espacio(context, nombre_espacio):
-    """
-    Asigna un espacio público al evento con los datos anteriores
-    """
+    """Asigna un espacio público al evento con los datos anteriores"""
+    if nombre_espacio == "NULL":
+        context.espacio_publico = None
+        return
+        
     context.entidad_municipal = crear_entidad_municipal_aleatoria()
-    context.espacio_publico = crear_espacio_publico_aleatorio(nombre_espacio=nombre_espacio,estado= "DISPONIBLE", entidad_municipal=context.entidad_municipal)
+    context.espacio_publico = crear_espacio_publico_aleatorio(
+        nombre_espacio=nombre_espacio,
+        estado=EstadoEspacioPublico.DISPONIBLE.value,
+        entidad_municipal=context.entidad_municipal
+    )
 
     context.evento = EventoMunicipal.objects.crear_evento_con_aforo(
         nombre=context.nombre_evento,
         descripcion=fake.paragraph(),
         fecha=timezone.now() + timedelta(days=7),
-        lugar="Parque Central",
+        lugar=nombre_espacio,
         capacidad=18,
         entidad_municipal=context.entidad_municipal,
         espacio_publico=context.espacio_publico,
@@ -123,9 +129,10 @@ def step_asigna_espacio(context, nombre_espacio):
 
 @step('el espacio publico esta en situación de "{estado_espacio}" debido a un "{motivo_riesgo}"')
 def step_cambia_estado_espacio(context, estado_espacio, motivo_riesgo):
-    """
-    Cambia el estado del espacio público y registra el motivo de riesgo.
-    """
+    """Cambia el estado del espacio público y registra el motivo de riesgo."""
+    if estado_espacio == "NULL" or motivo_riesgo == "NULL":
+        return
+        
     context.estado_espacio = estado_espacio
     context.motivo_riesgo = motivo_riesgo
 
@@ -141,12 +148,12 @@ def step_cambia_estado_espacio(context, estado_espacio, motivo_riesgo):
     except Exception as e:
         print(f"No se pudo cambiar el estado del lugar: {e}")
 
-
 @step('la entidad municipal cambia el estado del evento a "{nuevo_estado_evento}"')
 def step_cambia_estado_evento(context, nuevo_estado_evento):
-    """
-    Cambia el estado del evento usando el repositorio.
-    """
+    """Cambia el estado del evento usando el repositorio."""
+    if nuevo_estado_evento == "NULL":
+        return
+        
     try:
         if nuevo_estado_evento == EstadoEvento.CANCELADO.value:
             if hasattr(context, "motivo_riesgo"):
@@ -158,9 +165,7 @@ def step_cambia_estado_evento(context, nuevo_estado_evento):
 
 @step('se registra el motivo de la cancelación')
 def step_registra_motivo_cancelacion(context):
-    """
-    Registra el motivo de la cancelación si el evento está cancelado.
-    """
+    """Registra el motivo de la cancelación si el evento está cancelado."""
     if context.evento is None:
         print("No existe evento para registrar motivo de cancelación.")
         return

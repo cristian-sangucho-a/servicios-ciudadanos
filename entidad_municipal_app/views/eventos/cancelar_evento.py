@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
+from entidad_municipal_app.models.evento.enums import EstadoEvento
 from entidad_municipal_app.decorators import entidad_required
 
 @entidad_required
@@ -13,20 +14,19 @@ def cancelar_evento(request, evento_id):
 
     if request.method == 'POST':
         motivo_cancelacion = request.POST.get('motivo_cancelacion')
-        estado_incidente = request.POST.get('estado_incidente_espacio')  # Captura el estado del select
+        estado_incidente = request.POST.get('estado_incidente_espacio')  # Captura el valor seleccionado
 
         if not estado_incidente:
             messages.error(request, "Debe seleccionar un estado para el incidente del espacio público.")
             return redirect('gestor_eventos')
 
-
-        # Verificar si el estado es 'AFECTADO' y proceder a cancelar el evento
+        # Si el espacio está afectado y se proporciona un motivo, se cancela el evento
         if estado_incidente == 'AFECTADO':
             if motivo_cancelacion:
-                evento.estado_actual = EventoMunicipal.ESTADO_CANCELADO
+                evento.estado_actual = EstadoEvento.CANCELADO.value
                 evento.motivo_cancelacion = motivo_cancelacion
                 evento.save()
-                # Guardar el estado en la base de datos
+                # Actualizar el estado del espacio público
                 evento.espacio_publico.estado_incidente_espacio = estado_incidente
                 evento.espacio_publico.save()
                 messages.success(request, 'El evento ha sido cancelado exitosamente.')
