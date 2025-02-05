@@ -35,10 +35,23 @@ class RepositorioDeReporteMunicipalDjango(RepositorioDeReporteMunicipal):
         """
         Crea automáticamente reportes municipales a partir de los reportes ciudadanos.
         """
-        reportes_ciudadanos = self.repositorio_reporte_ciudadano.obtener_reportes_ordenados_prioridad()
+        reportes_ciudadanos = self.repositorio_reporte_ciudadano.obtener_todos_reportes()
 
         for reporte_ciudadano in reportes_ciudadanos:
+            if not self.existe_reporte_municipal_por_reporte_ciudadano(reporte_ciudadano):
                 self.crear(reporte_ciudadano)
+
+    def existe_reporte_municipal_por_reporte_ciudadano(self, reporte_ciudadano):
+        """
+        Verifica si existe un Reporte Municipal asociado a un Reporte Ciudadano específico.
+
+        Args:
+            reporte_ciudadano (Reporte): Instancia de Reporte que se quiere verificar.
+
+        Returns:
+            bool: `True` si existe un Reporte Municipal asociado al Reporte Ciudadano, `False` en caso contrario.
+        """
+        return ReporteMunicipal.objects.filter(reporte_ciudadano=reporte_ciudadano).exists()
 
     def obtener_por_id(self, id_reporte: int):
         """
