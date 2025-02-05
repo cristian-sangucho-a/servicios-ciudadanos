@@ -10,14 +10,16 @@ from .reporte.servicio_de_reporte import ServicioDeReporte
 from .reporte.repositorio_de_reporte_django import RepositorioDeReporteDjango
 from .notificacion.servicio_de_notificacion import ServicioDeNotificacion
 from .notificacion.notificacion import Notificacion
+from .sector import Sector
 
-_all_ = ['Reporte',
-           'RepositorioDeReporte',
-           'TipoReporte',
-           'ServicioDeReporte',
-           'RepositorioDeReporteDjango',
-           'ServicioDeNotificacion',
-            'Notificacion',
-            'Sector',
-            'ServicioDeEstadoSector'
-           ]
+__all__ = [
+    'Reporte',
+    'RepositorioDeReporte',
+    'TipoReporte',
+    'ServicioDeReporte',
+    'RepositorioDeReporteDjango',
+    'ServicioDeNotificacion',
+    'Notificacion',
+    'Sector',
+    'ServicioDeEstadoSector'
+]

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from ...decorators import ciudadano_required
 from shared.models import ServicioDeReporte, RepositorioDeReporteDjango, Reporte
 from shared.models.reporte.tipo_reporte import TipoReporte
+from shared.models.sector import Sector
 
 repositorioReporte = RepositorioDeReporteDjango()
 servicioDeReporte = ServicioDeReporte(repositorioReporte)

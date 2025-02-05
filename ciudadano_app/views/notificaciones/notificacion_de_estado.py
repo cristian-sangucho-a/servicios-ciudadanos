@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from shared.models.notificacion.sector import Sector
+from shared.models.sector import Sector
 from ...decorators import ciudadano_required
 from ciudadano_app.models import Ciudadano
 from shared.models import Reporte, TipoReporte, Notificacion

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from urllib.parse import unquote
+from shared.models.sector import Sector  # Actualizar si existe
 
 @login_required
 def ver_mapa_sector(request, nombre_sector):

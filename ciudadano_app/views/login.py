@@ -22,6 +22,9 @@ def login_ciudadano(request):
                 form.add_error(None, "Este usuario no es un ciudadano.")
             else:
                 login(request, user)
+                # Verificar si el ciudadano tiene sectores de interés
+                if not user.sectores_de_interes.exists():
+                    return redirect('agregar_primer_sector')
                 return redirect('bienvenida_ciudadano')
     else:
         form = CiudadanoLoginForm()

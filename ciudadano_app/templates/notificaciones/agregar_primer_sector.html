@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Seleccionar Sector de Interés - Municipio de Quito{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <!-- Encabezado -->
+            <div class="bg-[#002F5F] px-6 py-4 border-b-4" style="border-color: #D8A35C;">
+                <h2 class="text-white text-center text-2xl font-bold">Selecciona tu Sector de Interés</h2>
+            </div>
+            
+            <!-- Mensaje informativo -->
+            <div class="px-6 py-4 bg-blue-50 border-b border-blue-100">
+                <p class="text-blue-800 text-sm">
+                    Para comenzar, necesitas seleccionar al menos un sector de interés.
+                    Podrás agregar más sectores después.
+                </p>
+            </div>
+
+            <!-- Formulario -->
+            <form method="POST" class="px-6 py-8">
+                {% csrf_token %}
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="mb-6">
+                    <label for="sector" class="block text-gray-700 text-sm font-semibold mb-2">
+                        Sector de Interés <span class="text-red-500">*</span>
+                    </label>
+                    <select name="sector" id="sector" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#002F5F]">
+                        <option value="">Selecciona un sector</option>
+                        {% for sector in sectores %}
+                            <option value="{{ sector.0 }}">{{ sector.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-[#002F5F] hover:bg-[#001c3f] text-white font-semibold py-2 px-4 rounded transition duration-200">
+                    Continuar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 
