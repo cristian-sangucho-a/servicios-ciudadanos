@@ -8,6 +8,7 @@ from .registro_asistencia import RegistroAsistencia
 from .excepciones import ErrorGestionEventos
 from .enums import EstadoEvento, EstadoRegistro, EstadoEspacioPublico
 from .notificaciones import GestorNotificaciones
+from django.db.models import Count, F
 
 class EventoMunicipalManager(models.Manager):
     @transaction.atomic
@@ -32,6 +33,41 @@ class EventoMunicipalManager(models.Manager):
             espacio_publico=espacio_publico,
             entidad_municipal=entidad_municipal
         )
+
+    def proximos(self):
+        """
+        Retorna los eventos próximos o en curso.
+        """
+        return self.filter(
+            fecha_realizacion__gte=timezone.now(),
+            estado_actual__in=[EstadoEvento.PROGRAMADO.value, EstadoEvento.EN_CURSO.value]
+        ).order_by('fecha_realizacion')
+
+    def para_ciudadano(self, ciudadano):
+        """
+        Retorna los eventos en los que el ciudadano ya se encuentra inscrito (o en lista de espera).
+        """
+        return self.filter(
+            registroasistencia_set__ciudadano=ciudadano,
+            registroasistencia_set__estado_registro__in=[EstadoRegistro.INSCRITO.value, EstadoRegistro.EN_ESPERA.value]
+        ).distinct().order_by('fecha_realizacion')
+
+    def disponibles_para_inscripcion(self, ciudadano):
+        """
+        Retorna los eventos disponibles para inscripción.
+        Excluye aquellos en los que el ciudadano ya está registrado.
+        """
+        return self.exclude(
+            registroasistencia_set__ciudadano=ciudadano
+        ).filter(
+            estado_actual=EstadoEvento.PROGRAMADO.value,
+            fecha_realizacion__gte=timezone.now()
+        ).annotate(
+            total_inscritos=Count('registroasistencia_set', 
+                filter=models.Q(registroasistencia_set__estado_registro=EstadoRegistro.INSCRITO.value))
+        ).filter(
+            total_inscritos__lt=models.F('capacidad_maxima')
+        ).order_by('fecha_realizacion')
 
 class EventoMunicipal(models.Model):
     """
