@@ -153,6 +153,7 @@ def lista_espera_evento(request, evento_id):
 def confirmar_inscripcion_evento(request, evento_id):
     """
     Vista para confirmar la inscripción de un ciudadano en un evento.
+    Después de confirmar, redirige a la vista de mis eventos.
     """
     try:
         # Obtener el registro confirmado
