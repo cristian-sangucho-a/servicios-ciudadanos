@@ -232,29 +232,54 @@ class EventoMunicipal(models.Model):
         Se determina el estado (INSCRITO o EN_ESPERA) en función de los cupos disponibles.
         Se envía notificación al ciudadano.
         """
+        print(f"\n=== Cancelando inscripción ===")
+        print(f"ID de registro: {registro_id}")
+        print(f"ID del evento: {self.pk}")
+        print(f"Nombre del evento: {self.nombre_evento}")
+        
         try:
-            registro = self.registroasistencia_set.select_for_update().get(pk=registro_id)
+            # Primero bloqueamos el evento para evitar condiciones de carrera
+            evento = type(self).objects.select_for_update().get(pk=self.pk)
+            print("Evento bloqueado para actualización")
+            
+            # Ahora obtenemos y bloqueamos el registro
+            print(f"Buscando registro {registro_id}")
+            registro = evento.registroasistencia_set.select_for_update().get(pk=registro_id)
+            print(f"Registro encontrado: {registro.pk} - Estado: {registro.estado_registro}")
+            
             if registro.evento_id != self.pk:
                 raise ErrorGestionEventos("El registro no pertenece a este evento")
             if registro.estado_registro == EstadoRegistro.CANCELADO.value:
                 raise ErrorGestionEventos("El registro ya está cancelado")
             
             estado_original = registro.estado_registro
+            print(f"Estado original del registro: {estado_original}")
             registro.cancelar()
+            print(f"Registro cancelado. Nuevo estado: {registro.estado_registro}")
 
             registro_promovido = None
             if estado_original == EstadoRegistro.INSCRITO.value:
-                # (Aquí se podría liberar el cupo; en esta lógica se confía en que la consulta de cupos_disponibles se actualice)
-                registro_promovido = self._promover_siguiente_en_espera()
+                print("El registro era INSCRITO, buscando siguiente en lista de espera...")
+                registro_promovido = evento._promover_siguiente_en_espera()
+                print(f"Resultado de promoción: {registro_promovido}")
 
-            # Enviar notificaciones (la función interna se encarga de ello)
+            # Enviar notificaciones
+            print(f"Enviando notificación de cancelación para {registro}")
             self._enviar_notificacion_inscripcion(registro)
             if registro_promovido:
+                print(f"Enviando notificación de promoción para {registro_promovido}")
                 self._enviar_notificacion_inscripcion(registro_promovido)
+            
+            print("=== Fin de cancelación de inscripción ===\n")
             return registro, registro_promovido
 
         except RegistroAsistencia.DoesNotExist:
+            print(f"ERROR: No se encontró el registro {registro_id}")
             raise ErrorGestionEventos("Registro de asistencia no encontrado")
+        except Exception as e:
+            print(f"ERROR inesperado: {str(e)}")
+            print(f"Tipo de error: {type(e)}")
+            raise
 
     @transaction.atomic
     def marcar_asistencia(self, registro_id, asistio: bool):
@@ -295,8 +320,18 @@ class EventoMunicipal(models.Model):
         return registro
 
     def _promover_siguiente_en_espera(self):
-        siguiente = self.obtener_lista_espera().first()
+        """
+        Promueve al siguiente ciudadano en la lista de espera a estado INSCRITO.
+        Retorna el registro promovido o None si no hay nadie en lista de espera.
+        """
+        print("Entrando a _promover_siguiente_en_espera")
+        siguiente = self.registroasistencia_set.select_for_update().filter(
+            estado_registro=EstadoRegistro.EN_ESPERA.value
+        ).order_by('fecha_inscripcion').first()
+        print("Siguiente", siguiente)
+        
         if siguiente:
+            print("Promoviendo a siguiente")
             siguiente.promover_a_inscrito()
             self._enviar_notificacion_inscripcion(siguiente)
             return siguiente

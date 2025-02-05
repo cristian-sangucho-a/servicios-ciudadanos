@@ -88,10 +88,12 @@ class RegistroAsistencia(models.Model):
 
     def promover_a_inscrito(self):
         """Promueve un registro de EN_ESPERA a INSCRITO."""
+        print("antes de promover", self.pk, self.estado_registro)
         if self.estado_registro != EstadoRegistro.EN_ESPERA.value:
             raise ValueError("Solo se pueden promover registros en estado EN_ESPERA")
         self.estado_registro = EstadoRegistro.INSCRITO.value
         self.save()
+        print("después de promover", self.pk, self.estado_registro)
 
     def marcar_asistencia(self, asistio: bool):
         """Marca la asistencia del ciudadano al evento."""
@@ -129,4 +131,4 @@ class RegistroAsistencia(models.Model):
         self.save()
 
     def __str__(self):
-        return f"Registro de {self.ciudadano} en {self.evento.nombre} ({self.estado_registro})"
+        return f"Registro de {self.ciudadano} en {self.evento.nombre_evento} ({self.estado_registro})"
