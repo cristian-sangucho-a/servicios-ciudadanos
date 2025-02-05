@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import timedelta
 from entidad_municipal_app.models import EntidadMunicipal, EspacioPublico
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal
+from entidad_municipal_app.models.evento.enums import EstadoEvento, EstadoEspacioPublico
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from entidad_municipal_app.models.evento.gestor_eventos import RepositorioEventos
 from mocks.repositorio_eventos_memoria import (
@@ -34,7 +35,7 @@ def step_impl(context, nombre_espacio_publico, estado_espacio_publico):
     """Crea un espacio público aleatorio con el estado especificado"""
     context.estado_disponible = estado_espacio_publico
     context.espacio_publico = crear_espacio_publico_aleatorio(nombre_espacio_publico,context.estado_disponible,context.entidad_municipal)
-    if context.espacio_publico.estado_espacio_publico != EspacioPublico.ESTADO_DISPONIBLE:
+    if context.espacio_publico.estado_espacio_publico != EstadoEspacioPublico.DISPONIBLE.value:
         print(f"El espacio '{context.espacio_publico.nombre}' no está disponible para eventos.")
         context.disponible = False
     else:
@@ -58,7 +59,8 @@ def step_impl(context):
 @step("cambiara el estado del espacio público")
 def step_impl(context):
     """Cambia el estado del espacio público a NO DISPONIBLE"""
-    context.espacio_publico.estado_espacio_publico = EspacioPublico.ESTADO_NO_DISPONIBLE
+    context.espacio_publico.estado_espacio_publico = EstadoEspacioPublico.NO_DISPONIBLE.value
+    context.espacio_publico.save()
 
 @step('el espacio público "{nombre_espacio_publico}" se encuentra en estado {estado_espacio_publico}')
 def step_impl(context, nombre_espacio_publico, estado_espacio_publico):
@@ -70,7 +72,7 @@ def step_impl(context, nombre_espacio_publico, estado_espacio_publico):
 @step("no se creara el evento")
 def step_impl(context):
     """Verifica si el espacio público está disponible"""
-    if context.espacio_publico.estado_espacio_publico == EspacioPublico.ESTADO_NO_DISPONIBLE:
+    if context.espacio_publico.estado_espacio_publico == EstadoEspacioPublico.NO_DISPONIBLE.value:
         print("El espacio público no está disponible para este evento.")
         """Asegura que el evento no se haya creado"""
         assert context.evento is None, "Se esperaba que el evento no se creara."
@@ -146,7 +148,7 @@ def step_cambia_estado_evento(context, nuevo_estado_evento):
     Cambia el estado del evento usando el repositorio.
     """
     try:
-        if nuevo_estado_evento == EventoMunicipal.ESTADO_CANCELADO:
+        if nuevo_estado_evento == EstadoEvento.CANCELADO.value:
             if hasattr(context, "motivo_riesgo"):
                 repositorio.cancelar_evento(context.evento.id, context.motivo_riesgo)
             else:
@@ -163,7 +165,7 @@ def step_registra_motivo_cancelacion(context):
         print("No existe evento para registrar motivo de cancelación.")
         return
 
-    if context.evento.estado_actual == EventoMunicipal.ESTADO_CANCELADO:
+    if context.evento.estado_actual == EstadoEvento.CANCELADO.value:
         if hasattr(context, "motivo_riesgo"):
             context.evento.set_motivo_cancelacion(context.motivo_riesgo)
             context.evento.save()

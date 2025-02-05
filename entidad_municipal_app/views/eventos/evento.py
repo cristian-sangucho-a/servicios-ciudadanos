@@ -5,7 +5,8 @@ from django.contrib import messages
 from django.db.models import Q
 from django.db import transaction
 from entidad_municipal_app.models.evento.evento_municipal import EventoMunicipal, ErrorGestionEventos
-from entidad_municipal_app.models.evento.registro_asistencia import RegistroAsistencia, EstadoRegistroAsistencia
+from entidad_municipal_app.models.evento.registro_asistencia import RegistroAsistencia
+from entidad_municipal_app.models.evento.enums import EstadoRegistro
 from entidad_municipal_app.decorators import entidad_required
 
 @entidad_required
@@ -16,7 +17,7 @@ def evento(request, evento_id):
         
         # Obtener todos los registros activos (no cancelados)
         inscritos = evento.obtener_todos_registros().exclude(
-            estado_registro=EstadoRegistroAsistencia.CANCELADO
+            estado_registro=EstadoRegistro.CANCELADO
         )
         
         # Aplicar filtros de búsqueda
@@ -63,7 +64,7 @@ def actualizar_asistencia(request, registro_id):
         nuevo_estado = request.POST.get('nuevo_estado')
         
         # Validaciones de estado
-        estados_permitidos = [EstadoRegistroAsistencia.INSCRITO, EstadoRegistroAsistencia.EN_ESPERA]
+        estados_permitidos = [EstadoRegistro.INSCRITO, EstadoRegistro.EN_ESPERA]
         if registro.estado_registro not in estados_permitidos:
             raise ErrorGestionEventos("Solo se puede modificar el estado de registros activos")
         
@@ -71,7 +72,7 @@ def actualizar_asistencia(request, registro_id):
             raise ErrorGestionEventos("Estado no válido para actualización")
 
         # Validar cambio a EN_ESPERA solo si no hay cupos
-        if nuevo_estado == EstadoRegistroAsistencia.EN_ESPERA:
+        if nuevo_estado == EstadoRegistro.EN_ESPERA:
             if evento.cupos_disponibles > 0:
                 raise ErrorGestionEventos(
                     "No se puede poner en lista de espera cuando hay cupos disponibles. "
@@ -79,9 +80,9 @@ def actualizar_asistencia(request, registro_id):
                 )
 
         # Validar cambio a INSCRITO solo si hay cupos
-        elif nuevo_estado == EstadoRegistroAsistencia.INSCRITO:
+        elif nuevo_estado == EstadoRegistro.INSCRITO:
             inscritos_actuales = evento.registroasistencia_set.filter(
-                estado_registro=EstadoRegistroAsistencia.INSCRITO
+                estado_registro=EstadoRegistro.INSCRITO
             ).exclude(id=registro.id).count()
             
             if inscritos_actuales >= evento.capacidad_maxima:
@@ -93,7 +94,7 @@ def actualizar_asistencia(request, registro_id):
         registro.actualizar_estado(nuevo_estado)
         messages.success(
             request, 
-            f"Estado actualizado correctamente a: {dict(EstadoRegistroAsistencia.CHOICES)[nuevo_estado]}"
+            f"Estado actualizado correctamente a: {dict(EstadoRegistro.CHOICES)[nuevo_estado]}"
         )
         
     except ErrorGestionEventos as e:
