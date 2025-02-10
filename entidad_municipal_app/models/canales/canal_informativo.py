@@ -147,6 +147,19 @@ class CanalInformativo(models.Model):
     def esta_suscrito(self,ciudadano):
         return self.suscripciones.filter(ciudadano=ciudadano).exists()
 
+    @classmethod
+    def crear_canal_sugerido(cls,sugerencia):
+        try:
+            descripcion = sugerencia.descripcion + " (sugerido por: " + sugerencia.ciudadano.nombre_completo + ")"
+            entidad_municipal = sugerencia.entidad_municipal
+            nombre = sugerencia.nombre
+
+            canal = cls.crear_canal(entidad_municipal,nombre,descripcion, False)
+            sugerencia.canal_creado = True
+            return canal
+        except:
+            raise ValueError("No se ha podido crear el canal sugerido.")
+
 
 class Suscripcion(models.Model):
     """

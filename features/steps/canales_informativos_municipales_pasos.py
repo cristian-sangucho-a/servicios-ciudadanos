@@ -123,17 +123,24 @@ def step_impl(context, ciudad):
     context.canal_emergencia.notificar_alerta_emergencia(context.incidente, context.ciudad)
     assert Notificacion.objects.filter(titulo = "Alerta de emergencia").exists(), 'No se han eviado alertas de emergencia'
 
-
-@given("que soy un ciudadano registrado")
-def step_impl(context):
+@given('que un ciudadano registrado crea una sugerencia de canal con nombre "{nombre}" y descripción "{descripcion}"')
+def step_impl(context, nombre, descripcion):
     """Crea un ciudadano ficticio."""
     context.ciudadano = crear_ciudadano()
+    context.entidad_municipal = EntidadMunicipal.objects.create_user(
+        correo_electronico= fake.email(),
+        password=generate_random_string(7)
+    )
+    context.sugerencia = Sugerencia.crear_sugerencia_canal(nombre,descripcion,context.ciudadano,context.entidad_municipal)
 
-@when('el ciudadano crea una sugerencia de canal con nombre "{nombre}" y descripción "{descripcion}"')
-def step_impl(context, nombre, descripcion):
-    Sugerencia.crear_sugerencia_canal(nombre, descripcion)
+    assert Sugerencia.objects.filter(id=context.sugerencia.id).exists(), 'No se ha creado ninguna sugerencia'
 
-@then("el sistema registra la sugerencia del ciudadano")
+@when('se acepta la sugerencia')
+def step_impl(context):
+    context.canal_sugerido = CanalInformativo.crear_canal_sugerido(context.sugerencia)
+    assert context.sugerencia.canal_creado , 'No se ha aceptado la sugerencia'
+
+@then("se crea un nuevo canal informativo.")
 def step_impl(context):
     """Verifica que la sugerencia ha sido almacenada."""
-    assert Sugerencia.obtener_sugerencias().exists(), "La sugerencia no fue registrada."
+    assert CanalInformativo.objects.filter(nombre=context.sugerencia.nombre).exists(), "No existe ningún canal con el nombre de la sugerencia"
