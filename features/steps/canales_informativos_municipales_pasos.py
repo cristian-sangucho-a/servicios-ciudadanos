@@ -7,6 +7,7 @@ from entidad_municipal_app.models.canales.noticia import Noticia
 import string
 import secrets
 
+from entidad_municipal_app.models.canales.sugerencia import Sugerencia
 from shared.models.notificacion.notificacion import Notificacion
 
 fake = Faker()
@@ -35,7 +36,6 @@ def crear_canal(nombre, es_emergencia=False):
     canal = CanalInformativo.crear_canal(entidad,nombre,"Canal de noticias",es_emergencia)
     return canal
 
-
 # --- Escenario de suscripción a un canal informativo ---
 @given('que soy una entidad municipal que gestiona el canal "{canal_nombre}",')
 def step_impl(context, canal_nombre):
@@ -49,7 +49,7 @@ def step_impl(context, canal_nombre):
     context.ciudadano = crear_ciudadano()
     context.suscripcion = context.canal.suscribir_ciudadano(context.ciudadano)
 
-    assert context.suscripcion, f"El ciudadano no se suscribió correctamente al canal {canal.nombre}."
+    assert context.suscripcion, f"El ciudadano no se suscribió correctamente al canal {canal_nombre}."
 
 
 @then("el ciudadano recibe noticias relacionadas al canal.")
@@ -122,3 +122,18 @@ def step_impl(context, ciudad):
     """Verifica que las alertas de emergencia han sido enviadas."""
     context.canal_emergencia.notificar_alerta_emergencia(context.incidente, context.ciudad)
     assert Notificacion.objects.filter(titulo = "Alerta de emergencia").exists(), 'No se han eviado alertas de emergencia'
+
+
+@given("que soy un ciudadano registrado")
+def step_impl(context):
+    """Crea un ciudadano ficticio."""
+    context.ciudadano = crear_ciudadano()
+
+@when('el ciudadano crea una sugerencia de canal con nombre "{nombre}" y descripción "{descripcion}"')
+def step_impl(context, nombre, descripcion):
+    Sugerencia.crear_sugerencia_canal(nombre, descripcion)
+
+@then("el sistema registra la sugerencia del ciudadano")
+def step_impl(context):
+    """Verifica que la sugerencia ha sido almacenada."""
+    assert Sugerencia.obtener_sugerencias().exists(), "La sugerencia no fue registrada."
