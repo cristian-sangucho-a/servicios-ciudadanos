@@ -3,20 +3,25 @@ from django.shortcuts import render, get_object_or_404
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from entidad_municipal_app.models import Noticia
 from entidad_municipal_app.models.canales.canal_informativo import CanalInformativo, Suscripcion
+from entidad_municipal_app.models.canales.sugerencia import Sugerencia
 
 
 def lista_canales(request):
     """
-        Lista los canales informativos que no son de emergencia.
+    Lista los canales informativos que no son de emergencia y las sugerencias.
 
-        Args:
-            request (HttpRequest): La solicitud HTTP realizada por el usuario.
+    Args:
+        request (HttpRequest): La solicitud HTTP realizada por el usuario.
 
-        Returns:
-            HttpResponse: Renderiza la plantilla 'canales/lista_canales.html' con los canales disponibles.
+    Returns:
+        HttpResponse: Renderiza la plantilla 'canales/lista_canales.html' con los canales y sugerencias disponibles.
     """
     canales = CanalInformativo.objects.filter(es_emergencia=False)
-    return render(request, 'canales/lista_canales.html', {'canales': canales})
+    sugerencias = Sugerencia.objects.all()  # Obtener todas las sugerencias
+    return render(request, 'canales/lista_canales.html', {
+        'canales': canales,
+        'sugerencias': sugerencias,
+    })
 
 
 def detalle_canal(request, canal_id):

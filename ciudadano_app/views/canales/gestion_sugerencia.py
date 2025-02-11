@@ -31,7 +31,7 @@ def crear_sugerencia(request):
         elif nombre and descripcion:
             Sugerencia.crear_sugerencia_canal(nombre, descripcion, ciudadano, entidad_municipal)
             messages.success(request, 'La sugerencia de canal ha sido creada exitosamente.')
-            return redirect('/ciudadano/dashboard')
+            return redirect('/ciudadano/lista_canales')
 
     # Si no es POST, mostrar el formulario vacío
     return render(request, 'canales/crear_sugerencia.html')
