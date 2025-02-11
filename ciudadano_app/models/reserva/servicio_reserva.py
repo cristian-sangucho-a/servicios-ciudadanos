@@ -24,7 +24,6 @@ class ServicioReserva(RespositorioReserva):
         Returns:
             bool: True si el ciudadano supera el límite de reservas activas, False en caso contrario.
         """
-        print(ciudadano.reservas.filter(estado_reserva='Activa').count())
         return ciudadano.reservas.filter(estado_reserva='Activa').count() >= self.MAXIMO_RESERVAS
 
     def hay_areas_comunales_disponibles(self, espacio_publico):

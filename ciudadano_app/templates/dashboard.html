@@ -1,19 +1,58 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard Ciudadano - Municipio de Quito{% endblock %}
+{% block title %}Dashboard ciudadano - Municipio de Quito{% endblock %}
 
 {% block content %}
+<!-- Enhanced Header -->
 <!-- Enhanced Header -->
 <header class="bg-gradient-to-r from-[#002F5F] to-[#004080] text-white py-6 px-8 shadow-lg">
   <div class="container mx-auto flex items-center justify-between">
     <div>
-      <h1 class="text-3xl font-extrabold tracking-tight mb-2">Quito Municipal Dashboard</h1>
+      <h1 class="text-3xl font-extrabold tracking-tight mb-2">Dashboard del Municipio de Quito</h1>
       <p class="text-gray-200 text-lg opacity-90">Bienvenido/a, {{ ciudadano.nombre_completo }}</p>
     </div>
-    <div class="bg-[#D8A35C] p-3 rounded-full shadow-md">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+    <div class="flex items-center space-x-4">
+      <!-- Campanita de notificaciones -->
+      <div class="relative">
+        <button id="notificaciones-btn" class="p-2 rounded-full hover:bg-[#1a4f7a] focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+          </svg>
+          <!-- Indicador de notificaciones no leídas -->
+          {% if notificaciones_no_leidas %}
+            <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+              {{ notificaciones_no_leidas.count }}
+            </span>
+          {% endif %}
+        </button>
+        <!-- Menú desplegable de notificaciones -->
+        <div id="notificaciones-menu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg">
+          <div class="p-4">
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Notificaciones</h3>
+            <ul class="space-y-2">
+              {% for notificacion in notificaciones_no_leidas %}
+                <li class="text-sm text-gray-700">
+                  <div class="p-2 bg-gray-50 rounded-lg">
+                    <p>{{ notificacion.mensaje }}</p>
+                    <p class="text-xs text-gray-500">{{ notificacion.fecha }}</p>
+                  </div>
+                </li>
+              {% empty %}
+                <li class="text-sm text-gray-700">
+                  No tienes notificaciones nuevas.
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Icono de usuario -->
+      <div class="bg-[#D8A35C] p-3 rounded-full shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
     </div>
   </div>
 </header>
@@ -41,10 +80,9 @@
   </a>
     <!-- Sección de Agenda -->
         <a href="{% url 'agenda' %}"
-           class="bg-blue-300 text-white p-6 rounded-lg hover:bg-blue-600 transition-colors">
-
+class="bg-gradient-to-br from-[#2596be] to-[#2596be] text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 group">
             <div class="flex justify-between">
-                <h2 class="text-xl font-semibold mb-4">Agenda Publica</h2>
+                <h2 class="text-2xl font-bold tracking-wide">Agenda pública</h2>
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 17.75A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V6.25A3.25 3.25 0 0 1 6.25 3h11.5A3.25 3.25 0 0 1 21 6.25v11.5Zm-4-10a.75.75 0 0 0-.648-.743L16.25 7h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 7.75Zm0 8.5a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486L7.75 17h8.5l.102-.007A.75.75 0 0 0 17 16.25ZM17 12a.75.75 0 0 0-.648-.743l-.102-.007h-8.5l-.102.007a.75.75 0 0 0 0 1.486l.102.007h8.5l.102-.007A.75.75 0 0 0 17 12Z"
                           fill="#FFF"/>
@@ -70,6 +108,18 @@
       </svg>
     </div>
   </a>
+    <!-- Agregar sectores Card -->
+<a href="{% url 'agregar_sectores' %}" class="bg-gradient-to-br from-[#7df519] to-[#7319f5] text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 group">
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-bold tracking-wide">Agregar sectores de interés</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#D8A35C] group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2c3.866 0 7 3.134 7 7 0 5.25-7 13-7 13S5 14.25 5 9c0-3.866 3.134-7 7-7zm0 10a3 3 0 100-6 3 3 0 000 6z"/>
+      </svg>
+    </div>
+</a>
+
+
+
 </main>
 
 <!-- Metrics and Alerts Section -->
@@ -99,14 +149,14 @@
         <div class="slide">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Eventos Inscritos</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Eventos inscritos</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#007A33]">{{ eventos_inscritos }}</span>
                 <span class="text-sm text-gray-500">Registrado</span>
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Lista de Espera</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Lista de espera</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#A6192E]">{{ eventos_en_espera }}</span>
                 <span class="text-sm text-gray-500">En espera</span>
@@ -119,14 +169,14 @@
         <div class="slide">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Reportes Enviados</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Reportes enviados</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#007A33]">{{ reportes_enviados }}</span>
                 <span class="text-sm text-gray-500">Total</span>
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">En Proceso</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">En proceso</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#A6192E]">{{ reportes_en_proceso }}</span>
                 <span class="text-sm text-gray-500">Pendientes</span>
@@ -139,7 +189,7 @@
         <div class="slide">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Mis Canales</h3>
+              <h3 class="text-lg font-medium mb-2 text-[#002F5F]">Mis canales</h3>
               <div class="h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                 <span class="text-4xl font-bold text-[#007A33]">{{ canales_suscritos }}</span>
                 <span class="text-sm text-gray-500">Suscritos</span>
@@ -177,6 +227,7 @@
       </div>
     </div>
 
+
     <!-- Slide Indicators -->
     <div class="flex justify-center space-x-2 mt-6" id="slideIndicators">
       <button class="h-2 w-8 rounded-full bg-[#002F5F] transition-all duration-300"></button>
@@ -188,10 +239,10 @@
 
   <!-- Real-time Alerts -->
   <div class="bg-white p-6 rounded-2xl shadow-lg col-span-2 border-t-4 border-[#A6192E]">
-    <h2 class="text-2xl font-bold mb-6 text-[#A6192E]">Alertas en Tiempo Real</h2>
-    {% if ciudadano.notificaciones.all %}
+    <h2 class="text-2xl font-bold mb-6 text-[#A6192E]">Alertas en tiempo real</h2>
+    {% if alertas %}
       <div class="space-y-4">
-        {% for alerta in ciudadano.notificaciones.all %}
+        {% for alerta in alertas %}
         <div class="bg-gradient-to-r from-[#A6192E] to-[#C22A40] text-white p-5 rounded-lg shadow-md flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-4 text-[#D8A35C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -215,19 +266,14 @@
 {% block extra_js %}
 <!-- Three.js and GLTFLoader for the 3D Model -->
 <script type="module">
-  // With the import map in place, you can now import "three" as a bare module specifier.
   import * as THREE from 'three';
   import { GLTFLoader } from 'https://unpkg.com/three@0.152.2/examples/jsm/loaders/GLTFLoader.js';
 
-  // Get the container element for the model
   const container = document.getElementById('model-viewer');
-
   const existingCanvas = container.querySelector('canvas');
-  if (existingCanvas) {
-    container.removeChild(existingCanvas);
-  }
+  if (existingCanvas) container.removeChild(existingCanvas);
 
-  // Create the scene, camera, and renderer
+  // Configuración de Three.js (scene, camera, renderer, luces, etc.)
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xF5F5F5);
 
@@ -238,42 +284,36 @@
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
 
-  // Add basic lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Increased intensity
+  // Luces
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
   scene.add(ambientLight);
 
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1.75);
   directionalLight.position.set(0, 1, 1);
   scene.add(directionalLight);
 
-  // Load the GLB model
+  // Cargar modelo GLB
   const loader = new GLTFLoader();
   let model;
   loader.load(
-    '/static/3d/hello.glb', // Replace with your model's actual path
+    '/static/3d/hello.glb',
     (gltf) => {
       model = gltf.scene;
       scene.add(model);
 
-      // Optionally center and scale the model
+      // Centrar y escalar el modelo
       const box = new THREE.Box3().setFromObject(model);
       const size = box.getSize(new THREE.Vector3()).length();
       const center = box.getCenter(new THREE.Vector3());
-      model.position.x += (model.position.x - center.x);
-      model.position.y += (model.position.y - center.y);
-      model.position.z += (model.position.z - center.z);
-
-      // Adjust scale as needed
+      model.position.sub(center); // Corregir posición
       const scaleFactor = 3 / size;
       model.scale.set(scaleFactor, scaleFactor, scaleFactor);
     },
     undefined,
-    (error) => {
-      console.error('An error occurred loading the model:', error);
-    }
+    (error) => console.error('Error loading model:', error)
   );
 
-  // Update renderer and camera on window resize
+  // Manejar redimensionamiento
   window.addEventListener('resize', () => {
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -282,15 +322,36 @@
     camera.updateProjectionMatrix();
   });
 
-  // Animation loop: rotate the model
+  // Animación
   function animate() {
     requestAnimationFrame(animate);
-    if (model) {
-      model.rotation.y += 0.01;
-    }
+    if (model) model.rotation.y += 0.01;
     renderer.render(scene, camera);
   }
   animate();
+</script>
+
+<!-- Script de Notificaciones -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const notificacionesBtn = document.getElementById('notificaciones-btn');
+    const notificacionesMenu = document.getElementById('notificaciones-menu');
+
+    if (notificacionesBtn && notificacionesMenu) {
+      notificacionesBtn.addEventListener('click', function(event) {
+        event.stopPropagation();
+        notificacionesMenu.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', function(event) {
+        if (!notificacionesBtn.contains(event.target) && !notificacionesMenu.contains(event.target)) {
+          notificacionesMenu.classList.add('hidden');
+        }
+      });
+    } else {
+      console.error('Elementos del menú de notificaciones no encontrados');
+    }
+  });
 </script>
 {% endblock %}
 {% endblock %}

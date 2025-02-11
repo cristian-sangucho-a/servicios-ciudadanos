@@ -19,7 +19,7 @@ class Notificacion(models.Model):
                 leida (bool): Indicador de si la notificación ha sido leída por el ciudadano. Por defecto es False.
     """
     ciudadano = models.ForeignKey(
-        'ciudadano_app.Ciudadano',
+        Ciudadano, # Referencia directa al modelo Ciudadano
         on_delete=models.CASCADE,
         related_name='notificaciones'
     )
@@ -31,5 +31,5 @@ class Notificacion(models.Model):
     class Meta:
         ordering = ['-fecha']
 
-    def _str_(self):
+    def __str__(self):
         return f"Notificación para {self.ciudadano.nombre_completo}: {self.mensaje[:50]}..."

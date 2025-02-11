@@ -12,7 +12,7 @@
                 <div class="bg-default shadow-lg rounded-lg overflow-hidden">
                     <div class="flex items-center justify-between px-6 py-3 bg-primario-default">
                         <button id="prevMonth" class="text-white">Anterior</button>
-                        <h2 id="currentMonth" class="text-white">Mes y Año:</h2>
+                        <h2 id="currentMonth" class="text-white">Mes y año:</h2>
                         <button id="nextMonth" class="text-white">Siguiente</button>
                     </div>
                     <div class="grid grid-cols-7 gap-2 p-4" id="calendar">
@@ -21,7 +21,7 @@
                     <div id="myModal" class="modal hidden fixed inset-0 flex items-center justify-center z-50">
                         <div class="modal-overlay absolute inset-0 bg-black opacity-50"></div>
                         <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
-                            <div class="modal-content py-4 text-left px-6">
+                            <div class="modal-content py-4 text-left px-6 h-96 overflow-y-auto">
                                 <div class="flex justify-between items-center pb-3">
                                     <p class="text-2xl font-bold">Fecha seleccionada</p>
                                     <button id="closeModal"
@@ -87,7 +87,7 @@
                 dayElement.className = 'text-center py-2 border';
                 const currentDate = new Date();
                 const selectedDate = new Date(year, month, day);
-                if (selectedDate < new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())) {
+                if (selectedDate <= new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())) {
                     dayElement.classList.add('opacity-50', 'cursor-not-allowed', 'text-gray-400');
                 } else {
                     dayElement.classList.add('cursor-pointer');
@@ -108,6 +108,7 @@
                 calendarElement.appendChild(dayElement);
             }
         }
+
         const currentDate = new Date();
         let currentYear = currentDate.getFullYear();
         let currentMonth = currentDate.getMonth();
@@ -128,7 +129,9 @@
             }
             generateCalendar(currentYear, currentMonth);
         });
+
         const obtenerReservasUrl = "{% url 'obtener_reservas_por_fecha' %}";
+
         async function obtenerReservas(fecha) {
             const area_comunal_id = document.querySelector('select[name="area_id"]').value;
             try {
@@ -140,6 +143,7 @@
                 return [];
             }
         }
+
         function mostrarReservas(reservas, fecha) {
             const reservasList = document.getElementById('reservasList');
             reservasList.innerHTML = '';
@@ -148,7 +152,7 @@
 
             bloques.forEach(bloque => {
                 const bloqueElement = document.createElement('div');
-                bloqueElement.className = 'p-3 rounded-lg mb-2 border';
+                bloqueElement.className = 'p-3 rounded-lg mb-2 border h-24'; // Añadido h-24
                 const reservasEnBloque = reservas.filter(reserva => {
                     const [horaReserva] = reserva.hora_inicio.split(':').map(Number);
                     const horaInicioBloque = parseInt(bloque.inicio.split(':')[0], 10);

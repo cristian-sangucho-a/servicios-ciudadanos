@@ -4,6 +4,7 @@ from django.utils import timezone
 from shared.models.notificacion.notificacion import Notificacion
 from ..decorators import ciudadano_required
 from entidad_municipal_app.models import EventoMunicipal, RegistroAsistencia
+from entidad_municipal_app.models.evento.enums import EstadoRegistro, EstadoEvento
 
 @ciudadano_required
 def dashboard_ciudadano(request):
@@ -13,19 +14,20 @@ def dashboard_ciudadano(request):
 
     # Eventos donde estoy inscrito
     eventos_inscritos = EventoMunicipal.objects.filter(
-        registroasistencia__ciudadano=ciudadano,
-        registroasistencia__estado_registro=RegistroAsistencia.ESTADO_INSCRITO
+        registroasistencia_set__ciudadano=ciudadano,
+        registroasistencia_set__estado_registro=EstadoRegistro.INSCRITO.value
     ).distinct().count()
 
     # Eventos donde estoy en lista de espera
     eventos_en_espera = EventoMunicipal.objects.filter(
-        registroasistencia__ciudadano=ciudadano,
-        registroasistencia__estado_registro=RegistroAsistencia.ESTADO_EN_ESPERA
+        registroasistencia_set__ciudadano=ciudadano,
+        registroasistencia_set__estado_registro=EstadoRegistro.EN_ESPERA.value
     ).distinct().count()
 
     # Total de eventos activos en el sistema
     total_eventos = EventoMunicipal.objects.filter(
-        fecha_realizacion__gte=ahora
+        fecha_realizacion__gte=ahora,
+        estado_actual__in=[EstadoEvento.PROGRAMADO.value, EstadoEvento.EN_CURSO.value]
     ).count()
 
     context = {

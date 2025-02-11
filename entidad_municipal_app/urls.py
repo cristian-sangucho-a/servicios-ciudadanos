@@ -7,7 +7,7 @@ from .views.canales import gestion_canal
 from .views.canales import gestion_noticias
 from .views.canales import gestion_sugerencias
 from shared.views.logout import logout_usuario
-from .views.eventos.evento import actualizar_asistencia, eliminar_inscripcion
+from .views.eventos import evento
 
 urlpatterns = [
     path('lista_sugerencias/', gestion_sugerencias.listar_sugerencias, name='lista_sugerencias'),
@@ -26,15 +26,13 @@ urlpatterns = [
     path('lista_canales/noticias_canal/detalle_noticia/eliminar_noticia/<int:noticia_id>', gestion_noticias.eliminar_noticia, name='eliminar_noticia'),
     path('lista_canales/noticias_canal/crear_alerta_emergencia/<int:canal_id>', gestion_noticias.alerta_de_emergencia, name='alerta_emergencia'),
     path('eventos/', views.gestor_eventos, name='gestor_eventos'),
-    path('eventos/<int:evento_id>/', views.evento, name='detalle_evento'),
-    path('eventos/asistencia/<int:registro_id>/', actualizar_asistencia, name='actualizar_asistencia'),
-    path('eventos/inscripcion/<int:registro_id>/', eliminar_inscripcion, name='eliminar_inscripcion'),
+    path('eventos/<int:evento_id>/', evento.evento, name='detalle_evento'),
+    path('eventos/asistencia/<int:registro_id>/', evento.actualizar_asistencia, name='actualizar_asistencia'),
+    path('eventos/inscripcion/<int:registro_id>/', evento.eliminar_inscripcion, name='eliminar_inscripcion'),
     path('reportes/', views.lista_todos_reportes, name='lista_todos_reportes'),
     path('reportes/<int:reporte_id>/postergar/', views.postergar_reporte, name='postergar_reporte'),
-    # path('reportes/<str:departamento>/', views.reportes_por_departamento, name='reportes_por_departamento'),
     path('reportes/<int:reporte_id>/resolver/', views.resolver_reporte, name='resolver_reporte'),
-path('reporte/<int:reporte_id>/agregar_evidencia/', views.agregar_evidencia, name='agregar_evidencia'),
-
+    path('reporte/<int:reporte_id>/agregar_evidencia/', views.agregar_evidencia, name='agregar_evidencia'),
     path('eventos/editar_evento/<int:evento_id>/', views.editar_evento, name='editar_evento'),
     path('eventos/crear_evento/', views.crear_evento, name='crear_evento'),
     path('eventos/<int:evento_id>/cancelar_evento/', views.cancelar_evento, name='cancelar_evento')
