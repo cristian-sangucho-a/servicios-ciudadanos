@@ -7,7 +7,7 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-extrabold text-center">Reportes</h1>
         <a href="{% url 'envio_reporte' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
-            Enviar reporte
+            Enviar Reporte
         </a>
     </div>
     <div class="space-y-4">
@@ -34,9 +34,20 @@
                         <span class="block text-sm font-medium text-gray-500">Reportado por:</span>
                         <span class="text-sm text-gray-600">{{ reporte.ciudadano.nombre_completo }}</span>
                     </div>
+                    <!-- Botón de Confirmar Reporte -->
+                    <div class="mt-4">
+                        <form method="POST" action="{% url 'envio_reporte' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="asunto" value="{{ reporte.tipo_reporte.asunto }}">
+                            <input type="hidden" name="ubicacion" value="{{ reporte.ubicacion }}">
+                            <input type="hidden" name="ciudadano_id" value="{{ reporte.ciudadano.id }}">
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
+                                Confirmar Reporte
+                            </button>
+                        </form>
+                    </div>
                 </div>
                 {% endfor %}
-
             </div>
         </div>
         {% endfor %}

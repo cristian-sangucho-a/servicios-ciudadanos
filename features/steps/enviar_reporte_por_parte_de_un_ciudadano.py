@@ -48,3 +48,37 @@ def step_impl3(context, cantidad_registro, asunto):
 @step('el reporte es asignado con prioridad "{prioridad_esperada}"')
 def step_impl4(context, prioridad_esperada):
     assert int(prioridad_esperada) == context.reporte.prioridad
+
+
+@step(
+    'que un ciudadano llamado "{nombre}" con correo "{correo}" e identificación "{identificacion}" visualice el reporte con asunto "{asunto}" y ubicación "{ubicacion}"'
+)
+def step_impl(context, nombre, correo, identificacion, asunto, ubicacion):
+    context.ciudadano = Ciudadano(
+        nombre_completo=nombre, correo_electronico=correo, numero_identificacion=identificacion
+    )
+    context.reporte = Reporte(
+        ciudadano=context.ciudadano,
+        tipo_reporte=TipoReporte(asunto=asunto),
+        ubicacion=ubicacion,
+    )
+
+
+@step('el reporte cuente con "{cantidad_registro}" de registros previos de dicho reporte y prioridad "{prioridad}"')
+def step_impl1(context, cantidad_registro, prioridad):
+    generar_registros(repositorioEnMemoria, cantidad_registro, context.reporte.tipo_reporte.asunto)
+    context.reporte = servicioDeReporte.priorizar(context.reporte)
+    assert int(prioridad) == context.reporte.prioridad
+
+
+@step("se confirma el reporte")
+def step_impl2(context):
+    servicioDeReporte.confirmar_reporte(context.reporte)
+
+
+@step('se crea un nuevo reporte con el mismo "{asunto}", "{ubicacion}" y "{descripcion}"')
+def step_impl3(context, asunto, ubicacion, descripcion):
+    tipo_reporte = TipoReporte(asunto=asunto, descripcion=descripcion)
+    context.reporte = Reporte(
+        ciudadano=context.ciudadano, tipo_reporte=tipo_reporte, ubicacion=ubicacion
+    )

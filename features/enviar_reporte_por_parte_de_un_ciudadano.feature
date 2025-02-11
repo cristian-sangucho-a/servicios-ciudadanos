@@ -20,3 +20,11 @@ Característica: Enviar y gestionar reporte por parte de un ciudadano
       | Juan Perez | juan.perez@test.com | 1727263717     | bache        | Se inundo   | Av. 123   | 3                 | 4         |
       | Juan Perez | juan.perez@test.com | 1727263717     | robo         | Se inundo   | Av. 123   | 1                 | 5         |
       | Juan Perez | juan.perez@test.com | 1727263717     | choque       | Se inundo   | Av. 123   | 0                 | 5         |
+
+  Escenario: Confirmar reporte existente
+    Dado que un ciudadano llamado "Juan Perez" con correo "juan.perez@test.com" e identificación "1727263717" visualice el reporte con asunto "explosion" y ubicación "Av. 123"
+    Y el reporte cuente con "12" de registros previos de dicho reporte y prioridad "2"
+    Cuando se confirma el reporte
+    Y se crea un nuevo reporte con el mismo "explosion", "Av. 123" y "Se quemo"
+    Y se asigna una prioridad de acuerdo a "13" registros previos del problema con asunto "explosion"
+    Entonces el reporte es asignado con prioridad "1"

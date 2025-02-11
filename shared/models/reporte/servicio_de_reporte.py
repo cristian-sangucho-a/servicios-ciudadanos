@@ -76,6 +76,22 @@ class ServicioDeReporte:
         self.reporte_repositorio.agregar_reporte(reporte)
 
         return reporte
+
+    def confirmar_reporte(self, reporte: Reporte):
+        """
+        Valida y envía un reporte al repositorio para ser agregado a la base de datos.
+
+        Args:
+            reporte (Reporte): El reporte a enviar.
+
+        Raises:
+            ValueError: Si el reporte no es válido.
+        """
+        if not reporte.validar_reporte():
+            raise ValueError("El reporte no es válido.")
+        self.reporte_repositorio.agregar_reporte(reporte)
+
+        return reporte
     
     def obetener_lista_reportes_por_asunto(self):
         reportes = Reporte.objects.all().order_by('tipo_reporte__asunto', '-prioridad')
