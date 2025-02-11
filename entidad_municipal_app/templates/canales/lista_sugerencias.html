@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h1 class="text-2xl font-bold text-primario-DEFAULT mb-4">Sugerencias Recibidas</h1>
+
+    <div class="bg-gray rounded-lg shadow-md p-6">
+        {% if sugerencias %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for sugerencia in sugerencias %}
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-primario-DEFAULT">{{ sugerencia.nombre }}</h2>
+                <p class="text-gray-600">{{ sugerencia.descripcion }}</p>
+                <p class="text-gray-500 mt-2">Fecha de creación: {{ sugerencia.fecha_creacion }}</p>
+
+                <div class="mt-4 flex space-x-4">
+                    <form action="{% url 'aceptar_sugerencia' sugerencia.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">
+                            Aceptar
+                        </button>
+                    </form>
+                    <form action="{% url 'rechazar_sugerencia' sugerencia.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600">
+                            Rechazar
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-600">No hay sugerencias disponibles en este momento.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

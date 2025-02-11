@@ -1,5 +1,8 @@
+from contextlib import nullcontext
+
 from django.shortcuts import render, redirect, get_object_or_404
 
+from entidad_municipal_app.models import EntidadMunicipal
 from entidad_municipal_app.models.canales.sugerencia import Sugerencia
 
 
@@ -17,10 +20,11 @@ def crear_sugerencia(request):
     """
     if request.method == 'POST':
         ciudadano = request.user
+        entidad_municipal = EntidadMunicipal.objects.get(id=1)
         nombre = request.POST.get('nombre_sugerencia')
         descripcion = request.POST.get('descripcion')
         if nombre and descripcion:
-            Sugerencia.crear_sugerencia_canal(nombre,descripcion)
+            Sugerencia.crear_sugerencia_canal(nombre,descripcion, ciudadano, entidad_municipal)
 
     print(Sugerencia.objects.all())
     return redirect('/ciudadano/dashboard')

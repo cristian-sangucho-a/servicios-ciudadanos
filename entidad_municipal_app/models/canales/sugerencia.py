@@ -5,13 +5,18 @@ from entidad_municipal_app.models import EntidadMunicipal
 
 
 class Sugerencia(models.Model):
+    ESTADOS_CHOICES = [
+        ('Pendiente', 'Pendiente'),
+        ('Aceptada', 'Aceptada'),
+        ('Rechazada', 'Rechazada'),
+    ]
     ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE, related_name="sugerencias")
     entidad_municipal = models.ForeignKey(EntidadMunicipal, on_delete=models.CASCADE, related_name="sugerencias")
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
     canal_creado = models.BooleanField(default=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-
+    estado = models.CharField(max_length=20, choices=ESTADOS_CHOICES, default='Pendiente')
     @classmethod
     def crear_sugerencia_canal(cls, nombre, descripcion, ciudadano, entidad_municipal):
         sugerencia = Sugerencia.objects.create(

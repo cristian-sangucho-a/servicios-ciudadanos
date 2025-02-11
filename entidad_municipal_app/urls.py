@@ -5,10 +5,14 @@ from django.urls import path
 from . import views
 from .views.canales import gestion_canal
 from .views.canales import gestion_noticias
+from .views.canales import gestion_sugerencias
 from shared.views.logout import logout_usuario
 from .views.eventos.evento import actualizar_asistencia, eliminar_inscripcion
 
 urlpatterns = [
+    path('lista_sugerencias/', gestion_sugerencias.listar_sugerencias, name='lista_sugerencias'),
+    path('aceptar_sugerencia/<int:sugerencia_id>/', gestion_sugerencias.aceptar_sugerencia, name='aceptar_sugerencia'),
+    path('rechazar_sugerencia/<int:sugerencia_id>/', gestion_sugerencias.rechazar_sugerencia, name='rechazar_sugerencia'),
     path('', views.bienvenida_entidad, name='bienvenida_entidad'),
     path('login/', views.login_entidad, name='login_entidad'),
     path('dashboard/', views.dashboard_entidad, name='dashboard_entidad'),
