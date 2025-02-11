@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from entidad_municipal_app.models import EntidadMunicipal
 from entidad_municipal_app.models.canales.canal_informativo import CanalInformativo
@@ -16,8 +16,8 @@ def listar_canales_administrados(request):
         Returns:
             HttpResponse: El renderizado del template 'canales/lista_canales_administrados.html', con la lista de canales.
     """
-    entidad_municipal = EntidadMunicipal.objects.get(id = request.user.id)
-    canales = CanalInformativo.objects.filter(entidad_municipal = entidad_municipal)
+    entidad_municipal = request.user
+    canales = entidad_municipal.canales.all()
     return render(request, 'canales/lista_canales_administrados.html',{'canales':canales})
 
 def crear_canal_form(request):
@@ -39,9 +39,7 @@ def crear_canal(request):
         Crea un nuevo canal informativo y lo suscribe a todos los ciudadanos si es de emergencia.
 
         Esta vista maneja el formulario de creación de un canal. Al recibir una solicitud POST, crea un nuevo canal
-        informativo basado en los datos enviados en el formulario. Si el canal es de emergencia, suscribe a todos los ciudadanos
-        al canal recién creado.
-
+        informativo basado en los datos enviados en el formulario.
         Args:
             request (HttpRequest): La solicitud HTTP realizada por el usuario que contiene los datos del formulario.
 
@@ -49,22 +47,13 @@ def crear_canal(request):
             HttpResponseRedirect: Redirige a la lista de canales de la entidad municipal después de crear el canal.
     """
     if request.method == 'POST':
-        entidad_municipal = EntidadMunicipal.objects.get(id=request.user.id)
+        entidad_municipal = request.user
         nombre = request.POST.get('nombre_canal')
         descripcion = request.POST.get('descripcion_canal')
         es_emergencia = request.POST.get('es_emergencia')
-        if nombre and descripcion and es_emergencia:
-            CanalInformativo.objects.create(
-                entidad_municipal=entidad_municipal,
-                nombre=nombre,
-                descripcion=descripcion,
-                es_emergencia=es_emergencia
-            )
-            canal = CanalInformativo.objects.get(nombre=nombre)
-            if canal.es_emergencia:
-                ciudadanos = Ciudadano.objects.all()
-                for ciudadano in ciudadanos:
-                    canal.suscribir_ciudadano(ciudadano)
+        es_emergencia = es_emergencia in ["True", "true", "on", "1"]
+        if nombre and descripcion:
+            CanalInformativo.crear_canal(entidad_municipal,nombre,descripcion,es_emergencia)
     return redirect("/entidad_municipal/lista_canales/")
 
 def eliminar_canal(request,canal_id):
@@ -81,6 +70,6 @@ def eliminar_canal(request,canal_id):
         Returns:
             HttpResponseRedirect: Redirige a la lista de canales de la entidad municipal después de eliminar el canal.
     """
-    canal= CanalInformativo.objects.get(id=canal_id)
+    canal= get_object_or_404(CanalInformativo,id=canal_id)
     canal.delete()
     return redirect("/entidad_municipal/lista_canales/")

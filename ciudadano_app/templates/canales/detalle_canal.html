@@ -26,7 +26,7 @@
         <h2 class="text-2xl font-semibold text-primario-DEFAULT mb-4">Noticias</h2>
 
         <ul class="space-y-4">
-            {% for noticia in noticias %}
+            {% for noticia in canal.noticias.all %}
             <li class="bg-white p-4 rounded-lg shadow max-w-lg mx-auto">
                 {% include 'canales/partials/noticia_detalle.html' %}
                 {% if esta_suscrito %}

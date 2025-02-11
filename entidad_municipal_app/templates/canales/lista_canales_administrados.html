@@ -4,10 +4,19 @@
 <div class="bg-white rounded-lg shadow-md p-6">
     <h1 class="text-2xl font-bold text-primario-DEFAULT mb-4">Canales administrados</h1>
 
-    <a href="{% url 'crear_canal_form' %}"
-       class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-        Crear canal
-    </a>
+    <div class="flex space-x-4">
+        <!-- Crear Canal Button -->
+        <a href="{% url 'crear_canal_form' %}"
+           class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-auto">
+            Crear canal
+        </a>
+
+        <!-- Sugerencias Button -->
+        <a href="{% url 'lista_sugerencias' %}"
+           class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-auto">
+            Sugerencias
+        </a>
+    </div>
 </div>
 
 <div class="bg-gray rounded-lg shadow-md p-6">

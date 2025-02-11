@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views.canales.gestion_sugerencia import crear_sugerencia, crear_sugerencia_form
 from .views.canales.noticia import reaccionar, comentar, conteo_reacciones
 from .views.canales.suscripcion import suscribirse_canal, desuscribirse_canal
 from .views.canales.notificacion import listar_notificacion
@@ -13,6 +14,8 @@ from .views.eventos.lista_eventos import (
 )
 
 urlpatterns = [
+    path('canal/crear_sugerencia_form/', crear_sugerencia_form, name='crear_sugerencia_form'),
+    path('canal/crear_sugerencia/', crear_sugerencia, name='crear_sugerencia'),
     path('canal/<int:canal_id>/suscribirse/', suscribirse_canal, name='suscribirse_canal'),
     path('canal/<int:canal_id>/desuscribirse/', desuscribirse_canal, name='desuscribirse_canal'),
     path('canal/<int:canal_id>/detalle/', detalle_canal, name='detalle_canal'),

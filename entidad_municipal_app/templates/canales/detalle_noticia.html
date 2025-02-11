@@ -39,9 +39,9 @@
     <!-- Sección de Comentarios -->
     <div class="bg-gray-50 p-4 rounded-lg shadow-md">
         <h4 class="text-lg font-semibold mb-3 ">Comentarios</h4>
-        {% if comentarios %}
+        {% if noticia.comentarios.all %}
         <ul class="space-y-3">
-            {% for comentario in comentarios %}
+            {% for comentario in noticia.comentarios.all %}
             <li class="bg-white p-3 rounded-md shadow">
                 <p class="font-bold text-gray-800">{{ comentario.ciudadano.nombre_completo }}:</p>
                 <p class="text-sm text-gray-500">{{ comentario.fecha }}</p>

@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.timezone import now
 from .canal_informativo import CanalInformativo
+from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
+from django.db.models import Count
 
 class Noticia(models.Model):
     """
@@ -40,3 +42,115 @@ class Noticia(models.Model):
             str: El título de la noticia seguido del nombre del canal.
         """
         return f"{self.titulo} - {self.canal.nombre}"
+
+    @classmethod
+    def crear_noticia(cls, canal, titulo,contenido,imagen = None):
+        noticia = Noticia.objects.create(
+            canal=canal,
+            titulo=titulo,
+            contenido=contenido,
+            imagen=imagen
+        )
+        return noticia
+
+    def reaccionar(self,ciudadano,tipo_reaccion):
+        reaccion = Reaccion.objects.create(
+        noticia=self,
+        ciudadano=ciudadano,
+        tipo=tipo_reaccion
+        )
+
+        return reaccion
+
+    def comentar(self,ciudadano,contenido):
+        comentario = Comentario.objects.create(
+            noticia=self,
+            ciudadano=ciudadano,
+            contenido=contenido
+        )
+
+        return comentario
+
+    def obtener_reacciones(self):
+        return self.reacciones.all()
+
+    def obtener_comentarios(self):
+        return self.comentarios.all()
+
+    def contar_reacciones(self):
+        conteos_reacciones = self.reacciones.values('tipo').annotate(conteo=Count('tipo'))
+
+        # Crear un diccionario con los conteos de reacciones
+        reacciones_dict = {tipo: 0 for tipo, _ in Reaccion.TIPOS_REACCION}
+        for conteo in conteos_reacciones:
+            reacciones_dict[conteo['tipo']] = conteo['conteo']
+
+        return reacciones_dict
+
+    @staticmethod
+    def obtener_noticias(ciudadano):
+        canales=[]
+        for suscripcion in ciudadano.suscripciones.all():
+            canales.append(suscripcion.canal)
+        return Noticia.objects.filter(canal__in=canales)
+
+class Reaccion(models.Model):
+    """
+    Reacciones de ciudadanos a noticias.
+
+    Este modelo representa las reacciones que los ciudadanos pueden tener hacia una noticia publicada.
+    Cada reacción es vinculada a una noticia y un ciudadano específico.
+
+    Attributes:
+        noticia (ForeignKey): La noticia a la cual se le está reaccionando.
+        ciudadano (ForeignKey): El ciudadano que emite la reacción.
+        tipo (str): El tipo de reacción. Puede ser 'me_gusta', 'interesante', 'no_me_gusta', 'gracioso', o 'triste'.
+        fecha (datetime): La fecha y hora en que se registró la reacción. Se establece automáticamente a la fecha actual.
+    """
+    TIPOS_REACCION = [
+        ('me_gusta', 'Me gusta'),
+        ('interesante', 'Interesante'),
+        ('no_me_gusta', 'No me gusta'),
+        ('gracioso', 'Gracioso'),
+        ('triste', 'Triste'),
+    ]
+    noticia = models.ForeignKey(Noticia, on_delete=models.CASCADE, related_name="reacciones")
+    ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE, related_name="reacciones")
+    tipo = models.CharField(max_length=50, choices=TIPOS_REACCION)
+    fecha = models.DateTimeField(default=now)
+
+    def __str__(self):
+        """
+        Retorna una representación de la reacción, mostrando el tipo y el nombre completo del ciudadano.
+
+        Returns:
+            str: El tipo de reacción seguido del nombre del ciudadano.
+        """
+        return f"{self.tipo} - {self.ciudadano.nombre_completo}"
+
+class Comentario(models.Model):
+        """
+        Comentarios de ciudadanos en publicaciones.
+
+        Este modelo permite a los ciudadanos dejar comentarios en las noticias publicadas.
+        Cada comentario está vinculado a una noticia y un ciudadano específico.
+
+        Attributes:
+            noticia (ForeignKey): La noticia a la que se le ha agregado el comentario.
+            ciudadano (ForeignKey): El ciudadano que ha dejado el comentario.
+            contenido (str): El contenido del comentario.
+            fecha (datetime): La fecha y hora en que se registró el comentario. Se establece automáticamente a la fecha actual.
+        """
+        noticia = models.ForeignKey(Noticia, on_delete=models.CASCADE, related_name="comentarios")
+        ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE, related_name="comentarios")
+        contenido = models.TextField()
+        fecha = models.DateTimeField(default=now)
+
+        def __str__(self):
+            """
+            Retorna una representación del comentario, mostrando el nombre del ciudadano y el inicio del contenido del comentario.
+
+            Returns:
+                str: Un comentario con el nombre del ciudadano y los primeros 30 caracteres del contenido.
+            """
+            return f"Comentario de {self.ciudadano.nombre_completo}: {self.contenido[:30]}"

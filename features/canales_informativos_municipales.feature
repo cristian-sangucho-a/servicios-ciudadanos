@@ -23,3 +23,8 @@ Característica: Canales informativos municipales
     Dado que soy una entidad municipal que gestiona el canal de "emergencia",
     Cuando ocurre un incidente "terremoto" en "Quito",
     Entonces el sistema envía alertas rápidas a los ciudadanos de "Quito".
+
+  Escenario: Crear un canal informativo sugerido
+    Dado que un ciudadano registrado crea una sugerencia de canal con nombre "Deportes" y descripción "Noticias de la FEF"
+    Cuando se acepta la sugerencia
+    Entonces se crea un nuevo canal informativo.

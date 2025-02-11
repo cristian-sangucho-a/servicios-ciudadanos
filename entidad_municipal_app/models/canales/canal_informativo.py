@@ -1,7 +1,6 @@
 from django.db import models
 from ciudadano_app.models.ciudadano.ciudadano import Ciudadano
 from django.utils.timezone import now
-
 from entidad_municipal_app.models import EntidadMunicipal
 from shared.models.notificacion.notificacion import Notificacion
 
@@ -46,7 +45,7 @@ class CanalInformativo(models.Model):
         Args:
             ciudadano (Ciudadano): El ciudadano que se suscribe al canal.
         """
-        Suscripcion.objects.get_or_create(canal=self, ciudadano=ciudadano)
+        return Suscripcion.objects.get_or_create(canal=self, ciudadano=ciudadano)
 
     def desuscribir_ciudadano(self, ciudadano):
         """
@@ -114,6 +113,52 @@ class CanalInformativo(models.Model):
                 titulo="Alerta de emergencia",
                 mensaje=f"Ha ocurrido un {tipo_incidente} en {localidad}"
             )
+
+    @classmethod
+    def crear_canal(cls, entidad_municipal, nombre, descripcion, es_emergencia):
+        """
+        Crea un nuevo canal informativo.
+
+        Si el canal es de emergencia, suscribe a todos los ciudadanos al canal.
+
+        Args:
+            entidad_municipal (EntidadMunicipal): El municipio al que pertenece el canal.
+            nombre (str): El nombre del canal.
+            descripcion (str): La descripción del canal.
+            es_emergencia (bool): Indica si el canal es de emergencia.
+
+        Returns:
+            CanalInformativo: La instancia del canal creado.
+        """
+        canal = CanalInformativo.objects.create(
+            entidad_municipal=entidad_municipal,
+            nombre=nombre,
+            descripcion=descripcion,
+            es_emergencia=es_emergencia
+        )
+
+        # Si es un canal de emergencia, suscribir a todos los ciudadanos
+        if canal.es_emergencia is True:
+            ciudadanos = Ciudadano.objects.all()
+            for ciudadano in ciudadanos:
+                canal.suscribir_ciudadano(ciudadano)
+        return canal
+
+    def esta_suscrito(self,ciudadano):
+        return self.suscripciones.filter(ciudadano=ciudadano).exists()
+
+    @classmethod
+    def crear_canal_sugerido(cls,sugerencia):
+        try:
+            descripcion = sugerencia.descripcion + " (sugerido por: " + sugerencia.ciudadano.nombre_completo + ")"
+            entidad_municipal = sugerencia.entidad_municipal
+            nombre = sugerencia.nombre
+
+            canal = cls.crear_canal(entidad_municipal,nombre,descripcion, False)
+            sugerencia.canal_creado = True
+            return canal
+        except:
+            raise ValueError("No se ha podido crear el canal sugerido.")
 
 
 class Suscripcion(models.Model):

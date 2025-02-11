@@ -11,9 +11,7 @@ from .espacio_publico import EspacioPublico
 from .evento.evento_municipal import EventoMunicipal
 from .evento.registro_asistencia import RegistroAsistencia
 from .canales.canal_informativo import CanalInformativo, Suscripcion
-from .canales.noticia import Noticia
-from .canales.reaccion import Reaccion
-from .canales.comentario import Comentario
+from .canales.noticia import Noticia,Reaccion,Comentario
 from .reporte.reporte_municipal import ReporteMunicipal
 
 _all_ = [
@@ -25,7 +23,7 @@ _all_ = [
     'Suscripcion',
     'Noticia',
     'Reaccion',
-    'Comentario',
+    'Comentario'
     'ReporteMunicipal',
     'Departamento'
 ]

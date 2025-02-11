@@ -4,11 +4,10 @@ from ciudadano_app.models import Ciudadano
 from entidad_municipal_app.models import EntidadMunicipal
 from entidad_municipal_app.models.canales.canal_informativo import CanalInformativo, Suscripcion
 from entidad_municipal_app.models.canales.noticia import Noticia
-from entidad_municipal_app.models.canales.reaccion import Reaccion
-from entidad_municipal_app.models.canales.comentario import Comentario
 import string
 import secrets
 
+from entidad_municipal_app.models.canales.sugerencia import Sugerencia
 from shared.models.notificacion.notificacion import Notificacion
 
 fake = Faker()
@@ -34,19 +33,8 @@ def crear_canal(nombre, es_emergencia=False):
         password=generate_random_string(7)
     )
     """Crea y retorna un canal informativo o de emergencia."""
-    canal, _ = CanalInformativo.objects.get_or_create(
-        entidad_municipal = entidad,
-        nombre=nombre,
-        descripcion="Canal de noticias" if not es_emergencia else "Canal de emergencias",
-        es_emergencia=es_emergencia
-    )
+    canal = CanalInformativo.crear_canal(entidad,nombre,"Canal de noticias",es_emergencia)
     return canal
-
-def suscribir_ciudadano_al_canal(ciudadano, canal):
-    """Suscribe un ciudadano a un canal informativo."""
-    canal.suscribir_ciudadano(ciudadano)
-    return Suscripcion.objects.get(canal=canal, ciudadano=ciudadano)
-
 
 # --- Escenario de suscripción a un canal informativo ---
 @given('que soy una entidad municipal que gestiona el canal "{canal_nombre}",')
@@ -59,23 +47,16 @@ def step_impl(context, canal_nombre):
 def step_impl(context, canal_nombre):
     """El ciudadano se suscribe al canal especificado."""
     context.ciudadano = crear_ciudadano()
-    canal = CanalInformativo.objects.get(nombre=canal_nombre)
-    context.suscripcion = suscribir_ciudadano_al_canal(context.ciudadano, canal)
+    context.suscripcion = context.canal.suscribir_ciudadano(context.ciudadano)
 
-    assert context.suscripcion, f"El ciudadano no se suscribió correctamente al canal {canal.nombre}."
+    assert context.suscripcion, f"El ciudadano no se suscribió correctamente al canal {canal_nombre}."
 
 
 @then("el ciudadano recibe noticias relacionadas al canal.")
 def step_impl(context):
     """Verifica que el ciudadano recibe noticias del canal suscrito."""
-    noticia = Noticia.objects.create(
-        canal=context.canal,
-        titulo=fake.sentence(),
-        contenido=fake.text(max_nb_chars=500),
-        imagen=None
-    )
-
-    noticias = Noticia.objects.filter(canal=context.canal)
+    Noticia.crear_noticia(context.canal,fake.sentence(),fake.text(max_nb_chars=500) )
+    noticias = context.canal.noticias
     assert noticias.exists(), f"No hay noticias en el canal {context.canal.nombre}."
 
 
@@ -90,52 +71,43 @@ def step_impl(context):
 def step_impl(context):
     """Crea un canal informativo y publica una noticia."""
     context.canal = crear_canal("Noticias Locales")
-    context.noticia = Noticia.objects.create(
-        canal=context.canal,
-        titulo=fake.sentence(),
-        contenido=fake.text(max_nb_chars=500),
-        imagen=None
-    )
+    context.noticia = Noticia.crear_noticia(context.canal,
+        fake.sentence(),
+        fake.text(max_nb_chars=500))
 
 
 @when('el ciudadano reacciona a la noticia con "{tipo_reaccion}"')
 def step_impl(context, tipo_reaccion):
     """Registra la reacción del ciudadano en la noticia."""
-    context.reaccion = Reaccion.objects.create(
-        noticia=context.noticia,
-        ciudadano=context.ciudadano,
-        tipo=tipo_reaccion
-    )
+    context.noticia.reaccionar(context.ciudadano,tipo_reaccion)
 
 
 @when('el ciudadano comenta en la noticia con "{comentario_texto}"')
 def step_impl(context, comentario_texto):
     """Registra un comentario en la noticia."""
-    context.comentario = Comentario.objects.create(
-        noticia=context.noticia,
-        ciudadano=context.ciudadano,
-        contenido=comentario_texto
-    )
+    context.noticia.comentar(context.ciudadano,comentario_texto)
 
 
 @then("la reacción y comentario del ciudadano quedan registrados en la noticia.")
 def step_impl(context):
     """Verifica que la reacción y comentario han sido almacenados."""
-    assert Reaccion.objects.filter(noticia=context.noticia, ciudadano=context.ciudadano).exists(), "La reacción no fue registrada."
-    assert Comentario.objects.filter(noticia=context.noticia, ciudadano=context.ciudadano).exists(), "El comentario no fue registrado."
+    assert context.noticia.obtener_reacciones().exists(), "La reacción no fue registrada."
+    assert context.noticia.obtener_comentarios().exists(), "El comentario no fue registrado."
 
 
 # --- Escenario de alertas de emergencia ---
 @given('que soy una entidad municipal que gestiona el canal de "{canal_nombre}",')
 def step_impl(context, canal_nombre):
     """Crea un canal de emergencia y suscribe ciudadanos ficticios."""
+    numero_de_ciudadanos = 5
     context.canal_emergencia = crear_canal(canal_nombre, es_emergencia=True)
-    context.ciudadanos_en_ciudad = [crear_ciudadano() for _ in range(5)]
+    context.ciudadanos_en_ciudad = [crear_ciudadano() for _ in range(numero_de_ciudadanos)]
+    suscripciones = []
 
     for ciudadano in context.ciudadanos_en_ciudad:
-        suscribir_ciudadano_al_canal(ciudadano, context.canal_emergencia)
+        suscripciones.append(context.canal_emergencia.suscribir_ciudadano(ciudadano))
 
-    assert Suscripcion.objects.filter(canal=context.canal_emergencia).count() == 5, "Los ciudadanos no fueron suscritos correctamente al canal de emergencia."
+    assert len(suscripciones) == numero_de_ciudadanos, "Los ciudadanos no fueron suscritos correctamente al canal de emergencia."
 
 
 @when('ocurre un incidente "{incidente}" en "{ciudad}",')
@@ -150,3 +122,25 @@ def step_impl(context, ciudad):
     """Verifica que las alertas de emergencia han sido enviadas."""
     context.canal_emergencia.notificar_alerta_emergencia(context.incidente, context.ciudad)
     assert Notificacion.objects.filter(titulo = "Alerta de emergencia").exists(), 'No se han eviado alertas de emergencia'
+
+@given('que un ciudadano registrado crea una sugerencia de canal con nombre "{nombre}" y descripción "{descripcion}"')
+def step_impl(context, nombre, descripcion):
+    """Crea un ciudadano ficticio."""
+    context.ciudadano = crear_ciudadano()
+    context.entidad_municipal = EntidadMunicipal.objects.create_user(
+        correo_electronico= fake.email(),
+        password=generate_random_string(7)
+    )
+    context.sugerencia = Sugerencia.crear_sugerencia_canal(nombre,descripcion,context.ciudadano,context.entidad_municipal)
+
+    assert Sugerencia.objects.filter(id=context.sugerencia.id).exists(), 'No se ha creado ninguna sugerencia'
+
+@when('se acepta la sugerencia')
+def step_impl(context):
+    context.canal_sugerido = CanalInformativo.crear_canal_sugerido(context.sugerencia)
+    assert context.sugerencia.canal_creado , 'No se ha aceptado la sugerencia'
+
+@then("se crea un nuevo canal informativo.")
+def step_impl(context):
+    """Verifica que la sugerencia ha sido almacenada."""
+    assert CanalInformativo.objects.filter(nombre=context.sugerencia.nombre).exists(), "No existe ningún canal con el nombre de la sugerencia"
